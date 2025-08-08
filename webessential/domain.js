@@ -1,5 +1,5 @@
-const applicationdomain2 = "https://api.workwize.in/";
-const applicationdomain = "https://localhost:7151/";
+const applicationdomain = "https://api.workwize.in/";
+const applicationdomain2 = "https://localhost:7151/";
 const applicationdomain3 = "https://testing.hyprscripts.com/";
 const loginendpoint = applicationdomain + "api/login"
 
