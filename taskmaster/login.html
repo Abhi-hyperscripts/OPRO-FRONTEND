@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WorkWize | Login</title>
+    <link rel="icon" type="image/x-icon" href="commons/assets/img/AppImages/logo.jpeg" />
+    <link rel="stylesheet" href="taskmastercssjs/assets/css/style.css">
+    <link href="taskmastercssjs/assets/vender/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <script src="taskmastercssjs/theme/libs/jquery/jquery.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <section class="FormsBg d-flex align-items-center justify-content-center">
+        <div class="container">
+            <div class="FormsContainer">
+                <div>
+                    <a href="../../index.html">
+                        <img class="d-block m-auto" src="taskmastercssjs/assets/images/logo.png" />
+                    </a>
+                </div>
+                <div class="heading mt-md-3">Login</div>
+                <div action="" class="form LoginForm px-md-5">
+                    <div class="FormsField">
+                        <label class="FormsLabel" for="name">Email id</label>
+                        <input required="" class="input" type="text" name="Username" id="username"
+                               placeholder="Registered E-Mail ID">
+                    </div>
+                    <div class="FormsField">
+                        <label class="FormsLabel" for="name">Password</label>
+                        <input required="" class="input" type="password" name="Password" id="password"
+                               placeholder="*************">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 pt-3">
+                            <input type="checkbox" /><span class="mx-1">Remember Me</span>
+                        </div>
+                        <div class="col-md-6 p-0">
+                            <span class="forgot-password">
+                                <a href="../forgetpwd.html">
+                                    <b>
+                                        Forgot Password
+                                        ?
+                                    </b>
+                                </a>
+                            </span>
+                        </div>
+                    </div>
+                    <button class="FormsButton" onclick="LoginNormalUser()">Log In</button>
+                </div>
+                <div class="d-flex justify-content-center">
+                    <span class="text-danger" id="login-errors"></span>
+                </div>
+                <span class="agreement"><a href="../admin/adminLogin.html"> Login For Admin Panel</a></span>
+
+            </div>
+        </div>
+    </section>
+   
+    <script src="https://cdn.jsdelivr.net/npm/jwt-decode@4.0.0/build/cjs/index.min.js"></script>
+    <script src="taskmastercssjs/assets/vender/js/popper.min.js"></script>
+    <script src="taskmastercssjs/assets/vender/js/bootstrap.min.js"></script>
+
+    <script src="../webessential/domain.js"></script>
+    <script src="taskmastercssjs/app_taskmaster.js"></script>
+    <script src="taskmastercssjs/userlogin.js"></script>
+    <!-- <script src="/commons/systemjscss/js/userlogin.js"></script> -->
+</body>
+
+</html>

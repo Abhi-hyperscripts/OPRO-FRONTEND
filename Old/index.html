@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head> 
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Opro | Login</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/responsive.css">
+    <link href="assets/vender/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.1.1/css/buttons.dataTables.min.css">
+    <!-- DataTables ColVis CSS -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.2.2/css/buttons.dataTables.min.css">
+</head>
+<body>
+<header>
+    <div class="container">
+        <div class="top-header">
+            <div class="heads">
+            <div class="headsdes">
+                <a class="navbar-brand" href="index.html">
+                    <img src="assets/images/logo.png" />
+                  </a>
+            </div>
+            <div class="headsdes login-condions">
+                <div class="not-login d-none">
+                    <a href="login">
+                        <span>Login/Register</span>
+                    </a>
+                </div>
+                <div class="after-login">
+                    <!-- <div class="create-job">
+                        <a href="login">
+                            <span>Create New Job</span>
+                        </a>
+                    </div> -->
+                    <div class="created-accounts">
+                        <div class="created-img">
+                            <img src="assets/images/login/profileadmin.png" alt="">
+                        </div>
+                        <div class="created-content">
+                            <div class="dropdown">
+                                <button class="btn profile-btn dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                 User Profile
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                  <li><a class="dropdown-item" href="#">Name</a></li>
+                                  <li><a class="dropdown-item" href="#">Email</a></li>
+                                  <li><a class="dropdown-item" href="#">Contact Number</a></li>
+                                </ul>
+                              </div>
+                        </div>
+                    </div>
+                    
+                </div>
+                
+            </div>
+            </div>
+        </div>
+    </div>
+</header>
+<section class="top-banner">
+<div class="container">
+    <div class="top-banner-content">
+    <span>Let’s Go!</span>
+    <h1>rack your jobs like a pro with <br> Job scan’s Job Tracker</h1>
+    <p>Discover the best remote and work form home jobs at<br>
+        top remote compaines.</p>
+        <div class="get-started pt-3">
+            <a class="btn-green" href="#">Get Started</a>
+        </div>
+    </div>
+</div>
+</section>
+<section class="datatable-section">
+    <div class="container">
+        <div class="all-jobs-table">
+        <h2 class="all-headings">ALL JOBS</h2>
+        <table id="example" class="display" style="width:100%">
+            <thead>
+                <tr>
+                    <th>Job Id</th>
+                    <th>Job Details</th>
+                    <th>Date job creation <i class="fa-solid fa-calendar-days"></i></th>
+                    <th>Job Location</th>
+                    <th><select name="" id="">
+                        <option value="Property Name">Property Name</option>
+                        <option value="Property Name1">Property Name1</option>
+                        <option value="Property Name">Property Name</option>
+                        <option value="Property Name">Property Name</option>
+                    </select></th>
+                    <th>
+                        <select name="" id="">
+                            <option value="Priority">Priority</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                        </select>
+                    </th>
+                    <th><select name="" id="">
+                        <option value="Assigned to">Assigned to</option>
+                        <option value="Sunil kumar">Sunil kumar</option>
+                        <option value="Sourav">Sourav</option>
+                    </select></th>
+                    <th><select name="" id="">
+                        <option value="Status">Status</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="Progress">Progress</option>
+                    </select></th>
+                    <th>Ref no.</th>
+                    <th>Budget</th>
+                    <th>Attachment</th>
+                    <th>Close Date <i class="fa-solid fa-calendar-days"></i></th>
+                    <th>Remarks</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>Public Area (Guest)</td>
+                    <td>15/07/2024</td>
+                    <td>Delhi</td>
+                    <td>Guest Villa</td>
+                    <td>A</td>
+                    <td>Sunil kumar</td>
+                    <td class="status-done"><a href="close-jobs.html">Done</a></td>
+                    <td>5</td>
+                    <td>5000,00</td>
+                    <td> <img src="assets/images/login/profileadmin.png" alt=""> </td>
+                    <td>15/07/2024</td>
+                    <td>12</td>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>Public Area (Guest)</td>
+                    <td>15/07/2024</td>
+                    <td>Delhi</td>
+                    <td>Guest Villa</td>
+                    <td>A</td>
+                    <td>Sunil kumar</td>
+                    <td>In Progress</td>
+                    <td>5</td>
+                    <td>5000,00</td>
+                    <td> <img src="assets/images/login/profileadmin.png" alt=""> </td>
+                    <td>15/07/2024</td>
+                    <td>12</td>
+                </tr>
+                <!-- Add more rows as needed -->
+            </tbody>
+        </table>
+    </div>
+    </div>
+
+</section>
+
+<footer>
+    <section class="footer-bg-black">
+        <div class="container">
+            <p>© 2023- 2024  <span > OPRO</span> . All Rights Reserved</p>
+        </div>
+            </section>
+
+
+    <section class="footer-bg">
+<div class="container">
+    <ul class="list-unstyled">
+        <li><a href="login.html">Login</a></li>
+        <li><a href="Forgot-password.html">Forget Password</a></li>
+        <li><a href="email-link.html"> Email Link</a></li>
+        <li><a href="all-jobs.html">All Job</a></li>
+        <li><a href="create-jobs.html">Create Jobs</a></li>
+        <li><a href="close-jobs.html">Close Jobs</a></li>
+        <li><a href="ahr-job-tracker.html">Job Tracker</a></li>
+        <li><a href="job-details.html">Job Detail</a></li>
+    </ul>
+</div>
+    </section>
+</footer>
+
+
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- DataTables JS -->
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
+      <!-- DataTables Buttons JS -->
+      <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/2.1.1/js/dataTables.buttons.min.js"></script>
+      <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/2.1.1/js/buttons.html5.min.js"></script>
+      <script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+      <!-- DataTables ColVis JS -->
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.colVis.min.js"></script>
+
+<script src="assets/vender/js/popper.min.js"></script>
+<script src="assets/vender/js/bootstrap.min.js"></script>
+<script src="demo.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#example').DataTable({
+            responsive: true,
+            dom: 'Bfrtip', // Add the DataTables Buttons to the DOM
+            buttons: [
+            {
+                    extend: 'excel', // Use 'excel' for Excel export
+                    text: 'Export to Excel' // Change the button text
+                },
+                {
+                    extend: 'colvis', // Toggle Columns button
+                    text: 'Toggle Columns'
+                }
+            ],
+            searching: false // Disable the search bar
+        });
+    });
+</script>
+</body>
+</html>

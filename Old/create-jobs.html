@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Opro | Create Jobs</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/responsive.css">
+    <link href="assets/vender/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.dataTables.min.css">
+</head>
+<body>
+<header>
+    <div class="container">
+        <div class="top-header">
+            <div class="heads">
+            <div class="headsdes">
+                <a class="navbar-brand" href="index.html">
+                    <img src="assets/images/logo.png" />
+                  </a>
+            </div>
+            <div class="headsdes login-condions">
+                <div class="not-login d-none">
+                    <a href="login">
+                        <span>Login/Register</span>
+                    </a>
+                </div>
+                <div class="after-login">
+                    <!-- <div class="create-job">
+                        <a href="login">
+                            <span>Create New Job</span>
+                        </a>
+                    </div> -->
+                    <div class="created-accounts">
+                        <div class="created-img">
+                            <img src="assets/images/login/profileadmin.png" alt="">
+                        </div>
+                        <div class="created-content">
+                            <div class="dropdown">
+                                <button class="btn profile-btn dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                 User Profile
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                  <li><a class="dropdown-item" href="#">Name</a></li>
+                                  <li><a class="dropdown-item" href="#">Email</a></li>
+                                  <li><a class="dropdown-item" href="#">Contact Number</a></li>
+                                </ul>
+                              </div>
+                        </div>
+                    </div>
+                    
+                </div>
+                
+            </div>
+            </div>
+        </div>
+    </div>
+</header>
+<section class="top-banner">
+<div class="container">
+    <div class="top-banner-content">
+    <span>Let’s Go!</span>
+    <h1>rack your jobs like a pro with <br> Job scan’s Job Tracker</h1>
+    <p>Discover the best remote and work form home jobs at<br>
+        top remote compaines.</p>
+        <div class="get-started pt-3">
+            <a class="btn-green" href="#">Get Started</a>
+        </div>
+    </div>
+</div>
+</section>
+<section class="job-tracker-datatable mt-5">
+    <div class="container">
+        <div class="all-jobs-table">
+        <div class="job-tracker-datatable-heading mb-3">
+            <div class="all-heading">
+                <h2>Create New Jobs</h2>
+            </div>
+                    <div class="both-btns">
+                        <div class="export-btns">
+                            <button class="btn btn-greens">Excel Format</button>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="export-btns">
+                                <button class="btn btn-blues">Upload Excel</button>
+                            </div>
+                        </div>
+                    </div>    
+        </div>
+        <div class="create-jobs-form">
+            <form action="" class="form">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label for="Property Name">Property Name</label>
+                            <select name="" id="" class="form-control">
+                                <option value="">Choose Property Name</option>
+                                <option value="">Choose Property Name</option>
+                                <option value="">Choose Property Name</option>
+                                <option value="">Choose Property Name</option>
+                                <option value="">Choose Property Name</option>
+                                <option value="">Choose Property Name</option>
+                                <option value="">Choose Property Name</option>
+
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label for="Property Name">Area</label>
+                            <select name="" id="" class="form-control">
+                                <option value="">Choose Area</option>
+                                <option value="">Choose Area</option>
+                                <option value="">Choose Area</option>
+                                <option value="">Choose Area</option>
+                                <option value="">Choose Area</option>
+                                <option value="">Choose Area</option>
+                                <option value="">Choose Area</option>
+                                
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label for="Job Location">Job Location</label>
+                            <input type="text" class="form-control" placeholder="Enter Location">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label for="Manager">Manager</label>
+                            <input type="text" class="form-control" placeholder="Enter Manager">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label for="Priority">Priority</label>
+                            <select name="" id="" class="form-control">
+                                <option value="">Choose Priority</option>
+                                <option value="">Choose Priority</option>
+                                <option value="">Choose Priority</option>
+                                <option value="">Choose Priority</option>
+                                <option value="">Choose Priority</option>
+                                <option value="">Choose Priority</option>
+                                <option value="">Choose Priority</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label for="Date Calendar">Date Calendar</label>
+                            <input type="date" placeholder="Enter Date" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label for="Status">Status</label>
+                            <select name="status" id="status" class="form-control">
+                                <option value="">Chosse Status</option>
+                                <option value="Done">Done</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label for="Assigned to">Assigned to</label>
+                            <select name="assigned" id="" class="form-control">
+                                <option value="Assigned to">Assigned to</option>
+                                <option value="">Assigned Name</option>
+                                <option value="">Assigned Name</option>
+                                <option value="">Assigned Name</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label for="Budget">Budget</label>
+                            <input type="text" placeholder="Budget" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="Reference No.">Reference No.</label>
+                                    <input type="text" placeholder="Enter Reference No" class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="Remarks">Remarks</label>
+                                    <input type="text" placeholder="Enter Remarks" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label for="Attachment">Attachment</label>
+                            <input type="file" class="form-control" title = "Choose a video please">
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group mb-3">
+                            <label for="Job Details">Job Details</label>
+                            <textarea name="" id=""  rows="3" class="form-control" placeholder="Job Details"></textarea>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group mb-3">
+                            <input type="button" value="Submit" class="form-control submitbtn" >
+                        </div>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+
+    </div>
+    </div>
+
+</section>
+
+
+
+<footer>
+    <section class="footer-bg-black">
+        <div class="container">
+            <p>© 2023- 2024  <span > OPRO</span> . All Rights Reserved</p>
+        </div>
+            </section>
+
+
+    <section class="footer-bg">
+<div class="container">
+    <ul class="list-unstyled">
+        <li><a href="login.html">Login</a></li>
+        <li><a href="Forgot-password.html">Forget Password</a></li>
+        <li><a href="email-link.html"> Email Link</a></li>
+        <li><a href="all-jobs.html">All Job</a></li>
+        <li><a href="create-jobs.html">Create Jobs</a></li>
+        <li><a href="close-jobs.html">Close Jobs</a></li>
+        <li><a href="ahr-job-tracker.html">Job Tracker</a></li>
+        <li><a href="job-details.html">Job Detail</a></li>
+    </ul>
+</div>
+    </section>
+</footer>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- DataTables JS -->
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
+    <script src="assets/vender/js/popper.min.js"></script>
+    <script src="assets/vender/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            var table = $('#example').DataTable({
+                responsive: true,
+                dom: 'Bfrtip', // Add the DataTables Buttons to the DOM
+                              searching: false // Disable the search bar
+            });
+        });
+    </script>
+</body>
+</html>

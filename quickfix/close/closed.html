@@ -1,0 +1,36 @@
+<!-- Mobile Design -->
+<div class="mobileview">
+  <input class="form-control" type="text" name="Search" id="Search" placeholder="Search" oninput="SearchCloseJobs()">
+  <div class="accordion1" id="close-card-view">
+  </div>
+</div>
+
+<!-- Desktop Design -->
+<div class="card-body py-2">
+  <div class="table-responsive tablehide">
+    <table id="closejobstable" class="table table-sm table-hover "
+      style="font-size: 12px; width:100%; text-align: initial;" cellspacing="0">
+      <thead class="cf">
+        <tr>
+          <th>Sr.No.</th>
+          <th>Job Details</th>
+          <th>Issued By</th>
+          <th>Issued To</th>
+          <th>Area</th>
+          <th>Sub-Area</th>
+          <th class="w-px-300">Open Date/Time</th>
+          <th>Photo Before</th>
+          <th>Photo After</th>
+          <th>Closed By</th>
+          <th class="w-px-300">Closed Date/Time</th>
+          <th>Status</th>
+          <th>Remarks</th>
+        </tr>
+      </thead>
+      <tbody id="close-table-view">
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script src="close/closed.js"></script>

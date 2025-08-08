@@ -1,0 +1,22 @@
+# System files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Dependencies (if you have any)
+node_modules/
+npm-debug.log*
+
+# Build outputs (if applicable)
+dist/
+build/

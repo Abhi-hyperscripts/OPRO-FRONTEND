@@ -1,0 +1,220 @@
+<div class="modal fade animate__animated" id="editpropertyform" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bgimg">
+                <h5 class="modal-title" id="exampleModalLabel2">Add New Property</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <div class="accordion" id="collapsibleSection">
+                    <!-- Delivery Address -->
+                    <div class="card accordion-item" data-select2-id="30">
+                        <h2 class="accordion-header" id="headingDeliveryAddress">
+                            <button class="accordion-button collapsed bgimg2" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapseDeliveryAddress" aria-expanded="false"
+                                aria-controls="collapseDeliveryAddress">
+                                Property Details
+                            </button>
+                        </h2>
+                        <div id="collapseDeliveryAddress" class="accordion-collapse collapse"
+                            aria-labelledby="headingDeliveryAddress" data-bs-parent="#collapsibleSection">
+                            <div class="accordion-body">
+                                <div class="row g-3 mt-0" data-select2-id="29">
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <label class="col-sm-2 col-form-label" for="propName">Property Name</label>
+                                            <div class="col-sm-10">
+                                                <input type="text" id="propName" class="form-control"
+                                                    placeholder="Property Name">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <label class="col-sm-2 col-form-label" for="propAddress">Address</label>
+                                            <div class="col-sm-10">
+                                                <textarea name="propAddress" class="form-control" id="propAddress"
+                                                    rows="4" placeholder="1456, Mall Road"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr class="my-4">
+                                    <div class="col-md-6">
+                                        <div class="row">
+                                            <label class="col-sm-3 col-form-label text-sm-end" for="propType">Property
+                                                Type</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" id="propType" class="form-control"
+                                                    placeholder="Property Type">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="row">
+                                            <label class="col-sm-3 col-form-label text-sm-end"
+                                                for="propCity">City</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" id="propCity" class="form-control"
+                                                    placeholder="City">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="row">
+                                            <label class="col-sm-3 col-form-label text-sm-end"
+                                                for="propState">State/Province</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" id="propState" class="form-control"
+                                                    placeholder="State/Province">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="row">
+                                            <label class="col-sm-3 col-form-label text-sm-end"
+                                                for="propCountry">Country</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" id="propCountry" class="form-control"
+                                                    placeholder="Country">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="row">
+                                            <label class="col-sm-3 col-form-label text-sm-end" for="propZip">Zip
+                                                Code</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" id="propZip" class="form-control"
+                                                    placeholder="Zip Code">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="row">
+                                            <label class="col-sm-3 col-form-label text-sm-end"
+                                                for="propZip">Images</label>
+                                            <div class="col-sm-9">
+                                                <input type="file" id="propertyIamge" class="form-control"
+                                                    placeholder="Property Images" multiple>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Delivery Options -->
+                    <div class="card accordion-item">
+                        <h2 class="accordion-header" id="headingDeliveryOptions">
+                            <button class="accordion-button collapsed bgimg2" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapseDeliveryOptions" aria-expanded="false"
+                                aria-controls="collapseDeliveryOptions">
+                                Contact Details
+                            </button>
+                        </h2>
+                        <div id="collapseDeliveryOptions" class="accordion-collapse collapse"
+                            aria-labelledby="headingDeliveryOptions" data-bs-parent="#collapsibleSection">
+                            <div class="accordion-body">
+                                <div class="row g-3 mt-0">
+                                    <div class="col-md-6">
+                                        <div class="row">
+                                            <label class="col-sm-3 col-form-label text-sm-end"
+                                                for="propContactPerson">Contact Person</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" id="propContactPerson" class="form-control"
+                                                    placeholder="Contact Person">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="row">
+                                            <label class="col-sm-3 col-form-label text-sm-end"
+                                                for="propEmail">Email</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" id="propEmail" class="form-control"
+                                                    placeholder="Email">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="row">
+                                            <label class="col-sm-3 col-form-label text-sm-end" for="propContact">Phone
+                                                Number</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" id="propContact" class="form-control"
+                                                    placeholder="Phone Number">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="row">
+                                            <label class="col-sm-3 col-form-label text-sm-end" for="propWebsite">Web
+                                                Site</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" id="propWebsite" class="form-control"
+                                                    placeholder="Web Site">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Payment Method -->
+                    <div class="card accordion-item">
+                        <h2 class="accordion-header" id="headingPaymentMethod">
+                            <button class="accordion-button collapsed bgimg2" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapsePaymentMethod" aria-expanded="false"
+                                aria-controls="collapsePaymentMethod">
+                                Property Areas
+                            </button>
+                        </h2>
+                        <div id="collapsePaymentMethod" class="accordion-collapse collapse"
+                            aria-labelledby="headingPaymentMethod" data-bs-parent="#collapsibleSection">
+                            <form>
+                                <div class="accordion-body">
+                                    <div class="demo-inline-spacing mt-3">
+                                        <ul class="list-group" id="area-ul-holder">
+                                        </ul>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                     <!-- Image Method -->
+                     <div class="card accordion-item">
+                        <h2 class="accordion-header" id="headingImageMethod">
+                            <button class="accordion-button collapsed bgimg2" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapseImageMethod" aria-expanded="false"
+                                aria-controls="collapseImageMethod">
+                                Property Areas
+                            </button>
+                        </h2>
+                        <div id="collapseImageMethod" class="accordion-collapse collapse"
+                            aria-labelledby="headingImageMethod" data-bs-parent="#collapsibleSection">
+                            <form>
+                                <div class="accordion-body">
+                                    <div class="demo-inline-spacing mt-3">
+                                        <ul class="list-group" id="area-ul-holderv">
+                                        </ul>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">
+                    Close
+                </button>
+                <button type="button" class="btn btn-outline-dark btn-sm" onclick="SubmitNewProperty()">Save
+                    changes</button>
+            </div>
+        </div>
+    </div>
+</div>
