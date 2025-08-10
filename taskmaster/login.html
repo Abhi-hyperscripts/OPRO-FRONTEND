@@ -68,6 +68,15 @@
     <script src="taskmastercssjs/app_taskmaster.js"></script>
     <script src="taskmastercssjs/userlogin.js"></script>
     <!-- <script src="/commons/systemjscss/js/userlogin.js"></script> -->
+
+    <script>
+        const scriptsToLoad = [
+            '../webessential/domain.js',
+            'taskmastercssjs/app_taskmaster.js',
+            'taskmastercssjs/userlogin.js'
+        ];
+        loadScriptSequentially(scriptsToLoad);
+    </script>
 </body>
 
 </html>
