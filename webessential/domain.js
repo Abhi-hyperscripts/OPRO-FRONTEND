@@ -23,3 +23,27 @@ function formatDate(dateString) {
     // Return the formatted date
     return `${day}-${month}-${year}`;
 }
+
+
+function loadScriptSequentially(scripts, index = 0) {
+    if (index >= scripts.length) {
+        //console.log('All scripts loaded successfully');
+        return;
+    }
+
+    const script = document.createElement('script');
+    script.src = scripts[index] + '?v=' + new Date().getTime();
+
+    script.onload = function() {
+        //console.log(`Loaded: ${scripts[index]}`);
+        loadScriptSequentially(scripts, index + 1);
+    };
+
+    script.onerror = function() {
+        //console.error(`Failed to load: ${scripts[index]}`);
+        // Continue loading next script even if one fails
+        loadScriptSequentially(scripts, index + 1);
+    };
+
+    document.body.appendChild(script);
+}

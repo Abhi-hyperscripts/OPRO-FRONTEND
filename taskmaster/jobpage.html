@@ -616,8 +616,16 @@
   <script src="taskmastercssjs/theme/assets/vendor/libs/chartjs/chartjs.js"></script>
   <script src="taskmastercssjs/theme/assets/vendor/libs/apex-charts/apexcharts.js"></script>
   <script src="../webessential/domain.js"></script>
-  <script src="taskmastercssjs/app_taskmaster.js"></script>
-  <script src="taskmastercssjs/jobpage.js"></script>
+<!--  <script src="taskmastercssjs/app_taskmaster.js"></script>-->
+<!--  <script src="taskmastercssjs/jobpage.js"></script>-->
+
+  <script>
+    const scriptsToLoad = [
+      'taskmastercssjs/app_taskmaster.js',
+      'taskmastercssjs/jobpage.js'
+    ];
+    loadScriptSequentially(scriptsToLoad);
+  </script>
 </body>
 
 </html>
