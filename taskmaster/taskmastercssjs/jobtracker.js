@@ -431,6 +431,7 @@ function SubmitNewJob() {
     var ccf_dept = $('#ccf-dept-name').val();
     var referenceNo = $('#collapsible-refNumb').val(); // This seems to have the same ID as creation date. Ensure correct ID is used.
     var jobDetails = $('#collapsible-jd').val();
+    var jobRemarks = $('#collapsible-remarkes').val();
     var fileInput = document.getElementById('collapsible-attachment');
     debugger
     var error = 0;
@@ -463,6 +464,7 @@ function SubmitNewJob() {
         form.append("jobDetail", jobDetails);
         form.append("budget", budget);
         form.append("ccf", ccf);
+        form.append("jobremark", jobRemarks);
         form.append("ccfdept", ccf_dept);
         assignedTo.forEach((team) => {
             form.append("assignedTo", team);

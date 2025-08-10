@@ -12,7 +12,7 @@ var ServerRole = '';
 
 window.onload = function () {
     var UserObject = GetStoredUserData();
-    debugger
+    
     if (UserObject != null) {
         $('#UserName_Name').text(UserObject.name);
         CurrentProperty = UserObject.prop;
@@ -61,7 +61,7 @@ function GetJobById(pid) {
         },
         success: function (Response) {
             console.log(Response);
-            debugger
+            
             if (Response.success === true) {
                 JobInfo = Response;
                 CurrentProperty = Response.jobdata.propId;
@@ -166,8 +166,22 @@ function GetJobById(pid) {
 
 
 
-
-
+                if(Response.jobdata.remarks!==null){
+                    $('#job-remark-pane-div').html(`<div class="card mt-sm-2">
+                      <div class="card-header d-flex align-items-center justify-content-between">
+                        <h5 class="card-title m-0 me-2">Remarks</h5>
+                        <div id="jbt-remark-edit-div">
+                        </div>
+                      </div>
+                      <div class="card-body">
+                        <p><span id="job-remark-pane" style="font-size: 14px;"></span></p>
+                      </div>
+                    </div>`)
+                    
+                    $('#job-remark-pane').html(Response.jobdata.remarks.replace(/\n/g, '<br>'));
+                    
+                }
+               
 
 
                 /* Location */
@@ -228,7 +242,8 @@ function GetJobById(pid) {
                                 </div>`;
                     $('#div-createdate-holder').html(htm6);
 
-                    $('#job-detail-pane').text(Response.jobdata.jobDetail);
+                    //$('#job-detail-pane').text(Response.jobdata.jobDetail);
+                    $('#job-detail-pane').html(Response.jobdata.jobDetail.replace(/\n/g, '<br>'));
                     $('#jbt-detail-edit-div').html(`<button class="btn btn-outline-linkedin btn-sm" onclick="EditJobDetail()">Edit</button>`);
 
                     var htm7 = `<div class="input-group">
@@ -333,7 +348,11 @@ function GetJobById(pid) {
                         $('#job-ownercomment-pane-div').html('')
                     }
                     else if (UserAccess['F02'].read === true && UserAccess['F02'].write === false) {
-                        $('#job-ownercomment-pane').html(Response.jobdata.owner_comment);
+                       if(Response.jobdata.owner_comment!==null){
+                           $('#job-ownercomment-pane').html(Response.jobdata.owner_comment.replace(/\n/g, '<br>'));   
+                       }
+                       
+                        
                     }
                     else if (UserAccess['F02'].read === true && UserAccess['F02'].write === true) {
 
@@ -342,7 +361,10 @@ function GetJobById(pid) {
                         if (Response.jobdata.isActive === true) {
                             $('#jbt-ownercomment-edit-div').html(htm)
                         }
-                        $('#job-ownercomment-pane').html(Response.jobdata.owner_comment);
+                        if(Response.jobdata.owner_comment!==null){
+                            $('#job-ownercomment-pane').html(Response.jobdata.owner_comment.replace(/\n/g, '<br>'));    
+                        }
+                        
 
                     }
                 }
