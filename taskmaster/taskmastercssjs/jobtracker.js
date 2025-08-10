@@ -433,6 +433,7 @@ function SubmitNewJob() {
     var jobDetails = $('#collapsible-jd').val();
     var jobRemarks = $('#collapsible-remarkes').val();
     var fileInput = document.getElementById('collapsible-attachment');
+    console.log(jobRemarks)
     debugger
     var error = 0;
     if (area !== '' && priority !== '' && location !== '' && creationDate !== '' && status !== '' && assignedTo.length > 0) {
@@ -449,6 +450,7 @@ function SubmitNewJob() {
         error = 1;
     }
 
+    
 
     if (error === 0) {
         var form = new FormData();

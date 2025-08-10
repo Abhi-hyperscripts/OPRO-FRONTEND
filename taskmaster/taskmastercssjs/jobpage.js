@@ -165,7 +165,7 @@ function GetJobById(pid) {
                 }
 
 
-
+                debugger
                 if(Response.jobdata.remarks!==null){
                     $('#job-remark-pane-div').html(`<div class="card mt-sm-2">
                       <div class="card-header d-flex align-items-center justify-content-between">
