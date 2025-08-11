@@ -634,7 +634,7 @@ function AddEmployee(property) {
                               <span class="switch-on"></span>
                               <span class="switch-off"></span>
                             </span>
-                            <span class="switch-label">Admin</span>
+                            <span class="switch-label">Resort Admin</span>
                           </label>
                         </div>                                 
                       </li>
@@ -4007,7 +4007,7 @@ function ShowEmpData(userdata) {
                                       <span class="switch-on"></span>
                                       <span class="switch-off"></span>
                                     </span>
-                                    <span class="switch-label">Admin</span>
+                                    <span class="switch-label">Resort Admin</span>
                                   </label>
                                 </div>                                 
                               </li>
