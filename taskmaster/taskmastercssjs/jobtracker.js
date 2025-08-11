@@ -359,6 +359,8 @@ function GetProperyInfo(propID) {
 
 
 function ShowJobform(datavals) {
+    
+    
     // Remove existing modal if it exists
     const existingModal = document.getElementById('newJobform');
     if (existingModal) {
@@ -492,8 +494,13 @@ function ShowJobform(datavals) {
     $('#collapsible-assigned').empty();
     datavals.propEmp.forEach(function (emp) {
         console.log(emp)
-        
-        $('#collapsible-assigned').append('<option value="' + emp.teamId + '">' + emp.manager.firstName + ' ' + emp.manager.lastName + ' [' + emp.teamName + ']' + '</option>');
+        var desg = '';
+        if(emp.manager.desg !== null && emp.manager.desg !== undefined){
+            if(emp.manager.desg.trim().length > 0){
+                desg = " (" + emp.manager.desg.trim() + ")";
+            }
+        }
+        $('#collapsible-assigned').append('<option value="' + emp.teamId + '">' + emp.manager.firstName + ' ' + emp.manager.lastName + ' [' + emp.teamName + ']' + desg + '</option>');
     });
 
 
