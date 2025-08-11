@@ -357,7 +357,166 @@ function GetProperyInfo(propID) {
     });
 }
 
+
 function ShowJobform(datavals) {
+    // Remove existing modal if it exists
+    const existingModal = document.getElementById('newJobform');
+    if (existingModal) {
+        // If modal is currently shown, hide it first
+        const modalInstance = bootstrap.Modal.getInstance(existingModal);
+        if (modalInstance) {
+            modalInstance.dispose();
+        }
+        existingModal.remove();
+    }
+
+    // Create the modal HTML
+    const modalHTML = `
+    <div class="modal fade animate__animated" id="newJobform" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bgimg">
+                <h5 class="modal-title" >Add New Job <span id="job-prop-name" class="text-muted"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+              <div class="row g-3" data-select2-id="20">
+                <div class="col-md-6">
+                  <label class="form-label" for="collapsible-area">Area<span style="color: red;">*</span></label>
+                  <select id="collapsible-area" class="select2 form-select jbtclsdd" oninput="AreaChange()">
+                  </select>
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label" for="collapsible-villa">Villa Number<span style="color: red;">*</span></label>
+                  <input type="text" id="collapsible-villa" class="form-control" placeholder="Villa Number" disabled>
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label" for="collapsible-priority">Priority<span style="color: red;">*</span></label>
+                  <select id="collapsible-priority" class="select2 form-select jbtclsdd">
+                    <option value="HIGH">High</option>
+                    <option value="MEDIUM">Medium</option>
+                    <option value="LOW">Low</option>
+                    <option value="SAFETY">Safety</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label" for="collapsible-location">Job Location<span style="color: red;">*</span></label>
+                  <input type="text" id="collapsible-location" class="form-control" placeholder="Job Location">
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label" for="collapsible-date">Job Creation Date<span style="color: red;">*</span></label>
+                  <input type="date" id="collapsible-date" class="form-control">
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label" for="collapsible-complete-date">Expected Completion Date<span style="color: red;"></span></label>
+                  <input type="date" id="collapsible-complete-date" class="form-control">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label" for="collapsible-status">Status<span style="color: red;">*</span></label>
+                  <select id="collapsible-status" class="select2 form-select jbtclsdd">
+                    <option value="YET_TO_COMMENCE">Yet to Commence</option>
+                    <option value="IN_PROGRESS">In-Progress</option>
+                    <option value="SPARES_ON_ORDER">Spares on Order</option>
+                    <option value="FIXED">Fixed</option>
+                    <option value="COMPLETED">Completed</option>
+                    <option value="UNDER_DISCUSSION">Under Discussion</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label" for="collapsible-assigned">Assigned To<span style="color: red;">*</span></label>
+                  <select id="collapsible-assigned" class="select2 form-select jbtclsdd"  multiple>
+                  </select>
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label" for="collapsible-budget">Budget</label>
+                  <input type="text" id="collapsible-budget" class="form-control" placeholder="Budget in $">
+                </div>
+
+                <div class="col-md-3">
+                  <label class="form-label" for="collapsible-ccf">Cost Center</label>
+                  <select id="collapsible-ccf" class="select2 form-select jbtclsdd" oninput="CCFChange()">
+                    <option value="">select one...</option>
+                    <option value="POMEC">POMEC</option>
+                    <option value="CAPEX">CAPEX</option>
+                    <option value="Department Operational Budget">Department Operational Budget</option>
+                  </select>
+                  <div id="ccf-dept-div">
+                  </div>
+                </div>
+
+
+                <div class="col-md-6">
+                  <label class="form-label" for="collapsible-refNumb">Reference No.</label>
+                  <input type="text" id="collapsible-refNumb" class="form-control">
+                </div>
+
+                <div class="col-12">
+                  <label class="form-label" for="collapsible-jd">Job Details<span style="color: red;">*</span></label>
+                  <textarea name="collapsible-jd" class="form-control" id="collapsible-jd" rows="2" placeholder="Enter job details"></textarea>
+                </div>
+
+                <div class="col-12">
+                  <label class="form-label" for="collapsible-jd">Remarks<span style="color: red;"></span></label>
+                  <textarea name="collapsible-jd" class="form-control" id="collapsible-remarkes" rows="2" placeholder="Enter remarks"></textarea>
+                </div>
+                
+                <div class="col-md-12">
+                  <label class="form-label" for="collapsible-attachment">Attachment</label>
+                  <input type="file" id="collapsible-attachment" class="form-control" placeholder="Select files to upload" multiple>
+                </div>
+              </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">
+                    Close
+                </button>
+                <button type="button" class="btn btn-outline-linkedin btn-sm" onclick="SubmitNewJob()">Save
+                    changes</button>
+            </div>
+        </div>
+    </div>
+  </div>`;
+
+    // Add the modal to the DOM
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+
+    $('#job-prop-name').text("[" + datavals.propName + "]");
+    $('#collapsible-area').empty();
+    datavals.propArea.forEach(function (area) {
+        $('#collapsible-area').append('<option value="' + area.areaid + '">' + area.areaName + '</option>');
+    });
+
+    $('#collapsible-assigned').empty();
+    datavals.propEmp.forEach(function (emp) {
+        console.log(emp)
+        
+        $('#collapsible-assigned').append('<option value="' + emp.teamId + '">' + emp.manager.firstName + ' ' + emp.manager.lastName + ' [' + emp.teamName + ']' + '</option>');
+    });
+
+
+
+
+    // Initialize and show the modal
+    const modal = new bootstrap.Modal(document.getElementById('newJobform'));
+    modal.show();
+
+
+    $('.jbtclsdd').select2({
+        width: '100%',
+        dropdownParent: $('#newJobform')
+    });
+    
+    
+    // Optional: Return the modal instance for further manipulation if needed
+    return modal;
+}
+
+// Usage: Simply call openJobFormModal() to open the modal
+
+function xxShowJobform(datavals) {
 
     $('#job-prop-name').text("[" + datavals.propName + "]");
     $('#collapsible-area').empty();
@@ -433,8 +592,7 @@ function SubmitNewJob() {
     var jobDetails = $('#collapsible-jd').val();
     var jobRemarks = $('#collapsible-remarkes').val();
     var fileInput = document.getElementById('collapsible-attachment');
-    console.log(jobRemarks)
-    debugger
+
     var error = 0;
     if (area !== '' && priority !== '' && location !== '' && creationDate !== '' && status !== '' && assignedTo.length > 0) {
         var selectedText = $('#collapsible-area').find(':selected').text().toUpperCase().trim();

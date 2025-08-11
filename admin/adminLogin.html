@@ -157,8 +157,15 @@
 
 
     <script src="https://cdn.jsdelivr.net/npm/jwt-decode@4.0.0/build/cjs/index.min.js"></script>
-    <script src="../webessential/domain.js"></script>
+    <script src="../webessential/domain.js?v=1.0"></script>
     <script src="admincssjs/app_admin.js"></script>
 
+    <script>
+      const scriptsToLoad = [
+        '../webessential/domain.js',
+        'admincssjs/app_admin.js'
+      ];
+      loadScriptSequentially(scriptsToLoad);
+    </script>
   </body>
 </html>

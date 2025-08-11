@@ -1,7 +1,7 @@
-const applicationdomain = "https://api.workwize.in/";
-const applicationdomain2 = "https://localhost:7151/";
-const applicationdomain3 = "https://testing.hyprscripts.com/";
-const loginendpoint = applicationdomain + "api/login"
+var applicationdomain = "https://api.workwize.in/";
+var applicationdomain2 = "https://localhost:7151/";
+var applicationdomain3s = "https://testing.hyprscripts.com/";
+var loginendpoint = applicationdomain + "api/login"
 
 
 function ShowSpinner() {

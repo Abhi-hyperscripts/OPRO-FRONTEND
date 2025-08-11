@@ -456,9 +456,21 @@
   <script src="../commons/systemjscss/js/datatables.js"></script>
   <script src="admincssjs/theme/assets/vendor/libs/chartjs/chartjs.js"></script>
   <script src="admincssjs/theme/assets/vendor/libs/apex-charts/apexcharts.js"></script>
-  <script src="../webessential/domain.js"></script>
-  <script src="admincssjs/app_admin.js"></script>
-  <script src="admincssjs/adminconsole.js"></script>
+  <script src="../webessential/domain.js?v=1.0"></script>
+<!--  <script src="admincssjs/app_admin.js"></script>-->
+<!--  <script src="admincssjs/adminconsole.js"></script>-->
+
+
+    <script>
+      const scriptsToLoad = [
+        '../webessential/domain.js',
+        'admincssjs/app_admin.js',
+        'admincssjs/adminconsole.js',
+      ];
+      loadScriptSequentially(scriptsToLoad);
+    </script>
+
+
 </body>
 
 </html>
