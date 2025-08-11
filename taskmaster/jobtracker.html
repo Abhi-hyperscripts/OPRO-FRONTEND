@@ -445,7 +445,7 @@
   <script src="https://cdn.jsdelivr.net/npm/jwt-decode@4.0.0/build/cjs/index.min.js"></script> 
   <script src="taskmastercssjs/theme/assets/vendor/libs/chartjs/chartjs.js"></script>
   <script src="taskmastercssjs/theme/assets/vendor/libs/apex-charts/apexcharts.js"></script>
-  <script src="../webessential/domain.js?v=1.0"></script>
+
 <!--  <script src="taskmastercssjs/app_taskmaster.js"></script>-->
 <!--  <script src="taskmastercssjs/jobtracker.js"></script>-->
 
@@ -457,6 +457,32 @@
       'taskmastercssjs/jobtracker.js'
     ];
     loadScriptSequentially(scriptsToLoad);
+
+
+    function loadScriptSequentially(scripts, index = 0) {
+      if (index >= scripts.length) {
+        //console.log('All scripts loaded successfully');
+        return;
+      }
+
+      const script = document.createElement('script');
+      script.src = scripts[index] + '?v=' + new Date().getTime();
+
+      script.onload = function() {
+        //console.log(`Loaded: ${scripts[index]}`);
+        loadScriptSequentially(scripts, index + 1);
+      };
+
+      script.onerror = function() {
+        //console.error(`Failed to load: ${scripts[index]}`);
+        // Continue loading next script even if one fails
+        loadScriptSequentially(scripts, index + 1);
+      };
+
+      document.body.appendChild(script);
+    }
+
+
   </script>
 
 

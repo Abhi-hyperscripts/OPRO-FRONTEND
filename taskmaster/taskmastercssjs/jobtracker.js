@@ -583,7 +583,7 @@ function CCFChange(){
 }
 
 
-function SubmitNewJob() {
+function sssSubmitNewJob() {
     var area = $('#collapsible-area').val();
     var villaNumber = $('#collapsible-villa').val();
     var priority = $('#collapsible-priority').val();
@@ -713,7 +713,223 @@ function SubmitNewJob() {
 
 
 }
+function SubmitNewJob() {
+    var area = $('#collapsible-area').val();
+    var villaNumber = $('#collapsible-villa').val();
+    var priority = $('#collapsible-priority').val();
+    var location = $('#collapsible-location').val();
+    var creationDate = $('#collapsible-date').val();
+    var completionDate = $('#collapsible-complete-date').val();
+    var status = $('#collapsible-status').val();
+    var assignedTo = $('#collapsible-assigned').val(); // This will return an array of selected values if 'multiple' attribute is present
+    var budget = $('#collapsible-budget').val();
+    var ccf = $('#collapsible-ccf').val();
+    var ccf_dept = $('#ccf-dept-name').val();
+    var referenceNo = $('#collapsible-refNumb').val(); // This seems to have the same ID as creation date. Ensure correct ID is used.
+    var jobDetails = $('#collapsible-jd').val();
+    var jobRemarks = $('#collapsible-remarkes').val();
+    var fileInput = document.getElementById('collapsible-attachment');
 
+    var error = 0;
+    var errorMessage = '';
+
+    // Existing validation logic
+    if (area !== '' && priority !== '' && location !== '' && creationDate !== '' && status !== '' && assignedTo.length > 0) {
+        var selectedText = $('#collapsible-area').find(':selected').text().toUpperCase().trim();
+        if (selectedText === 'GUEST VILLA' && villaNumber === '') {
+            error = 1;
+            errorMessage = 'Villa number is required for Guest Villa area.';
+        }
+    }
+    else {
+        error = 1;
+        errorMessage = 'Please enter all mandatory fields to continue.';
+    }
+
+    if(ccf === 'Department Operational Budget' && ccf_dept === ''){
+        error = 1;
+        errorMessage = 'Department name is required for Department Operational Budget.';
+    }
+
+    // File validation logic
+    if (fileInput.files.length > 0) {
+        // Check maximum number of files (10)
+        if (fileInput.files.length > 10) {
+            error = 1;
+            errorMessage = 'Maximum 10 images can be uploaded at once.';
+        } else {
+            // Validate each file
+            for (let i = 0; i < fileInput.files.length; i++) {
+                const file = fileInput.files[i];
+
+                // Check file type
+                const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+                const fileExtension = file.name.split('.').pop().toLowerCase();
+                const allowedExtensions = ['jpg', 'jpeg', 'png'];
+
+                if (!allowedTypes.includes(file.type) && !allowedExtensions.includes(fileExtension)) {
+                    error = 1;
+                    errorMessage = `File "${file.name}" is not a valid image format. Only JPG, JPEG, and PNG files are allowed.`;
+                    break;
+                }
+
+                // Check file size (5MB = 5 * 1024 * 1024 bytes)
+                const maxSizeInBytes = 5 * 1024 * 1024; // 5MB
+                if (file.size > maxSizeInBytes) {
+                    const fileSizeInMB = (file.size / (1024 * 1024)).toFixed(2);
+                    error = 1;
+                    errorMessage = `File "${file.name}" (${fileSizeInMB}MB) exceeds the maximum size limit of 5MB.`;
+                    break;
+                }
+            }
+        }
+    }
+
+    if (error === 0) {
+        var form = new FormData();
+        form.append("propId", CurrentProperty);
+        form.append("areaID", area);
+        form.append("villaNumber", villaNumber);
+        form.append("priority", priority);
+        form.append("jobLocation", location);
+        form.append("jobStatus", status);
+        form.append("jobDate", creationDate);
+        form.append("completeDate", completionDate);
+        form.append("refNum", referenceNo);
+        form.append("jobDetail", jobDetails);
+        form.append("budget", budget);
+        form.append("ccf", ccf);
+        form.append("jobremark", jobRemarks);
+        form.append("ccfdept", ccf_dept);
+        assignedTo.forEach((team) => {
+            form.append("assignedTo", team);
+        });
+
+        // Append validated files
+        for (let i = 0; i < fileInput.files.length; i++) {
+            form.append("propImages", fileInput.files[i]);
+        }
+
+        $("#dialog-Confirm").dialog({
+            resizable: false,
+            height: "auto",
+            width: "auto",
+            modal: true,
+            position: { my: "center", at: "center", of: window },
+            dialogClass: "no-close",
+            show: { effect: "pulsate", duration: 100 },
+            buttons: [
+                {
+                    text: 'Yes, proceed!',
+                    open: function () { $(this).addClass('yescls') },
+                    click: function () {
+                        $(this).dialog("close");
+
+                        var ep = applicationdomain + 'api/jobtracker/addnewjob';
+                        var jwt = GetStoredJwt();
+                        $.ajax({
+                            url: ep,
+                            type: 'POST',
+                            dataType: 'json',
+                            data: form,
+                            processData: false,
+                            contentType: false,
+                            headers: {
+                                "Authorization": "Bearer " + jwt
+                            },
+                            success: function (Response) {
+                                if (Response.success === true) {
+                                    HidePopupModal('newJobform');
+                                    GetJobOverView(CurrentProperty);
+                                    var userdata = `<p>Job added successfully</p>`
+                                    SuccessMessageCustom('New Job', userdata, 'success')
+                                }
+                                else {
+                                    var userdata = `<p>Failed to add job</p>`
+                                    SuccessMessageCustom('New Job', userdata, 'error')
+                                }
+                            },
+                            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                                if (XMLHttpRequest.status === 401) {
+                                    LogoutUser()
+                                }
+                                else if (XMLHttpRequest.status === 400) {
+                                    var errorResponse = XMLHttpRequest.responseJSON;
+                                    ErrorMessage()
+                                } else {
+                                    console.log("An error occurred:", errorThrown);
+                                }
+                            }
+                        });
+                    }
+                },
+                {
+                    text: "Cancel",
+                    open: function () { $(this).addClass('cancelcls') },
+                    click: function () {
+                        $(this).dialog("close");
+                    }
+                }
+            ],
+        });
+    }
+    else {
+        // Show specific error message
+        NotifyToast('error', errorMessage);
+    }
+}
+
+// Optional: Add real-time file validation function for better UX
+function validateFileInput() {
+    const fileInput = document.getElementById('collapsible-attachment');
+
+    fileInput.addEventListener('change', function(e) {
+        const files = e.target.files;
+        let errorMessage = '';
+
+        // Check file count
+        if (files.length > 10) {
+            errorMessage = 'Maximum 10 images can be uploaded at once.';
+            fileInput.value = ''; // Clear the input
+            NotifyToast('error', errorMessage);
+            return;
+        }
+
+        // Validate each file
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+
+            // Check file type
+            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+            const fileExtension = file.name.split('.').pop().toLowerCase();
+            const allowedExtensions = ['jpg', 'jpeg', 'png'];
+
+            if (!allowedTypes.includes(file.type) && !allowedExtensions.includes(fileExtension)) {
+                errorMessage = `File "${file.name}" is not a valid image format. Only JPG, JPEG, and PNG files are allowed.`;
+                fileInput.value = ''; // Clear the input
+                break;
+            }
+
+            // Check file size (5MB)
+            const maxSizeInBytes = 5 * 1024 * 1024;
+            if (file.size > maxSizeInBytes) {
+                const fileSizeInMB = (file.size / (1024 * 1024)).toFixed(2);
+                errorMessage = `File "${file.name}" (${fileSizeInMB}MB) exceeds the maximum size limit of 5MB.`;
+                fileInput.value = ''; // Clear the input
+                break;
+            }
+        }
+
+        if (errorMessage) {
+            NotifyToast('error', errorMessage);
+        } else if (files.length > 0) {
+            NotifyToast('success', `${files.length} image(s) selected successfully.`);
+        }
+    });
+}
+
+// Call this function when the page loads or when the modal opens
+// validateFileInput();
 function ShowAreaJobs(areaID) {
 
 

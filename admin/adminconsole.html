@@ -456,7 +456,7 @@
   <script src="../commons/systemjscss/js/datatables.js"></script>
   <script src="admincssjs/theme/assets/vendor/libs/chartjs/chartjs.js"></script>
   <script src="admincssjs/theme/assets/vendor/libs/apex-charts/apexcharts.js"></script>
-  <script src="../webessential/domain.js?v=1.0"></script>
+<!--  <script src="../webessential/domain.js?v=1.0"></script>-->
 <!--  <script src="admincssjs/app_admin.js"></script>-->
 <!--  <script src="admincssjs/adminconsole.js"></script>-->
 
@@ -468,6 +468,30 @@
         'admincssjs/adminconsole.js',
       ];
       loadScriptSequentially(scriptsToLoad);
+
+
+      function loadScriptSequentially(scripts, index = 0) {
+        if (index >= scripts.length) {
+          //console.log('All scripts loaded successfully');
+          return;
+        }
+
+        const script = document.createElement('script');
+        script.src = scripts[index] + '?v=' + new Date().getTime();
+
+        script.onload = function() {
+          //console.log(`Loaded: ${scripts[index]}`);
+          loadScriptSequentially(scripts, index + 1);
+        };
+
+        script.onerror = function() {
+          //console.error(`Failed to load: ${scripts[index]}`);
+          // Continue loading next script even if one fails
+          loadScriptSequentially(scripts, index + 1);
+        };
+
+        document.body.appendChild(script);
+      }
     </script>
 
 
