@@ -502,10 +502,11 @@ function ShowJobform(datavals) {
             var desg = '';
             if (emp.manager.desg !== null && emp.manager.desg !== undefined) {
                 if (emp.manager.desg.trim().length > 0) {
-                    desg = " (" + emp.manager.desg.trim() + ")";
+                    desg = emp.manager.desg.trim();
                 }
             }
-            $('#collapsible-assigned').append('<option value="' + emp.teamId + '">' + emp.manager.firstName + ' ' + emp.manager.lastName + ' [' + emp.teamName + ']' + desg + '</option>');
+            //$('#collapsible-assigned').append('<option value="' + emp.teamId + '">' + emp.manager.firstName + ' ' + emp.manager.lastName + ' [' + emp.teamName + ']' + desg + '</option>');
+            $('#collapsible-assigned').append('<option value="' + emp.teamId + '">' + desg + ' [' + emp.teamName + ']' + '</option>');
         }
     });
 
