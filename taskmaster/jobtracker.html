@@ -188,37 +188,130 @@
                   style="float:left; margin:12px 12px 20px 0;"></span>Are you sure you want to continue?</p>
             </div>
 
-            <div class="card">
-              <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div id="div-F01"><button id="btn-F01" class="btn btn-linkedin rounded-2" onclick="CreateNewJob()" style="display: none;">Create New Job</button></div>
-                    <div id="prop-dd-selector" style=" width: 300px; "></div>
-                    <button class="btn btn-linkedin rounded-2" onclick="ViewClosedJobs()">View Closed Job</button>
-                </div>
               
+              
+              
+              
+<!--            <div class="card">-->
+<!--              <div class="card-body">-->
+<!--                <div class="d-flex justify-content-between">-->
+<!--                    <div id="div-F01"><button id="btn-F01" class="btn btn-linkedin rounded-2" onclick="CreateNewJob()" style="display: none;">Create New Job</button></div>-->
+<!--                    <div id="prop-dd-selector" style=" width: 300px; "></div>-->
+<!--                    <button class="btn btn-linkedin rounded-2" onclick="ViewClosedJobs()">View Closed Job</button>-->
+<!--                </div>-->
+<!--              -->
 
-                <div class="card my-5">
-                  <div class="text-start p-3">
-                    <table class="table table-borderless text-nowrap">
-                      <thead>
-                        <tr>
-                          <th class="w-px-150 text-center">No</th>
-                          <th class="text-center">Area</th>
-                          <th class="w-px-150 text-center">Total Jobs</th>
-                          <th class="w-px-150 text-center">Open Jobs</th>
-                          <th class="w-px-150 text-center">Safety Issues</th>
-                          <th class="w-px-300 text-center">Graphs</th>
-                        </tr>
-                      </thead>
-                      <tbody id="job-overview-table-body">
-                      </tbody>
-                    </table>
-                  </div>
+<!--                <div class="card my-5">-->
+<!--                  <div class="text-start p-3">-->
+<!--                    <table class="table table-borderless text-nowrap">-->
+<!--                      <thead>-->
+<!--                        <tr>-->
+<!--                          <th class="w-px-150 text-center">No</th>-->
+<!--                          <th class="text-center">Area</th>-->
+<!--                          <th class="w-px-150 text-center">Total Jobs</th>-->
+<!--                          <th class="w-px-150 text-center">Open Jobs</th>-->
+<!--                          <th class="w-px-150 text-center">Safety Issues</th>-->
+<!--                          <th class="w-px-300 text-center">Graphs</th>-->
+<!--                        </tr>-->
+<!--                      </thead>-->
+<!--                      <tbody id="job-overview-table-body">-->
+<!--                      </tbody>-->
+<!--                    </table>-->
+<!--                  </div>-->
+<!--                </div>-->
+
+<!--              </div>-->
+<!--              </div>-->
+<!--            </div>-->
+
+
+            <div class="nav-align-top mb-4">
+                <ul class="nav nav-tabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button type="button" class="nav-link active" role="tab" data-bs-toggle="tab" data-bs-target="#navs-top-home" aria-controls="navs-top-home" aria-selected="true">
+                            Jobs by Area
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button type="button" class="nav-link" role="tab" data-bs-toggle="tab" data-bs-target="#navs-top-profile" aria-controls="navs-top-profile" aria-selected="false" tabindex="-1">
+                            All Jobs
+                        </button>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane fade active show" id="navs-top-home" role="tabpanel">
+                        <div class="card" style="border: none;">
+                            <div class="card-body p-1">
+                                <div class="d-flex justify-content-between">
+                                    <div id="div-F01"><button id="btn-F01" class="btn btn-linkedin rounded-2" onclick="CreateNewJob()" style="display: none;">Create New Job</button></div>
+                                    <div id="prop-dd-selector" style=" width: 300px; "></div>
+                                    <button class="btn btn-linkedin rounded-2" onclick="ViewClosedJobs()">View Closed Job</button>
+                                </div>
+
+
+                                <div class="card mt-3">
+                                    
+                                    <div class="text-start p-3">
+                                        <table class="table table-borderless text-nowrap">
+                                            <thead>
+                                            <tr>
+                                                <th class="w-px-150 text-center">No</th>
+                                                <th class="text-center">Area</th>
+                                                <th class="w-px-150 text-center">Total Jobs</th>
+                                                <th class="w-px-150 text-center">Open Jobs</th>
+                                                <th class="w-px-150 text-center">Safety Issues</th>
+                                                <th class="w-px-300 text-center">Graphs</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody id="job-overview-table-body">
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    
+                                    
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-pane fade" id="navs-top-profile" role="tabpanel">
+
+                        <div class="card-body py-2">
+                            <div class="table-responsive text-nowrap">
+                                <table id="prop-jobTrackerDataTable" class="table table-sm table-hover "style="font-size: 12px; width:100%; text-align: initial;" cellspacing="0">
+                                    <thead class="bgimg2">
+                                    <tr>
+                                        <th style="text-align: left;">ID</th>
+                                        <th style="text-align: left;" id="prop-jbt-villa-headerd">VILLA</th>
+                                        <th style="text-align: left;" class="truncate">DETAILS</th>
+                                        <th style="text-align: left;">CREATE DATE</th>
+                                        <th style="text-align: left;">LOCATION</th>
+                                        <th style="text-align: left;">PRIORITY</th>
+                                        <th style="text-align: left;">STATUS</th>
+                                        <th style="text-align: left;">REF NO</th>
+                                        <th class="text-center">ASSIGNED TO</th>
+                                        <th style="text-align: left;">EXPECTED COMPLETION DATE</th>
+                                        <th style="text-align: left;">CLOSE DATE</th>
+                                        <th style="text-align: left;">ATTACHMENTS</th>
+                                        <th style="text-align: left;">COMMENTS</th>
+                                        <th style="text-align: left;">CREATED BY</th>
+                                        <th style="text-align: left;">PROPERTY</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody class="table-border-bottom-0" id="prop-area-table-bodyd">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                    </div>
+
                 </div>
-
-              </div>
-              </div>
             </div>
+            
+            
+            
 
           </div>
         </div>

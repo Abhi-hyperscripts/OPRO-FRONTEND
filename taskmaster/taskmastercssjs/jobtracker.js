@@ -187,6 +187,7 @@ function GetAllProperties() {
 
 function GetJobOverView(Cprop) {
     CurrentProperty = Cprop;
+    
     blockUI('#section-block');
     var form = new FormData();
     form.append("propId", CurrentProperty);
@@ -291,7 +292,7 @@ function GetJobOverView(Cprop) {
             });
 
             unblockUI('#section-block');
-
+            ShowPropertyJobs()
 
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -552,6 +553,7 @@ function propertyChange() {
     var areacode = $('#admin-properties').val();
     CurrentProperty = areacode;
     GetJobOverView(CurrentProperty);
+    
 }
 
 
@@ -984,7 +986,47 @@ function ShowAreaJobs(areaID) {
 
     ShowPopupModal('JobDetailsform');
 }
+function ShowPropertyJobs() {
 
+
+    blockUI('#section-block');
+    var form = new FormData();
+    form.append("propId", CurrentProperty);
+    
+
+    var ep = applicationdomain + 'api/jobtracker/getpropertyjobs';
+    var jwt = GetStoredJwt();
+
+    $.ajax({
+        url: ep,
+        type: 'POST',
+        dataType: 'json',
+        data: form,
+        processData: false,
+        contentType: false,
+        headers: {
+            "Authorization": "Bearer " + jwt
+        },
+        success: function (Response) {
+
+           console.log(Response)
+            PropertyAppendJobListing(Response.jobs, Response.villaCount);
+            unblockUI('#section-block');
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            if (XMLHttpRequest.status === 401) {
+                LogoutUser()
+            }
+            else if (XMLHttpRequest.status === 400) {
+                var errorResponse = XMLHttpRequest.responseJSON;
+                ErrorMessage()
+            } else {
+                console.log("An error occurred:", errorThrown);
+            }
+        }
+    });
+
+}
 function FillterByAreaAndDate(areaID, datespan) {
 
     blockUI('#section-block');
@@ -1239,6 +1281,169 @@ function AppendJobListing(datavalues, villas) {
     $('#jobTrackerDataTable_filter').css("margin-bottom", "5px")
 
 
+
+}
+
+function PropertyAppendJobListing(datavalues, villas) {
+
+    var condition = true;
+    if (villas === 0) {
+        condition = false
+    }
+    if ($.fn.DataTable.isDataTable('#prop-jobTrackerDataTable')) {
+        $('#prop-jobTrackerDataTable').DataTable().destroy();
+    }
+
+    // Create Search Inputs
+    $('#prop-jobTrackerDataTable thead th').each(function (i) {
+        var title = $('#prop-jobTrackerDataTable thead th').eq($(this).index()).text();
+        $(this).html(
+            `<label class="header-label">${title}</label><br><input type="text" class="form-control form-control-sm" placeholder="Search..." data-index="${i}" />`
+        );
+    });
+
+
+    var table =  $('#prop-jobTrackerDataTable').DataTable({
+        data: datavalues,
+        "columns": [
+            {
+                data: "jobId", name: "ID", render: function (data, type, row, meta) {
+                    var rowid = row["jobId"];
+                    var showwid = row["orgjobId"];
+                    var tt = `<a href="#" onclick="ShowJobDetails('${rowid}')" ><span class="text-secondary text-decoration-underline">${showwid}</span></a>`
+                    return tt;
+                }
+            },
+            { data: "villaNumber", name: "VILLA" , visible :condition, render: function (data, type, row, meta) {
+
+                    var txt = row["villaNumber"];
+                    if(txt!==''){
+                        return txt;
+                    }
+                    else{
+                        return '-'
+                    }
+
+                }
+            },
+            {
+                data: "jobDetail", name: "DETAILS", render: function (data, type, row, meta) {
+
+
+                    return type === 'display' && data.length > 50 ?
+                        data.substr(0, 50) + '...' :
+                        data;
+                }
+            },
+            {
+                data: "jobCreatedOn", name: "CREATE DATE", render: function (data, type, row, meta) {
+                    var rowid = row["jobCreatedOn"];
+                    var odata = formatDate(rowid) + ' IST'
+                    return odata;
+
+                }
+            },
+            { data: "jobLocation", name: "LOCATION" },
+            { data: "priority", name: "PRIORITY" },
+            { data: "jobStatus", name: "STATUS" },
+            { data: "refNum", name: "REF NO" },
+            {
+                data: "data1", name: "ASSIGNED TO", render: function (data, type, row, meta) {
+                    var rowid = row["jobId"];
+                    var teams = row["data1"];
+                    var tt = JobTeamsHtml(rowid, teams)
+                    return tt;
+
+                }
+            },
+            {
+                data: "expectedCompletion", name: "EXPECTED COMPLETION DATE", render: function (data, type, row, meta) {
+                    var rowid = row["expectedCompletion"];
+                    if (rowid === '0001-01-01T00:00:00') {
+                        return 'NA'
+                    }
+                    else {
+
+                        var odata = formatDate(rowid)  + ' IST'
+                        return odata;
+                    }
+                }
+            },
+            {
+                data: "jobCloseOn", name: "CLOSE DATE", render: function (data, type, row, meta) {
+                    var rowid = row["jobCloseOn"];
+                    if (rowid === '0001-01-01T00:00:00') {
+                        return 'NA'
+                    }
+                    else {
+
+                        var odata = formatDate(rowid) + ' IST'
+                        return odata;
+                    }
+
+
+                }
+            },
+            { data: "uploadCount", name: "ATTACHMENTS" },
+            { data: "commentCount", name: "COMMENTS" },
+            {
+                data: "firstname", name: "CREATED BY", render: function (data, type, row, meta) {
+                    var firstname = row["firstname"];
+                    var lastname = row["lastname"];
+                    var tt = `${firstname} ${lastname}`
+                    return tt;
+
+                }
+            },
+            { data: "propName", name: "PROPERTY" },
+        ],
+        columnDefs: [{
+            "defaultContent": "-",
+            "targets": "_all"
+        }],
+        "serverSide": false,
+        "order": [0, "desc"],
+        "processing": true,
+
+        "language": {
+            "processing": "Processing...Please wait"
+        },
+        pageLength: 100,
+        dom: 'Bfrtip',
+        lengthMenu: [
+            [10, 25, 50, 100],
+            ['10 rows', '25 rows', '50 rows', '100 rows']
+        ],
+        buttons: [
+            { extend: 'copy', className: 'btn-outline-secondary btn-sm' },
+            { extend: 'csv', className: 'btn-outline-secondary btn-sm' },
+            { extend: 'excel', className: 'btn-outline-secondary btn-sm' },
+            { extend: 'pdf', className: 'btn-outline-secondary btn-sm' },
+            { extend: 'print', className: 'btn-outline-secondary btn-sm' },
+            { extend: 'pageLength', className: 'btn-outline-secondary btn-sm' }
+        ],
+        autoWidth: true,
+        responsive: true,
+        searching: true
+    });
+    $('#prop-jobTrackerDataTable tbody').on('mouseover', 'tr', function () {
+
+        $('[data-toggle="tooltip"]').tooltip({
+            trigger: 'hover',
+            html: true
+        });
+    });
+    $('#prop-jobTrackerDataTable_filter').css("margin-top", "0px")
+    $('#prop-jobTrackerDataTable_filter').css("margin-bottom", "5px")
+
+
+    // Filter event handler
+    $(table.table().container()).on('keyup', 'thead input', function () {
+        table
+            .column($(this).data('index'))
+            .search(this.value)
+            .draw();
+    });
 
 }
 
