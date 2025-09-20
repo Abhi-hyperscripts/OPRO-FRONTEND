@@ -710,7 +710,7 @@ function SubmitNewEmployee(propCode) {
     roles.push(checkbox.id);
   });
 
-  if (emp_first_name !== '' && emp_last_name !== '' && emp_email !== '' && roles.length >= 1) {
+  if (emp_first_name !== '' && emp_last_name !== '' && emp_email !== '' && emp_Designation !== '' && roles.length >= 1) {
     var form = new FormData();
     form.append("propID", propCode);
     form.append("emp_first_name", emp_first_name);
