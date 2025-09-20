@@ -1,6 +1,5 @@
 var applicationdomain = "https://api.workwize.in/";
-var applicationdomain31 = "https://localhost:7151/";
-var applicationdomain3s = "https://testing.hyprscripts.com/";
+var applicationdomain2 = "https://localhost:7151/";
 var loginendpoint = applicationdomain + "api/login"
 
 

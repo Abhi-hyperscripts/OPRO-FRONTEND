@@ -492,15 +492,19 @@ function ShowJobform(datavals) {
     });
 
     $('#collapsible-assigned').empty();
+    
     datavals.propEmp.forEach(function (emp) {
         console.log(emp)
-        var desg = '';
-        if(emp.manager.desg !== null && emp.manager.desg !== undefined){
-            if(emp.manager.desg.trim().length > 0){
-                desg = " (" + emp.manager.desg.trim() + ")";
+        
+        if (emp.manager !== null && emp.manager !== undefined) {
+            var desg = '';
+            if (emp.manager.desg !== null && emp.manager.desg !== undefined) {
+                if (emp.manager.desg.trim().length > 0) {
+                    desg = " (" + emp.manager.desg.trim() + ")";
+                }
             }
+            $('#collapsible-assigned').append('<option value="' + emp.teamId + '">' + emp.manager.firstName + ' ' + emp.manager.lastName + ' [' + emp.teamName + ']' + desg + '</option>');
         }
-        $('#collapsible-assigned').append('<option value="' + emp.teamId + '">' + emp.manager.firstName + ' ' + emp.manager.lastName + ' [' + emp.teamName + ']' + desg + '</option>');
     });
 
 
@@ -952,7 +956,7 @@ function ShowAreaJobs(areaID) {
             "Authorization": "Bearer " + jwt
         },
         success: function (Response) {
-
+            
             AppendJobListing(Response.jobs, Response.villaCount);
             if (Response.villaCount === 0) {
                 $('#jbt-villa-header').hide();
@@ -1183,6 +1187,16 @@ function AppendJobListing(datavalues, villas) {
             },
             { data: "uploadCount", name: "ATTACHMENTS" },
             { data: "commentCount", name: "COMMENTS" },
+            {
+                data: "firstname", name: "CREATED BY", render: function (data, type, row, meta) {
+                    var firstname = row["firstname"];
+                    var lastname = row["lastname"];
+                    var tt = `${firstname} ${lastname}`
+                    return tt;
+
+                }
+            },
+            { data: "propName", name: "PROPERTY" },
         ],
         columnDefs: [{
             "defaultContent": "-",

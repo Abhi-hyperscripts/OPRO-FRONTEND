@@ -539,6 +539,12 @@ function removePhoto(checkpointId) {
 
     return tableHTML;
 }
+
+
+
+
+
+
 function createVillaWiseCheckpointTable(villaid, checkpoints, subareaName = "Checkpoints", teams = [], existingData = []) {
 
     var dtd = findMatchingCheckpoints(checkpoints,existingData);
