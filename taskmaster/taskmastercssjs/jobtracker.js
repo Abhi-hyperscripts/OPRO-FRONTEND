@@ -466,6 +466,7 @@ function ShowJobform(datavals) {
                 <div class="col-md-12">
                   <label class="form-label" for="collapsible-attachment">Attachment</label>
                   <input type="file" id="collapsible-attachment" class="form-control" placeholder="Select files to upload" multiple>
+                  <span class="text-muted" style="font-size: 0.7rem">Only JPG, JPEG, and PNG files are allowed with the maximum size limit of 5MB</span>
                 </div>
               </div>
 
