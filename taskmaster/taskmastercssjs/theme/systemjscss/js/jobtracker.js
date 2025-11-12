@@ -737,11 +737,11 @@ function AppendJobListing(datavalues, villas) {
             },
             {
                 data: "jobDetail", name: "DETAILS", render: function (data, type, row, meta) {
-                    
-                    
-                    return type === 'display' && data.length > 50 ?
+
+
+                    return type === 'display' && data && data.length > 50 ?
                         data.substr(0, 50) + '...' :
-                        data;
+                        (data || '');
                 }
             },
             {
