@@ -489,7 +489,7 @@ function handleAction(auditId, propid) {
 
 
     // Create URL with query parameters for auditinfo.html
-    const auditInfoUrl = `auditinfo.html?audit=${encodeURIComponent(auditId)}&prop=${encodeURIComponent(propid)}`;
+    const auditInfoUrl = `auditinfo_new.html?audit=${encodeURIComponent(auditId)}&prop=${encodeURIComponent(propid)}`;
 
     // Open in new tab
     window.open(auditInfoUrl, '_blank');
