@@ -981,7 +981,7 @@ function AssignJobToMemeber(name_list, propid, teamid, jobid) {
 
         $('#save-changes-button').on('click', AssignTeamMember);
     }
-    else{
+    else {
         alert('Job cannot be assigned as there are no sub teams in this department.')
     }
 }
@@ -1077,7 +1077,12 @@ function ShowImagePc(mediaUrl) {
                     <div class="card card-body p-2">`;
 
     if (isImage) {
-        htm += `<img src="${mediaUrl}" alt="" style="height: 45vh; width: 100%;">`;
+        htm += `<img 
+    src="${mediaUrl}" 
+    alt="" 
+    style="width:100%; height:45vh; object-fit:contain; display:block;"
+>`;
+
     } else if (isVideo) {
         const videoType = mediaUrl.endsWith('.mp4') ? 'video/mp4' : 'video/quicktime';
         htm += `<video controls autoplay muted style="height: 45vh; width: 100%;">

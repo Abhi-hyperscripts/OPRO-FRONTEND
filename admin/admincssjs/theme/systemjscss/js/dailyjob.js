@@ -806,6 +806,7 @@ function SubmitDailyJobWithPhoto() {
             form.append("jobImages", fileInput.files[i]);
         }
 
+
         var ep = applicationdomain + 'api/dailyjob/addnewjob';
         var jwt = GetStoredJwt();
         $.ajax({
@@ -906,6 +907,7 @@ function SubmitDailyJobWithOutPhoto() {
                     $('#Subarea').val('');
 
                     var userdata = `<p>Job added successfully</p>`
+                    console.log(userdata,'here');
                     SuccessMessageCustom('New Job', userdata, 'success')
                 }
                 else {
