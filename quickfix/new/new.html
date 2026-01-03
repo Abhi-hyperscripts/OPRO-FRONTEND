@@ -72,18 +72,12 @@
             <td>
               <div class="upload">
                 <label class="upload-area">
-                  <input id="job-photo" type="file" accept=".jpeg, .jpg, .mp4, .mov" onchange="previewImage(event)">
+                  <input id="job-photo" type="file" accept=".jpeg, .jpg, .png, .mp4, .mov" multiple onchange="previewImage(event)">
                   <span class="upload-button">
                     <i class="fas fa-upload"></i>
                   </span>
                 </label>
-                <div style="margin-left: 5px;">
-                  <img id="preview-image" 
-                    src="" 
-                    alt="" 
-                    style="max-width: 150px; max-height: 150px;"
-                    class="rounded-3"/>
-                </div>
+                <div id="preview-container" style="margin-left: 5px; display:flex; gap:8px; flex-wrap:wrap;"></div>
               </div>
             </td>
           </tr>

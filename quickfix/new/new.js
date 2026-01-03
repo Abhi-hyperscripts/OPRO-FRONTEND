@@ -252,7 +252,8 @@ function SubmitDailyJobWithPhoto() {
                     $('#Subarea').val('');
                     
                     $('#job-photo').val('');
-                    $('#preview-image').attr('src', '')
+                    var pc = document.getElementById('preview-container');
+                    if (pc) pc.innerHTML = '';
                     var userdata = `<p>Job added successfully</p>`
                     SuccessMessageCustom('New Job', userdata, 'success')
                 }
@@ -359,7 +360,8 @@ function SubmitDailyJobWithOutPhoto() {
                     $('#Subarea').val('');
                     
                     $('#job-photo').val('');
-                    $('#preview-image').attr('src', '')
+                    var pc = document.getElementById('preview-container');
+                    if (pc) pc.innerHTML = '';
                     var userdata = `<p>Job added successfully</p>`
                     SuccessMessageCustom('New Job', userdata, 'success')
                 }
@@ -392,17 +394,71 @@ function SubmitDailyJobWithOutPhoto() {
 }
 
 function previewImage(event) {
-    const fileInput = event.target; // Get the file input element
-    const file = fileInput.files[0]; // Get the selected file
-  
-    if (file) {
-      const reader = new FileReader(); // Create a FileReader to read the file
-      const previewImage = document.getElementById('preview-image'); // Get the img element
-  
-      reader.onload = function (e) {
-        previewImage.src = e.target.result; // Set the img src to the file's data URL
-      };
-  
-      reader.readAsDataURL(file); // Read the file as a data URL
-    }
-  }
+    const input = document.getElementById('job-photo');
+    if (!input) return;
+    const files = Array.from(input.files || []);
+    const previewContainer = document.getElementById('preview-container');
+    if (!previewContainer) return;
+    previewContainer.innerHTML = '';
+    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'video/mp4', 'video/quicktime'];
+    const maxSize = 5 * 1024 * 1024; // 5MB
+
+    files.forEach(function (file) {
+        if (!validTypes.includes(file.type) || file.size > maxSize) {
+            var userdata = `<p>Invalid file type or size exceeds 5 MB. Please upload JPEG, PNG, MP4, or MOV files only.</p>`;
+            SuccessMessageCustom('New Job', userdata, 'error');
+            return; // skip this file
+        }
+
+        const identifier = `${file.name}_${file.size}_${file.lastModified}`;
+        const wrapper = document.createElement('div');
+        wrapper.className = 'preview-thumb';
+        wrapper.style.cssText = 'position:relative;width:150px;height:150px;border-radius:6px;overflow:hidden;border:1px solid #ddd;padding:4px;background:#fff;';
+
+        if (file.type.startsWith('image/')) {
+            const img = document.createElement('img');
+            img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
+            img.alt = file.name;
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+            wrapper.appendChild(img);
+        } else {
+            const videoIcon = document.createElement('div');
+            videoIcon.style.cssText = 'display:flex;align-items:center;justify-content:center;height:100%;font-size:32px;color:#0077b5;';
+            videoIcon.innerHTML = '<i class="fas fa-play-circle"></i>';
+            wrapper.appendChild(videoIcon);
+        }
+
+        const del = document.createElement('button');
+        del.type = 'button';
+        del.innerHTML = '<i class="fa-solid fa-xmark" aria-hidden="true"></i>';
+        del.setAttribute('aria-label', 'Remove file');
+        del.title = 'Remove file';
+        del.style.cssText = 'position:absolute;top:6px;right:6px;background:rgba(0,0,0,0.6);color:#fff;border:none;border-radius:50%;width:28px;height:28px;cursor:pointer;line-height:22px;padding:0;display:flex;align-items:center;justify-content:center;';
+        del.dataset.identifier = identifier;
+        del.addEventListener('click', function () {
+            removeFileByIdentifier(identifier);
+        });
+        wrapper.appendChild(del);
+
+        previewContainer.appendChild(wrapper);
+    });
+}
+
+function removeFileByIdentifier(identifier) {
+    const input = document.getElementById('job-photo');
+    if (!input) return;
+    const dt = new DataTransfer();
+    Array.from(input.files || []).forEach(function (file) {
+        const id = `${file.name}_${file.size}_${file.lastModified}`;
+        if (id !== identifier) {
+            dt.items.add(file);
+        }
+    });
+    input.files = dt.files;
+    // Re-render previews
+    previewImage();
+}
