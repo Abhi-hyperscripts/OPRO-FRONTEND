@@ -16588,11 +16588,11 @@ html:not(.layout-menu-fixed) .menu-inner-shadow {
     margin-top: 0.75rem;
   }
 }
-.layout-navbar-full .content-wrapper {
+.layout-navbar-full .content-wrapper.dev {
   flex-basis: 100%;
-  width: 0;
+  /* width: 0;
   min-width: 0;
-  max-width: 100%;
+  max-width: 100%; */
 }
 .layout-navbar-full .content-backdrop.show {
   z-index: 9;
