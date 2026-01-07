@@ -18449,7 +18449,7 @@ html:not(.layout-menu-fixed) .menu-inner-shadow {
     margin-top: 0.75rem;
   }
 }
-.layout-navbar-full .content-wrapper.dev {
+.layout-navbar-full .content-wrapper {
   flex-basis: 100%;
   /* width: 0;
   min-width: 0;
