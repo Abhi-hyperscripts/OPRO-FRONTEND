@@ -8,20 +8,6 @@ var QuickFisxNew = null;
 var UserRoles = null;
 var allTeams = null;
 
-function getCurrentMaldivesTime() {
-  const formatter = new Intl.DateTimeFormat('en-US', {
-    timeZone: 'Indian/Maldives',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false
-  });
-  const parts = formatter.formatToParts(new Date());
-  const map = new Map(parts.map(x => [x.type, x.value]));
-  return `${map.get('day')}-${map.get('month')}-${map.get('year')} ${map.get('hour')}:${map.get('minute')}`;
-}
 
 function initializePage(containerId) {
     $(document).ready(function () {
@@ -149,7 +135,7 @@ function PopulateOpenJobCards() {
                             </div>
                             <div class="cont1">
                               <div class="col-4">Open Date/Time:</div>
-                              <div class="col-8">${getCurrentMaldivesTime()} MVT</div>
+                              <div class="col-8">${formatDateString(op.openDate)} IST</div>
                             </div>
                             <div class="cont1">
                               <div class="col-4">Photo After:</div>
@@ -189,10 +175,18 @@ function PopulateOpenJobCards() {
             { data: "area_name", name: "Area" },
             { data: "subarea", name: "Sub-Area" },
             {
-                data: "teamId", name: "Open Date/Time",
-                render: function (data, type, row, meta) {
-                    return getCurrentMaldivesTime() + ' MVT';
-                }
+render: function (data, type, row) {
+    let op = row["openDate"];
+    if (!op) return "";
+
+    let date = new Date(op);
+
+    // UTC → Maldives (UTC + 5 hours)
+    date.setHours(date.getHours() + 5);
+
+    return formatDateString(date) + " GST";
+}
+
             },
             {
                 data: "teamName", name: "Photo Before",
@@ -498,7 +492,7 @@ function SearchOpenJobs() {
                                 </div>
                                 <div class="cont1">
                                   <div class="col-4">Open Date/Time:</div>
-                                  <div class="col-8">${getCurrentMaldivesTime()}</div>
+                                  <div class="col-8">${formatDateString(op.openDate)}</div>
                                 </div>
                                 <div class="cont1">
                                   <div class="col-4">Photo After:</div>
