@@ -1191,11 +1191,17 @@ function PopulateOpenJobCards() {
             { data: "area_name", name: "Area" },
             { data: "subarea", name: "Sub-Area" },
             {
-                data: "teamId", name: "Open Date/Time",
-                render: function (data, type, row, meta) {
-                    var op = row["openDate"];
-                    return formatDateString(op);
-                }
+             render: function (data, type, row) {
+    let op = row["openDate"];
+    if (!op) return "";
+
+    let date = new Date(op);
+
+    // UTC → Maldives (UTC + 5 hours)
+    date.setHours(date.getHours() + 5);
+
+    return formatDateString(date) + " GST";
+}
             },
             {
                 data: "teamName", name: "Photo Before",
@@ -1599,11 +1605,17 @@ function PopulateCloseJobCards() {
             { data: "area_name", name: "Area" },
             { data: "subarea", name: "Sub-Area" },
             {
-                data: "teamId", name: "Open Date/Time",
-                render: function (data, type, row, meta) {
-                    var op = row["openDate"];
-                    return formatDateString(op);
-                }
+               render: function (data, type, row) {
+    let op = row["openDate"];
+    if (!op) return "";
+
+    let date = new Date(op);
+
+    // UTC → Maldives (UTC + 5 hours)
+    date.setHours(date.getHours() + 5);
+
+    return formatDateString(date) + " GST";
+}
             },
             {
                 data: "teamName", name: "Photo Before",
