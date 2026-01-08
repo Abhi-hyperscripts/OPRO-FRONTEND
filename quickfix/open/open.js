@@ -8,6 +8,21 @@ var QuickFisxNew = null;
 var UserRoles = null;
 var allTeams = null;
 
+function getCurrentMaldivesTime() {
+  const formatter = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Indian/Maldives',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
+  });
+  const parts = formatter.formatToParts(new Date());
+  const map = new Map(parts.map(x => [x.type, x.value]));
+  return `${map.get('day')}-${map.get('month')}-${map.get('year')} ${map.get('hour')}:${map.get('minute')}`;
+}
+
 function initializePage(containerId) {
     $(document).ready(function () {
         var userdata = $(containerId).data('controlData');
@@ -134,7 +149,7 @@ function PopulateOpenJobCards() {
                             </div>
                             <div class="cont1">
                               <div class="col-4">Open Date/Time:</div>
-                              <div class="col-8">${formatDateString(op.openDate)} IST</div>
+                              <div class="col-8">${getCurrentMaldivesTime()} MVT</div>
                             </div>
                             <div class="cont1">
                               <div class="col-4">Photo After:</div>
@@ -176,8 +191,7 @@ function PopulateOpenJobCards() {
             {
                 data: "teamId", name: "Open Date/Time",
                 render: function (data, type, row, meta) {
-                    var op = row["openDate"];
-                    return formatDateString(op) + ' IST';
+                    return getCurrentMaldivesTime() + ' MVT';
                 }
             },
             {
@@ -484,7 +498,7 @@ function SearchOpenJobs() {
                                 </div>
                                 <div class="cont1">
                                   <div class="col-4">Open Date/Time:</div>
-                                  <div class="col-8">${formatDateString(op.openDate)}</div>
+                                  <div class="col-8">${getCurrentMaldivesTime()}</div>
                                 </div>
                                 <div class="cont1">
                                   <div class="col-4">Photo After:</div>
