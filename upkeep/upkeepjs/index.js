@@ -389,6 +389,7 @@ function createAuditTable(auditData) {
     const sortedAuditData = [...auditData].sort((a, b) => {
         return new Date(b.createdOn) - new Date(a.createdOn);
     });
+    
 
     let tableHTML = `
         <div class="table-container">
@@ -427,13 +428,16 @@ function createAuditTable(auditData) {
         const coveredCount = audit.opUpkeepTrackers ? audit.opUpkeepTrackers.length : 0;
         const totalCount = audit.subAreaCheckPoints ? audit.subAreaCheckPoints.length : 0;
         const createdDate = new Date(audit.createdOn).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
+           timeZone: 'Indian/Maldives',   // ✅ Maldives Timezone
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true
         });
 
+        
         tableHTML += `
             <tr class="audit-row" data-audit-id="${audit.auditId}" data-created-by="${audit.createdBy}">
                 <td>
