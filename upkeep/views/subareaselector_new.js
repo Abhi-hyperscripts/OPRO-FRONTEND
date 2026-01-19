@@ -16,7 +16,6 @@ function initializePage(containerId) {
     });
 }
 
-
 function AddNewSubarea() {
     console.log(subareas.areaid);
     console.log(subareas.propId);
@@ -68,13 +67,32 @@ function AddNewSubarea() {
 }
 
 
+
+// tab according chnege subareaname
+
 function getSubAreaDetail(subAreaId) {
     userselectedarea = subAreaId;
+    updateSubareaHeader(subAreaId);
     // Changed to load subareachecklist_new.html
     LoadCustomControlWithRender('subareachecklist-div', 'views/subareachecklist_new.html', subAreaId, '')
 }
 
+function updateSubareaHeader(subAreaId) {
+    if (!subareas || !Array.isArray(subareas.subAreas)) {
+        return;
+    }
 
+    const selectedSubarea = subareas.subAreas.find(subarea => subarea.subareaId === subAreaId);
+    if (!selectedSubarea) {
+        return;
+    }
+
+    $('#area-name').text(selectedSubarea.subareaName);
+    $('#area-name2').text(subareas.areaName);
+}
+
+
+// end of tab according chnege subareaname
 
 function createSubAreaTabs(areaData) {
     // Input validation
