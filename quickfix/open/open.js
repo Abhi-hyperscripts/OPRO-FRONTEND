@@ -185,7 +185,9 @@ render: function (data, type, row) {
     date.setHours(date.getHours() + 5);
 
     return formatDateString(date) + " GST";
-}
+},
+//  width: "210px",           
+//     className: "text-nowrap no-wrap"
 
             },
             {
