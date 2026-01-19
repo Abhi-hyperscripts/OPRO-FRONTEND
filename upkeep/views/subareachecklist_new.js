@@ -319,7 +319,8 @@ function createCheckpointTable(checkpoints, subareaName = "Checkpoints", teams =
             { value: "03", text: "Satisfactory", class: "status-satisfactory" },
             { value: "04", text: "Unsatisfactory", class: "status-unsatisfactory" },
             { value: "05", text: "Poor", class: "status-poor" },
-            { value: "06", text: "Safety Issue", class: "status-safety" }
+            { value: "06", text: "Safety Issue", class: "status-safety" },
+            { value: "07", text: "N/A", class: "NA" }
         ];
 
         let optionsHTML = '<option value="">Select</option>';
@@ -591,7 +592,9 @@ function createVillaWiseCheckpointTable(villaid, checkpoints, subareaName = "Che
             { value: "03", text: "Satisfactory", class: "status-satisfactory" },
             { value: "04", text: "Unsatisfactory", class: "status-unsatisfactory" },
             { value: "05", text: "Poor", class: "status-poor" },
-            { value: "06", text: "Safety Issue", class: "status-safety" }
+            { value: "06", text: "Safety Issue", class: "status-safety" },
+            { value: "07", text: "N/A", class: "NA" }
+
         ];
 
         let optionsHTML = '<option value="">Select</option>';
