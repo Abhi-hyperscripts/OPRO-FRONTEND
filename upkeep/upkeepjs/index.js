@@ -57,8 +57,8 @@ function GetSignalRclientID() {
 $(document).ready(function () {
 
     UserObject = GetStoredUserData();
-    
-    if (UserObject != null){
+
+    if (UserObject != null) {
         userName = UserObject.name;
         userEmail = UserObject.username;
         userDesignation = UserObject.desg;
@@ -67,17 +67,17 @@ $(document).ready(function () {
         initializeSignalR(userEmail);
         $('#UserName_Name').text(UserObject.name);
         $('#is-designation').text(userDesignation);
-        GetPropertyList(UserRoles,UserObject.prop);
+        GetPropertyList(UserRoles, UserObject.prop);
 
 
     }
-    else{
+    else {
         LogoutUser();
     }
 });
 
 
-function GetPropertyList(uroles, propid){
+function GetPropertyList(uroles, propid) {
     var ep = applicationdomain + 'api/upkeep/getallproperty';
     var jwt = GetStoredJwt();
 
@@ -91,30 +91,30 @@ function GetPropertyList(uroles, propid){
             "Authorization": "Bearer " + jwt
         },
         success: function (Response) {
-            if(Response){
+            if (Response) {
                 var htm = ``;
                 AllProperties = Response;
                 var PropName = extractPropData(Response);
-                
+
                 var TopIndexProp = null;
 
-                if(uroles.includes('SUPERADMIN') || uroles.includes('OPROADMIN')){
+                if (uroles.includes('SUPERADMIN') || uroles.includes('OPROADMIN')) {
                     TopIndexProp = PropName[0];
-                    $.each(PropName, function (index, op){
-                        htm += `<option ${index===0?'selected':''} value="${op.propId}">${op.propName}</option>`
+                    $.each(PropName, function (index, op) {
+                        htm += `<option ${index === 0 ? 'selected' : ''} value="${op.propId}">${op.propName}</option>`
                     });
                     var selt2 = `<select id="property_sector" class=" form-select" oninput="PropertyChange()">${htm}</select>`
                     $('#prop-selector-div').html(selt2);
                 }
-                else{
-                    TopIndexProp = getPropDataById(Response,propid);
+                else {
+                    TopIndexProp = getPropDataById(Response, propid);
                     htm += `<option selected value="${TopIndexProp.propId}">${TopIndexProp.propName}</option>`
                     var selt2 = `<select id="property_sector" class=" form-select" oninput="PropertyChange()">${htm}</select>`
                     $('#prop-selector-div').html(selt2);
                 }
 
-                if(TopIndexProp) {
-                    
+                if (TopIndexProp) {
+
                     PropertyChange()
                 }
             }
@@ -164,7 +164,7 @@ function getFullPropertyById(data, propId) {
 function PropertyChange() {
 
     GetAllAudits()
-    
+
     // var NewProp = $('#property_sector').val();
     // var form = new FormData();
     // form.append("propId", NewProp);
@@ -247,7 +247,7 @@ function PropertyChange() {
 
 }
 
-function GetCurrentPropertyInfo(propid){
+function GetCurrentPropertyInfo(propid) {
 
     ShowSpinner()
     var form = new FormData();
@@ -269,8 +269,8 @@ function GetCurrentPropertyInfo(propid){
         },
         success: function (Response) {
             HideSpinner()
-            
-            if(Response){
+
+            if (Response) {
                 CurrentPropertyData = Response;
                 console.log(CurrentPropertyData);
             }
@@ -293,7 +293,7 @@ function GetCurrentPropertyInfo(propid){
     });
 }
 
-function CreateNewAudit(){
+function CreateNewAudit() {
     var NewProp = $('#property_sector').val();
     var form = new FormData();
     form.append("propId", NewProp);
@@ -310,9 +310,9 @@ function CreateNewAudit(){
             "Authorization": "Bearer " + jwt
         },
         success: function (Response) {
-            if(Response.success==true){
+            if (Response.success == true) {
                 GetAllAudits()
-                handleAction(Response.auditid,NewProp)
+                handleAction(Response.auditid, NewProp)
             }
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -329,8 +329,8 @@ function CreateNewAudit(){
     });
 }
 
-function GetAllAudits(){
-    
+function GetAllAudits() {
+
     var NewProp = $('#property_sector').val();
     var ep = `${applicationdomain}api/upkeep/getallaudits?prop=${NewProp}`;
     var jwt = GetStoredJwt();
@@ -389,7 +389,7 @@ function createAuditTable(auditData) {
     const sortedAuditData = [...auditData].sort((a, b) => {
         return new Date(b.createdOn) - new Date(a.createdOn);
     });
-    
+
 
     let tableHTML = `
         <div class="table-container">
@@ -414,7 +414,7 @@ function createAuditTable(auditData) {
                 <thead>
                     <tr>
                         <th>Audit ID</th>
-                        <th>Covered</th>
+                        <th>Progress</th>
                         <th>Total</th>
                         <th>Created Date</th>
                         <th>Created By</th>
@@ -428,16 +428,18 @@ function createAuditTable(auditData) {
         const coveredCount = audit.opUpkeepTrackers ? audit.opUpkeepTrackers.length : 0;
         const totalCount = audit.subAreaCheckPoints ? audit.subAreaCheckPoints.length : 0;
         const createdDate = new Date(audit.createdOn).toLocaleDateString('en-US', {
-           timeZone: 'Indian/Maldives',   // ✅ Maldives Timezone
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: true
+            timeZone: 'Indian/Maldives',   // ✅ Maldives Timezone
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
         });
 
+
         
+
         tableHTML += `
             <tr class="audit-row" data-audit-id="${audit.auditId}" data-created-by="${audit.createdBy}">
                 <td>
@@ -488,7 +490,7 @@ function createAuditTable(auditData) {
     return tableHTML;
 }
 function handleAction(auditId, propid) {
-    
+
 
 
 
@@ -497,9 +499,9 @@ function handleAction(auditId, propid) {
 
     // Open in new tab
     window.open(auditInfoUrl, '_blank');
-    
-    
-    
+
+
+
 }
 
 function handleAddNewAudit() {
@@ -542,7 +544,7 @@ function filterTable(searchTerm) {
     }
 }
 
-function GetCurrentAuditReport(auditID,propid){
+function GetCurrentAuditReport(auditID, propid) {
 
     ShowSpinner()
     var ep = `${applicationdomain}api/upkeep/getauditreport?prop=${propid}&audit=${auditID}`;
@@ -558,9 +560,9 @@ function GetCurrentAuditReport(auditID,propid){
         },
         success: function (Response) {
             HideSpinner()
-            if(Response){
+            if (Response) {
                 CurrentAuditData = Response;
-                var ttx = createAuditSummaryTable(CurrentPropertyData.propArea,CurrentAuditData);
+                var ttx = createAuditSummaryTable(CurrentPropertyData.propArea, CurrentAuditData);
                 $('#auditsummarydatadiv').html(ttx);
                 $('#audit-id-span').text(`Audit Report : ${auditID}`)
             }
