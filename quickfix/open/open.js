@@ -593,58 +593,265 @@ function ChangeJobStatus(currentstatus, jobid, propid, areaid, assignedSuperviso
             status += `<option value="Closed" ${currentstatus === "Closed" ? "selected" : ""}>Closed</option>`;
         }
     }
+//   close tab chand
+    var selt2 = `<select id="job-status-sector" class=" form-select " oninput="JobStatusChange()">${status}</select>`
 
-    var selt2 = `<select id="job-status-sector" class="form-select" oninput="JobStatusChange()">${status}</select>`;
-
-    var htm = `
-    <div class="modal fade" id="resetDataModel" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-xl modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header bgimg2">
-                    <h5 class="modal-title">Job Status</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="card card-body p-2">
-                        ${selt2}
-                        <div id="div-close-job-status">
-                            <textarea id="close-job-remark" class="form-control my-2" rows="4" placeholder="Enter Remarks"></textarea>
-                            <input type="file" id="close-job-photo" class="form-control" />
-                        </div>
+    var htm = `<div class="modal fade" id="resetDataModel" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+      <div class="modal-content">      
+        <div class="modal-header bgimg2">
+          <h5 class="modal-title" id="exampleModalLabel2">Job Status</h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+            <div class="card card-body p-2">
+               <div>
+                ${selt2}
+               </div>
+               <div id="div-close-job-status" >
+                <div class="py-1">
+                 <div>
+                    <textarea id="close-job-remark" class="form-control" rows="5" placeholder="Enter Remarks"></textarea>
+                 </div>
+                    <div class="py-1">
+                        <input type="file" id="close-job-photo" accept=".jpeg, .jpg, .mp4, .mov" class="form-control">
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-linkedin btn-sm" id="save-changes-button">Save changes</button>
-                </div>
+                
+               </div>
             </div>
         </div>
-    </div>`;
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">
+            Close
+          </button>
+          <button type="button" class="btn btn-linkedin btn-sm"  id="save-changes-button">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>`
 
     $('#modelHolder').html(htm);
     JobStatusChange();
     ShowPopupModal('resetDataModel');
 
+
     function SaveJobDetail() {
         var new_status = $('#job-status-sector').val();
         var close_job_remark = $('#close-job-remark').val();
+        var fileInput = document.getElementById('close-job-photo');
 
-        if (new_status === 'Closed' && close_job_remark === '') {
-            SuccessMessageCustom('Job Status', '<p>Please enter closing remarks</p>', 'error');
-            return;
+        var error = 0;
+
+        if (new_status === 'Closed') {
+            if (close_job_remark === '') {
+                error++;
+
+                var userdata = `<p>Please enter closing remarks</p>`
+                SuccessMessageCustom('Job Status', userdata, 'error')
+
+                //alert("Please enter closing remarks and also select a picture")
+            }
+            else {
+                // Hide modal immediately when Save is clicked
+                $('#resetDataModel').modal('hide');
+                
+                if (fileInput.files.length === 0) {
+                    Swal.fire({
+                        title: "<h4>Do you want to continue without job image?</h4>",
+                        showDenyButton: true,
+                        showCancelButton: false,
+                        confirmButtonText: "Save",
+                        denyButtonText: `Don't save`,
+                        customClass: {
+                            confirmButton: 'btn btn-label-linkedin', // Custom class for confirm button
+                            denyButton: 'btn btn-label-danger',       // Custom class for deny button
+                            cancelButton: 'btn custom-cancel-button'    // Custom class for cancel button
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            SaveJobDetailCloseStatusWithoutPhoto()
+                        } else if (result.isDenied) {
+                            // Show modal again if user cancelled
+                            $('#modelHolder').html(htm);
+                            ShowPopupModal('resetDataModel');
+                            Swal.fire("Changes are not saved", "", "info");
+                        }
+                    });
+                }
+                else {
+                    SaveJobDetailCloseStatusWithPhoto()
+                }
+            }
+        }
+        else {
+            // Hide modal and refresh data for non-Closed status
+            $('#resetDataModel').modal('hide');
+            setTimeout(function () { $('#modelHolder').empty(); }, 250);
+            PropertyChange();
+        }
+    }
+    function SaveJobDetailCloseStatusWithPhoto() {
+        var new_status = $('#job-status-sector').val();
+        var close_job_remark = $('#close-job-remark').val();
+        var fileInput = document.getElementById('close-job-photo');
+        var ggg = `${new_status}:${jobid}:${propid}:${areaid}`
+
+        var error = 0;
+        if (error === 0) {
+            var form = new FormData();
+            form.append("jobID", jobid);
+            form.append("propId", propid);
+            form.append("areaID", areaid);
+            form.append("status", new_status);
+            form.append("remarks", close_job_remark);
+            for (let i = 0; i < fileInput.files.length; i++) {
+                form.append("jobImages", fileInput.files[i]);
+            }
+
+            var ep = applicationdomain + 'api/dailyjob/changejobstatus';
+            var jwt = GetStoredJwt();
+            $.ajax({
+                url: ep,
+                type: 'POST',
+                dataType: 'json',
+                data: form,
+                processData: false,
+                contentType: false,
+                headers: {
+                    "Authorization": "Bearer " + jwt
+                },
+                success: function (Response) {
+                    if (Response === true) {
+                        // Close SweetAlert if open
+                        Swal.close();
+                        
+                        // Remove modal HTML from DOM
+                        setTimeout(function () { $('#modelHolder').empty(); }, 100);
+                        
+                        // Refresh data
+                        PropertyChange();
+                        
+                        // Switch to Closed tab
+                        setTimeout(function () {
+                            try {
+                                var tabEl = document.querySelector('#tab3-tab');
+                                if (tabEl && typeof bootstrap !== 'undefined') {
+                                    var tab = new bootstrap.Tab(tabEl);
+                                    tab.show();
+                                } else if (tabEl) {
+                                    $(tabEl).trigger('click');
+                                }
+                            } catch (e) { console.log(e); }
+                        }, 300);
+                        
+                        var userdata = `Status modified successfully`
+                        ConfirmationDialog2('Job Status', userdata, 'success')
+                    }
+                    else {
+                        var userdata = `<p>Failed to modify job status</p>`
+                        SuccessMessageCustom('Job Status', userdata, 'error')
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    if (XMLHttpRequest.status === 401) {
+                        LogoutUser()
+                    }
+                    else if (XMLHttpRequest.status === 400) {
+                        var errorResponse = XMLHttpRequest.responseJSON;
+                        ErrorMessage()
+                    } else {
+                        console.log("An error occurred:", errorThrown);
+                    }
+                }
+            });
         }
 
-        $('#resetDataModel').modal('hide');
 
-        setTimeout(function () {
-            PropertyChange();
-            RedirectToClosedTabSafe();
-            $('#modelHolder').empty();
-        }, 600);
-
-        ConfirmationDialog2('Job Status', 'Status modified successfully', 'success');
     }
+    function SaveJobDetailCloseStatusWithoutPhoto() {
+        var new_status = $('#job-status-sector').val();
+        var close_job_remark = $('#close-job-remark').val();
+        var fileInput = document.getElementById('close-job-photo');
+        var ggg = `${new_status}:${jobid}:${propid}:${areaid}`
 
+        var error = 0;
+        if (error === 0) {
+            var form = new FormData();
+            form.append("jobID", jobid);
+            form.append("propId", propid);
+            form.append("areaID", areaid);
+            form.append("status", new_status);
+            form.append("remarks", close_job_remark);
+
+
+            var ep = applicationdomain + 'api/dailyjob/changejobstatus';
+            var jwt = GetStoredJwt();
+            $.ajax({
+                url: ep,
+                type: 'POST',
+                dataType: 'json',
+                data: form,
+                processData: false,
+                contentType: false,
+                headers: {
+                    "Authorization": "Bearer " + jwt
+                },
+                success: function (Response) {
+                    if (Response === true) {
+                        // Close SweetAlert if open
+                        Swal.close();
+                        
+                        // Remove modal HTML from DOM
+                        setTimeout(function () { $('#modelHolder').empty(); }, 100);
+                        
+                        // Refresh data
+                        PropertyChange();
+                        
+                        // Switch to Closed tab
+                        setTimeout(function () {
+                            try {
+                                var tabEl = document.querySelector('#tab3-tab');
+                                if (tabEl && typeof bootstrap !== 'undefined') {
+                                    var tab = new bootstrap.Tab(tabEl);
+                                    tab.show();
+                                } else if (tabEl) {
+                                    $(tabEl).trigger('click');
+                                }
+                            } catch (e) { console.log(e); }
+                        }, 300);
+
+                        var userdata = `Status modified successfully`
+                        ConfirmationDialog2('Job Status', userdata, 'success')
+
+                    }
+                    else {
+                        var userdata = `<p>Failed to modify job status</p>`
+                        SuccessMessageCustom('Job Status', userdata, 'error')
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    if (XMLHttpRequest.status === 401) {
+                        LogoutUser()
+                    }
+                    else if (XMLHttpRequest.status === 400) {
+                        var errorResponse = XMLHttpRequest.responseJSON;
+                        ErrorMessage()
+                    } else {
+                        console.log("An error occurred:", errorThrown);
+                    }
+                }
+            });
+        }
+
+
+    }
+    // Bind save button with off/on to avoid duplicate handlers
     $('#save-changes-button').off('click').on('click', SaveJobDetail);
 }
 
@@ -652,27 +859,13 @@ function JobStatusChange() {
     var new_status = $('#job-status-sector').val();
     if (new_status === 'Closed') {
         $('#div-close-job-status').show();
-    } else {
+    }
+    else {
         $('#div-close-job-status').hide();
         $('#close-job-remark').val('');
-        $('#close-job-photo').val('');
+        $('#close-job-photo').val('')
     }
 }
-
-/* ========= ADDITION (TAB REDIRECT FIX) ========= */
-function RedirectToClosedTabSafe() {
-    setTimeout(function () {
-        var tabEl = document.getElementById('tab3-tab');
-        if (!tabEl) return;
-
-        if (window.bootstrap && bootstrap.Tab) {
-            bootstrap.Tab.getOrCreateInstance(tabEl).show();
-        } else {
-            tabEl.click();
-        }
-    }, 400);
-}
-
 
 function GetTeamMember(propid, teamid, jobid) {
     var form = new FormData();
