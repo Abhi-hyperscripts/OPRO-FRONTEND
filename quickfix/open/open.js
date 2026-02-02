@@ -593,7 +593,7 @@ function ChangeJobStatus(currentstatus, jobid, propid, areaid, assignedSuperviso
             status += `<option value="Closed" ${currentstatus === "Closed" ? "selected" : ""}>Closed</option>`;
         }
     }
-
+//   close tab chandge
     var selt2 = `<select id="job-status-sector" class=" form-select " oninput="JobStatusChange()">${status}</select>`
 
     var htm = `<div class="modal fade" id="resetDataModel" tabindex="-1" aria-hidden="true">
