@@ -593,7 +593,7 @@ function ChangeJobStatus(currentstatus, jobid, propid, areaid, assignedSuperviso
             status += `<option value="Closed" ${currentstatus === "Closed" ? "selected" : ""}>Closed</option>`;
         }
     }
-//   close tab chand
+
     var selt2 = `<select id="job-status-sector" class=" form-select " oninput="JobStatusChange()">${status}</select>`
 
     var htm = `<div class="modal fade" id="resetDataModel" tabindex="-1" aria-hidden="true">
@@ -658,9 +658,6 @@ function ChangeJobStatus(currentstatus, jobid, propid, areaid, assignedSuperviso
                 //alert("Please enter closing remarks and also select a picture")
             }
             else {
-                // Hide modal immediately when Save is clicked
-                $('#resetDataModel').modal('hide');
-                
                 if (fileInput.files.length === 0) {
                     Swal.fire({
                         title: "<h4>Do you want to continue without job image?</h4>",
@@ -677,9 +674,6 @@ function ChangeJobStatus(currentstatus, jobid, propid, areaid, assignedSuperviso
                         if (result.isConfirmed) {
                             SaveJobDetailCloseStatusWithoutPhoto()
                         } else if (result.isDenied) {
-                            // Show modal again if user cancelled
-                            $('#modelHolder').html(htm);
-                            ShowPopupModal('resetDataModel');
                             Swal.fire("Changes are not saved", "", "info");
                         }
                     });
@@ -690,10 +684,7 @@ function ChangeJobStatus(currentstatus, jobid, propid, areaid, assignedSuperviso
             }
         }
         else {
-            // Hide modal and refresh data for non-Closed status
-            $('#resetDataModel').modal('hide');
-            setTimeout(function () { $('#modelHolder').empty(); }, 250);
-            PropertyChange();
+            SaveJobDetailCloseStatusWithoutPhoto();
         }
     }
     function SaveJobDetailCloseStatusWithPhoto() {
@@ -728,30 +719,17 @@ function ChangeJobStatus(currentstatus, jobid, propid, areaid, assignedSuperviso
                 },
                 success: function (Response) {
                     if (Response === true) {
-                        // Close SweetAlert if open
-                        Swal.close();
-                        
-                        // Remove modal HTML from DOM
-                        setTimeout(function () { $('#modelHolder').empty(); }, 100);
-                        
-                        // Refresh data
+                        HidePopupModal('resetDataModel');
+
+                        /*
+                        GetAllOpenJobs();
+                        GetAllCloseJobs();
+                        GetAllOpenJobsCount(propid);
+                        */
                         PropertyChange();
-                        
-                        // Switch to Closed tab
-                        setTimeout(function () {
-                            try {
-                                var tabEl = document.querySelector('#tab3-tab');
-                                if (tabEl && typeof bootstrap !== 'undefined') {
-                                    var tab = new bootstrap.Tab(tabEl);
-                                    tab.show();
-                                } else if (tabEl) {
-                                    $(tabEl).trigger('click');
-                                }
-                            } catch (e) { console.log(e); }
-                        }, 300);
-                        
                         var userdata = `Status modified successfully`
                         ConfirmationDialog2('Job Status', userdata, 'success')
+                        //location.reload();
                     }
                     else {
                         var userdata = `<p>Failed to modify job status</p>`
@@ -804,28 +782,14 @@ function ChangeJobStatus(currentstatus, jobid, propid, areaid, assignedSuperviso
                 },
                 success: function (Response) {
                     if (Response === true) {
-                        // Close SweetAlert if open
-                        Swal.close();
-                        
-                        // Remove modal HTML from DOM
-                        setTimeout(function () { $('#modelHolder').empty(); }, 100);
-                        
-                        // Refresh data
-                        PropertyChange();
-                        
-                        // Switch to Closed tab
-                        setTimeout(function () {
-                            try {
-                                var tabEl = document.querySelector('#tab3-tab');
-                                if (tabEl && typeof bootstrap !== 'undefined') {
-                                    var tab = new bootstrap.Tab(tabEl);
-                                    tab.show();
-                                } else if (tabEl) {
-                                    $(tabEl).trigger('click');
-                                }
-                            } catch (e) { console.log(e); }
-                        }, 300);
+                        HidePopupModal('resetDataModel');
 
+                        /*
+                        GetAllOpenJobs();
+                        GetAllCloseJobs();
+                        GetAllOpenJobsCount(propid);
+                        */
+                        PropertyChange();
                         var userdata = `Status modified successfully`
                         ConfirmationDialog2('Job Status', userdata, 'success')
 
@@ -851,8 +815,8 @@ function ChangeJobStatus(currentstatus, jobid, propid, areaid, assignedSuperviso
 
 
     }
-    // Bind save button with off/on to avoid duplicate handlers
-    $('#save-changes-button').off('click').on('click', SaveJobDetail);
+    $('#save-changes-button').on('click', SaveJobDetail);
+    
 }
 
 function JobStatusChange() {
