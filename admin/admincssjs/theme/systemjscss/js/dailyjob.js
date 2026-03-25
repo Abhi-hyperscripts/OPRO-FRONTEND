@@ -1133,7 +1133,7 @@ function PopulateOpenJobCards() {
                               <div class="col-8">${op.job_remark ? op.job_remark : "NA"}</div>
                             </div>
                             <div class="cont1">
-                              <div class="col-12 d-grid"><button class="btn btn-linkedin btn-sm" onclick="ConfirmationDialog('${op.propId}','${op.jobId}')">Move To Task Master</button></div>
+                              <div class="col-12 d-grid"><button class="btn btn-linkedin btn-sm" disabled onclick="ConfirmationDialog('${op.propId}','${op.jobId}')">Move To Task Master</button></div>
                             </div>
                           </div>
                     </div>
@@ -1329,7 +1329,7 @@ function PopulateOpenJobCards() {
                 render: function (data, type, row, meta) {
                     var propId = row["propId"];
                     var jobId = row["jobId"];
-                    var tt = `<div class="col-12 d-grid"><button class="btn btn-linkedin btn-xs" onclick="ConfirmationDialog('${propId}','${jobId}')">Move To Task Master</button></div>`
+                    var tt = `<div class="col-12 d-grid"><button class="btn btn-linkedin btn-xs" disabled onclick="ConfirmationDialog('${propId}','${jobId}')">Move To Task Master</button></div>`
                     return tt;
                 }
             },
@@ -2606,7 +2606,7 @@ function SearchOpenJobs() {
                                   <div class="col-8">${op.job_remark ? op.job_remark : "NA"}</div>
                                 </div>
                                  <div class="cont1">
-                                    <div class="col-12 d-grid"><button class="btn btn-linkedin btn-sm" onclick="ConfirmationDialog('${op.propId}','${op.jobId}')">Move To Task Master</button></div>
+                                    <div class="col-12 d-grid"><button class="btn btn-linkedin btn-sm" disabled onclick="ConfirmationDialog('${op.propId}','${op.jobId}')">Move To Task Master</button></div>
                                  </div>
                               </div>
                         </div>
@@ -2809,5 +2809,3 @@ function playMusic() {
     const audio = new Audio(url);
     audio.play();
 }
-
-
