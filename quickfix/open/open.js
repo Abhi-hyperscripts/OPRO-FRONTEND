@@ -17,13 +17,14 @@ function initializePage(containerId) {
         var UserObject = GetStoredUserData();
         UserRoles = UserObject.role;
 
-        CurrentProperty = QuickFixOpen.property.propId;
+        CurrentProperty = (QuickFixOpen && QuickFixOpen.property) ? QuickFixOpen.property.propId : null;
         UserCurrentTeamId = QuickFixOpen.teamId;
         allTeams = QuickFixOpen.allTeams;
         userTeams = QuickFixOpen.userTeam;
         UserSubTeamInfo = QuickFixOpen.userSubTeamData;
 
-        $('#openjobcountbadge').text(QuickFixOpen.openjob.length)
+        var totalOpenCount = QuickFixOpen.pagination ? QuickFixOpen.pagination.totalOpen : QuickFixOpen.openjob.length;
+        $('#openjobcountbadge').text(totalOpenCount);
 
         PopulateOpenJobCards()
     });
@@ -34,7 +35,12 @@ function PopulateOpenJobCards() {
     var htm = ``;
     var tabrow = ``
     var rowcount = 1;
-    let OpenJobs = QuickFixOpen.openjob;
+    let OpenJobs = QuickFixOpen.openjob || [];
+    let pagination = QuickFixOpen.pagination || {};
+    let currentPage = QuickFixOpen.currentPage || pagination.pageNumber || 1;
+    let pageSize = pagination.pageSize || 10;
+    let totalRecords = pagination.totalOpen !== undefined ? pagination.totalOpen : OpenJobs.length;
+    let totalPages = pagination.totalOpenPages || Math.ceil(totalRecords / pageSize) || 1;
 
 
 
@@ -166,7 +172,7 @@ function PopulateOpenJobCards() {
             {
                 data: "propID", name: "Sr.No.",
                 render: function (data, type, row, meta) {
-                    return meta.row + 1;
+                    return (currentPage - 1) * pageSize + meta.row + 1;
                 }
             },
             { data: "job_detail", name: "Job Details" },
@@ -331,6 +337,8 @@ render: function (data, type, row) {
             "defaultContent": "-",
             "targets": "_all"
         }],
+        paging: false,
+        info: false,
         "serverSide": false,
         "order": [0, "asc"],
         "processing": true,
@@ -338,7 +346,6 @@ render: function (data, type, row) {
         "language": {
             "processing": "Processing...Please wait"
         },
-        pageLength: 10,
         dom: 'Bfrtip',
         lengthMenu: [
             [10, 25, 50, 100],
@@ -395,6 +402,7 @@ render: function (data, type, row) {
         divs.style.marginBottom = '5px';
     }
 
+    RenderPaginationControls('#open-pagination-container', currentPage, totalPages, totalRecords, pageSize, 'FetchOpenJobPage');
 }
 
 function SearchOpenJobs() {

@@ -13,7 +13,12 @@ function PopulateCloseJobCards() {
     var htm = ``;
     var tabrow = ``
     var rowcount = 1;
-    let CloseJobs = QuickFixClosed.closedjob;
+    let CloseJobs = QuickFixClosed.closedjob || [];
+    let pagination = QuickFixClosed.pagination || {};
+    let currentPage = QuickFixClosed.currentPage || pagination.pageNumber || 1;
+    let pageSize = pagination.pageSize || 10;
+    let totalRecords = pagination.totalClose !== undefined ? pagination.totalClose : CloseJobs.length;
+    let totalPages = pagination.totalClosePages || Math.ceil(totalRecords / pageSize) || 1;
 
 
     $.each(CloseJobs, function (index, op) {
@@ -154,7 +159,7 @@ function PopulateCloseJobCards() {
             {
                 data: "propID", name: "Sr.No.",
                 render: function (data, type, row, meta) {
-                    return meta.row + 1;
+                    return (currentPage - 1) * pageSize + meta.row + 1;
                 }
             },
             { data: "job_detail", name: "Job Details" },
@@ -274,6 +279,8 @@ function PopulateCloseJobCards() {
             "defaultContent": "-",
             "targets": "_all"
         }],
+        paging: false,
+        info: false,
         "serverSide": false,
         "order": [0, "asc"],
         "processing": true,
@@ -281,7 +288,6 @@ function PopulateCloseJobCards() {
         "language": {
             "processing": "Processing...Please wait"
         },
-        pageLength: 10,
         dom: 'Bfrtip',
         lengthMenu: [
             [10, 25, 50, 100],
@@ -337,4 +343,6 @@ function PopulateCloseJobCards() {
     if (divs) {
         divs.style.marginBottom = '5px';
     }
+
+    RenderPaginationControls('#close-pagination-container', currentPage, totalPages, totalRecords, pageSize, 'FetchCloseJobPage');
 }

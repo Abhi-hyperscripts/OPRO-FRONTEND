@@ -148,19 +148,40 @@ function getPropDataById(data, propId) {
     return null;
 }
 function getFullPropertyById(data, propId) {
-    // Find the property object with the matching propId
+    if (!data || !Array.isArray(data)) return null;
     const property = data.find(item => item.propId === propId);
-    
-    // Return the found property or null if no match is found
     return property || null;
 }
-function PropertyChange() {
-    
+window.currentOpenPage = 1;
+window.currentClosePage = 1;
+
+function PropertyChange(openPage, closePage) {
+    if (typeof openPage === 'number' && openPage > 0) {
+        window.currentOpenPage = openPage;
+    } else if (openPage === 1 || openPage === undefined || openPage === null) {
+        if (typeof openPage !== 'number') {
+            window.currentOpenPage = 1;
+        }
+    }
+
+    if (typeof closePage === 'number' && closePage > 0) {
+        window.currentClosePage = closePage;
+    } else if (closePage === 1 || closePage === undefined || closePage === null) {
+        if (typeof closePage !== 'number') {
+            window.currentClosePage = 1;
+        }
+    }
+
     var NewProp = $('#property_sector').val();
     var form = new FormData();
     form.append("propId", NewProp);
     form.append("status", 'Open');
-
+    form.append("openPageNumber", window.currentOpenPage);
+    form.append("closePageNumber", window.currentClosePage);
+    form.append("openPage", window.currentOpenPage);
+    form.append("closePage", window.currentClosePage);
+    form.append("pageNumber", window.currentOpenPage);
+    form.append("pageSize", 10);
 
     var ep = applicationdomain + 'api/dailyjob/getallquickfixjobs';
     var jwt = GetStoredJwt();
@@ -177,44 +198,47 @@ function PropertyChange() {
         },
         success: function (Response) {
           if(Response){
-            
             var CurrentProperty = getFullPropertyById(AllProperties,NewProp);
-            var XTeam = findTeamByEmail(userEmail,Response.teams);
+            var XTeam = findTeamByEmail(userEmail, Response.teams || []);
             var UserCurrentTeamId = null;
             var UserSubTeams = [];
             if(XTeam){
-                UserCurrentTeamId = XTeam.teamId
-                UserSubTeams = XTeam.propsubteams
+                UserCurrentTeamId = XTeam.teamId;
+                UserSubTeams = XTeam.propsubteams;
             }
             
             var control_open = {
                 property : CurrentProperty,
-                openjob: Response.open,
-                teamId:UserCurrentTeamId,
+                openjob: Response.open || [],
+                teamId: UserCurrentTeamId,
                 allTeams : Response.teams,
-                userTeam:Response.userTeam,
+                userTeam: Response.userTeam,
                 userSubTeamData : UserSubTeams,
-                areas:Response.areas
+                areas: Response.areas,
+                pagination: Response.pagination || null,
+                currentPage: window.currentOpenPage
             };
             
             var control_close = {
                 property : CurrentProperty,
-                closedjob: Response.close,
-                teamId:UserCurrentTeamId,
+                closedjob: Response.close || [],
+                teamId: UserCurrentTeamId,
                 allTeams : Response.teams,
-                userTeam:Response.userTeam,
+                userTeam: Response.userTeam,
                 userSubTeamData : UserSubTeams,
-                areas:Response.areas
+                areas: Response.areas,
+                pagination: Response.pagination || null,
+                currentPage: window.currentClosePage
             };
 
             var Control_new = {
                 property : CurrentProperty,
-                teamId:UserCurrentTeamId,
+                teamId: UserCurrentTeamId,
                 allTeams : Response.teams,
-                userTeam:Response.userTeam,
+                userTeam: Response.userTeam,
                 userSubTeamData : UserSubTeams,
-                areas:Response.areas
-            }
+                areas: Response.areas
+            };
             
             LoadNewJobControl(Control_new);
             LoadOpneJobControl(control_open);
@@ -233,11 +257,74 @@ function PropertyChange() {
             }
         }
     });
-
-
-    
 }
 
+function FetchOpenJobPage(page) {
+    PropertyChange(page, window.currentClosePage);
+}
+
+function FetchCloseJobPage(page) {
+    PropertyChange(window.currentOpenPage, page);
+}
+
+function generatePaginationHTML(currentPage, totalPages, onClickFuncName) {
+    if (totalPages <= 1) return '';
+
+    let html = '<nav aria-label="Page navigation"><ul class="pagination pagination-sm mb-0 flex-wrap gap-1">';
+    
+    if (currentPage > 1) {
+        html += `<li class="page-item"><a class="page-link" href="javascript:void(0)" onclick="${onClickFuncName}(${currentPage - 1})">&laquo; Prev</a></li>`;
+    } else {
+        html += `<li class="page-item disabled"><span class="page-link">&laquo; Prev</span></li>`;
+    }
+
+    let startPage = Math.max(1, currentPage - 2);
+    let endPage = Math.min(totalPages, currentPage + 2);
+
+    if (startPage > 1) {
+        html += `<li class="page-item"><a class="page-link" href="javascript:void(0)" onclick="${onClickFuncName}(1)">1</a></li>`;
+        if (startPage > 2) {
+            html += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+        }
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+        if (i === currentPage) {
+            html += `<li class="page-item active"><span class="page-link">${i}</span></li>`;
+        } else {
+            html += `<li class="page-item"><a class="page-link" href="javascript:void(0)" onclick="${onClickFuncName}(${i})">${i}</a></li>`;
+        }
+    }
+
+    if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+            html += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+        }
+        html += `<li class="page-item"><a class="page-link" href="javascript:void(0)" onclick="${onClickFuncName}(${totalPages})">${totalPages}</a></li>`;
+    }
+
+    if (currentPage < totalPages) {
+        html += `<li class="page-item"><a class="page-link" href="javascript:void(0)" onclick="${onClickFuncName}(${currentPage + 1})">Next &raquo;</a></li>`;
+    } else {
+        html += `<li class="page-item disabled"><span class="page-link">Next &raquo;</span></li>`;
+    }
+
+    html += '</ul></nav>';
+    return html;
+}
+
+function RenderPaginationControls(containerId, currentPage, totalPages, totalRecords, pageSize, onClickFuncName) {
+    if (totalRecords <= 0) {
+        $(containerId).html('');
+        return;
+    }
+    let startItem = (currentPage - 1) * pageSize + 1;
+    let endItem = Math.min(currentPage * pageSize, totalRecords);
+    let infoHTML = `<div class="text-muted small">Showing ${startItem} to ${endItem} of ${totalRecords} entries</div>`;
+    let paginationHTML = generatePaginationHTML(currentPage, totalPages, onClickFuncName);
+    
+    $(containerId).html(infoHTML + paginationHTML);
+}
 
 function LoadNewJobControl(propid){
     LoadCustomControlWithRender('div-newjob-holder','new/new.html',propid,'osd')
