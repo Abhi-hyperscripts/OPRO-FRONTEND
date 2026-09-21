@@ -13,12 +13,12 @@ function PopulateCloseJobCards() {
     var htm = ``;
     var tabrow = ``
     var rowcount = 1;
-    let CloseJobs = QuickFixClosed.closedjob || [];
-    let pagination = QuickFixClosed.pagination || {};
-    let currentPage = QuickFixClosed.currentPage || pagination.pageNumber || 1;
-    let pageSize = pagination.pageSize || 10;
-    let totalRecords = pagination.totalClose !== undefined ? pagination.totalClose : CloseJobs.length;
-    let totalPages = pagination.totalClosePages || Math.ceil(totalRecords / pageSize) || 1;
+    let CloseJobs = (QuickFixClosed && QuickFixClosed.closedjob) ? QuickFixClosed.closedjob : [];
+    let pagination = (QuickFixClosed && QuickFixClosed.pagination) ? QuickFixClosed.pagination : {};
+    let currentPage = parseInt(pagination.pageNumber || (QuickFixClosed && QuickFixClosed.currentPage) || window.currentClosePage || 1);
+    let pageSize = parseInt(pagination.pageSize || (QuickFixClosed && QuickFixClosed.pageSize) || window.currentClosePageSize || 25);
+    let totalRecords = pagination.totalClose !== undefined ? parseInt(pagination.totalClose) : (pagination.totalRecords !== undefined ? parseInt(pagination.totalRecords) : CloseJobs.length);
+    let totalPages = pagination.totalClosePages !== undefined ? parseInt(pagination.totalClosePages) : (pagination.totalPages !== undefined ? parseInt(pagination.totalPages) : (Math.ceil(totalRecords / pageSize) || 1));
 
 
     $.each(CloseJobs, function (index, op) {
@@ -151,6 +151,7 @@ function PopulateCloseJobCards() {
     if ($.fn.DataTable.isDataTable('#closejobstable')) {
         $('#closejobstable').DataTable().destroy();
     }
+    $('#closejobstable thead th select').remove();
 
     $('#closejobstable').DataTable({
 
@@ -289,17 +290,12 @@ function PopulateCloseJobCards() {
             "processing": "Processing...Please wait"
         },
         dom: 'Bfrtip',
-        lengthMenu: [
-            [10, 25, 50, 100],
-            ['10 rows', '25 rows', '50 rows', '100 rows']
-        ],
         buttons: [
             { extend: 'copy', className: 'btn-outline-secondary btn-sm' },
             { extend: 'csv', className: 'btn-outline-secondary btn-sm' },
             { extend: 'excel', className: 'btn-outline-secondary btn-sm' },
             { extend: 'pdf', className: 'btn-outline-secondary btn-sm' },
-            { extend: 'print', className: 'btn-outline-secondary btn-sm' },
-            { extend: 'pageLength', className: 'btn-outline-secondary btn-sm' }
+            { extend: 'print', className: 'btn-outline-secondary btn-sm' }
         ],
         autoWidth: true,
         responsive: true,
@@ -309,7 +305,8 @@ function PopulateCloseJobCards() {
                 .columns([1, 2, 3, 4, 5])
                 .every(function () {
                     var column = this;
-                    var select = $('<select><option value=""></option></select>')
+                    $(column.header()).find('select').remove();
+                    var select = $('<select class="form-select form-select-sm mt-1"><option value=""></option></select>')
                         .appendTo($(column.header()))
                         .on('change', function () {
                             var val = $.fn.dataTable.util.escapeRegex($(this).val());
@@ -322,7 +319,9 @@ function PopulateCloseJobCards() {
                         .unique()
                         .sort()
                         .each(function (d, j) {
-                            select.append('<option value="' + d + '">' + d + '</option>');
+                            if (d && typeof d === 'string' && d.trim() !== '') {
+                                select.append('<option value="' + d + '">' + d + '</option>');
+                            }
                         });
 
                     $(column.footer()).empty();
@@ -332,17 +331,48 @@ function PopulateCloseJobCards() {
         },
     });
 
-
-
-    let div = document.querySelector('div.dt-buttons.btn-group.flex-wrap');
-    if (div) {
-        div.style.marginBottom = '-45px';
-    }
-
-    let divs = document.querySelector('div.dt-search');
-    if (divs) {
-        divs.style.marginBottom = '5px';
-    }
-
+    RenderTopPageSizeSelector('#closejobstable', pageSize, 'ChangeClosePageSize');
+    $('#mobile-close-pagesize').val(pageSize);
     RenderPaginationControls('#close-pagination-container', currentPage, totalPages, totalRecords, pageSize, 'FetchCloseJobPage');
+}
+
+function SearchCloseJobs() {
+    var txt = $('#Search').val();
+    if (!txt || txt.trim() === '') {
+        PopulateCloseJobCards();
+        return;
+    }
+    var searchedList = searchItems(txt, (QuickFixClosed && QuickFixClosed.closedjob) ? QuickFixClosed.closedjob : []);
+    if (searchedList.length > 0) {
+        var htm = ``;
+        $.each(searchedList, function (index, op) {
+            var retval = ``;
+            if (op.open_uploads.length > 0) {
+                var imgurl = op.open_uploads[0].fileurl;
+                const isImage = imgurl.match(/\.(jpeg|jpg|png|gif)$/i);
+                if (isImage) {
+                    retval = `<a href="#" onclick="ShowImageMob('${imgurl}')"><img class="image1" src="${imgurl}" alt=""></a>`;
+                } else {
+                    retval = `<a href="#" onclick="ShowImageMob('${imgurl}')" class="fa fa-play-circle fa-2x" style="color: #0077b5;"></a>`;
+                }
+            }
+            var currentstatus = op.job_status;
+            htm += `<div class="accordion-item1">
+                        <button class="accordion-btn1" onclick="toggleAccordion(this)">
+                            <div class="moretitle">View More
+                                <span class="plus">+</span>
+                                <span class="minus" style="display: none;">-</span>
+                            </div>
+                            <div class="morecont">
+                                <div class="cont1"><div class="col-4">Job Details:</div><div class="col-8">${op.job_detail}</div></div>
+                                <div class="cont1"><div class="col-4">Area:</div><div class="col-8">${op.area_name}</div></div>
+                                <div class="cont1"><div class="col-4">Sub-Area:</div><div class="col-8">${op.subarea}</div></div>
+                                <div class="cont1"><div class="col-4">Issued To:</div><div class="col-8">${op.issued_to_team_name}</div></div>
+                                <div class="cont1"><div class="col-4">Status:</div><div class="col-8"><a href="#">${currentstatus}</a></div></div>
+                            </div>
+                        </button>
+                    </div>`;
+        });
+        $('#close-card-view').html(htm);
+    }
 }

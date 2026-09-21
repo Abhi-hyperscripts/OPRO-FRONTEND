@@ -23,7 +23,9 @@ function initializePage(containerId) {
         userTeams = QuickFixOpen.userTeam;
         UserSubTeamInfo = QuickFixOpen.userSubTeamData;
 
-        var totalOpenCount = QuickFixOpen.pagination ? QuickFixOpen.pagination.totalOpen : QuickFixOpen.openjob.length;
+        var totalOpenCount = (QuickFixOpen && QuickFixOpen.pagination && QuickFixOpen.pagination.totalOpen !== undefined)
+            ? QuickFixOpen.pagination.totalOpen
+            : ((QuickFixOpen && QuickFixOpen.openjob) ? QuickFixOpen.openjob.length : 0);
         $('#openjobcountbadge').text(totalOpenCount);
 
         PopulateOpenJobCards()
@@ -35,12 +37,12 @@ function PopulateOpenJobCards() {
     var htm = ``;
     var tabrow = ``
     var rowcount = 1;
-    let OpenJobs = QuickFixOpen.openjob || [];
-    let pagination = QuickFixOpen.pagination || {};
-    let currentPage = QuickFixOpen.currentPage || pagination.pageNumber || 1;
-    let pageSize = pagination.pageSize || 10;
-    let totalRecords = pagination.totalOpen !== undefined ? pagination.totalOpen : OpenJobs.length;
-    let totalPages = pagination.totalOpenPages || Math.ceil(totalRecords / pageSize) || 1;
+    let OpenJobs = (QuickFixOpen && QuickFixOpen.openjob) ? QuickFixOpen.openjob : [];
+    let pagination = (QuickFixOpen && QuickFixOpen.pagination) ? QuickFixOpen.pagination : {};
+    let currentPage = parseInt(pagination.pageNumber || (QuickFixOpen && QuickFixOpen.currentPage) || window.currentOpenPage || 1);
+    let pageSize = parseInt(pagination.pageSize || (QuickFixOpen && QuickFixOpen.pageSize) || window.currentOpenPageSize || 25);
+    let totalRecords = pagination.totalOpen !== undefined ? parseInt(pagination.totalOpen) : OpenJobs.length;
+    let totalPages = pagination.totalOpenPages !== undefined ? parseInt(pagination.totalOpenPages) : (Math.ceil(totalRecords / pageSize) || 1);
 
 
 
@@ -164,6 +166,7 @@ function PopulateOpenJobCards() {
     if ($.fn.DataTable.isDataTable('#openjobstable')) {
         $('#openjobstable').DataTable().destroy();
     }
+    $('#openjobstable thead th select').remove();
 
     $('#openjobstable').DataTable({
 
@@ -347,17 +350,12 @@ render: function (data, type, row) {
             "processing": "Processing...Please wait"
         },
         dom: 'Bfrtip',
-        lengthMenu: [
-            [10, 25, 50, 100],
-            ['10 rows', '25 rows', '50 rows', '100 rows']
-        ],
         buttons: [
             { extend: 'copy', className: 'btn-outline-secondary btn-sm' },
             { extend: 'csv', className: 'btn-outline-secondary btn-sm' },
             { extend: 'excel', className: 'btn-outline-secondary btn-sm' },
             { extend: 'pdf', className: 'btn-outline-secondary btn-sm' },
-            { extend: 'print', className: 'btn-outline-secondary btn-sm' },
-            { extend: 'pageLength', className: 'btn-outline-secondary btn-sm' }
+            { extend: 'print', className: 'btn-outline-secondary btn-sm' }
         ],
         autoWidth: true,
         responsive: true,
@@ -367,7 +365,8 @@ render: function (data, type, row) {
                 .columns([1, 2, 3, 4, 5])
                 .every(function () {
                     var column = this;
-                    var select = $('<select><option value=""></option></select>')
+                    $(column.header()).find('select').remove();
+                    var select = $('<select class="form-select form-select-sm mt-1"><option value=""></option></select>')
                         .appendTo($(column.header()))
                         .on('change', function () {
                             var val = $.fn.dataTable.util.escapeRegex($(this).val());
@@ -380,7 +379,9 @@ render: function (data, type, row) {
                         .unique()
                         .sort()
                         .each(function (d, j) {
-                            select.append('<option value="' + d + '">' + d + '</option>');
+                            if (d && typeof d === 'string' && d.trim() !== '') {
+                                select.append('<option value="' + d + '">' + d + '</option>');
+                            }
                         });
 
                     $(column.footer()).empty();
@@ -392,22 +393,18 @@ render: function (data, type, row) {
 
     });
 
-    let div = document.querySelector('div.dt-buttons.btn-group.flex-wrap');
-    if (div) {
-        div.style.marginBottom = '-45px';
-    }
-
-    let divs = document.querySelector('div.dt-search');
-    if (divs) {
-        divs.style.marginBottom = '5px';
-    }
-
+    RenderTopPageSizeSelector('#openjobstable', pageSize, 'ChangeOpenPageSize');
+    $('#mobile-open-pagesize').val(pageSize);
     RenderPaginationControls('#open-pagination-container', currentPage, totalPages, totalRecords, pageSize, 'FetchOpenJobPage');
 }
 
 function SearchOpenJobs() {
     var txt = $('#Search').val();
-    var searchedList = searchItems(txt, QuickFixOpen.openjob);
+    if (!txt || txt.trim() === '') {
+        PopulateOpenJobCards();
+        return;
+    }
+    var searchedList = searchItems(txt, (QuickFixOpen && QuickFixOpen.openjob) ? QuickFixOpen.openjob : []);
     if (searchedList.length > 0) {
 
         var htm = ``;

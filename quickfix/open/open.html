@@ -1,6 +1,14 @@
 <!-- Mobile Design -->
 <div class="mobileview">
-  <input class="form-control" type="text" name="Search" id="Search" placeholder="Search" oninput="SearchOpenJobs()">
+  <div class="d-flex align-items-center gap-2 mb-2">
+    <input class="form-control" type="text" name="Search" id="Search" placeholder="Search" oninput="SearchOpenJobs()">
+    <select id="mobile-open-pagesize" class="form-select form-select-sm" style="width: auto; min-width: 90px;" onchange="ChangeOpenPageSize(this.value)">
+      <option value="25">25 rows</option>
+      <option value="50">50 rows</option>
+      <option value="100">100 rows</option>
+      <option value="200">200 rows</option>
+    </select>
+  </div>
   <div class="accordion1" id="open-card-view">
   </div>
 </div>
@@ -47,10 +55,18 @@
 #openjobstable thead th select {
     width: 100% !important;          
     max-width: 140px !important;      
-       
-  
-  
-  
+}
+.dt-container .row:first-child,
+.dataTables_wrapper .row:first-child {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    margin-bottom: 10px !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+}
+.custom-pagesize-container select {
+    cursor: pointer;
 }
 </style>
 
