@@ -17,11 +17,16 @@ function initializePage(containerId) {
 }
 
 function AddNewSubarea() {
-    console.log(subareas.areaid);
-    console.log(subareas.propId);
-    var subareaname = $('#newSubareaInput').val();
-    console.log(subareaname);
-
+    var subareaname = $('#newSubareaInput').val().trim();
+    if (subareaname === '') {
+        PageToast('error', 'Please enter a sub area name');
+        return;
+    }
+    // Adding a subarea redraws this area, so unsaved rows must be saved (or discarded) first
+    if (!confirmDiscardUnsaved()) {
+        return;
+    }
+    var existingIds = (subareas.subAreas || []).map(sa => sa.subareaId);
 
     var form = new FormData();
     form.append("areaId", subareas.areaid);
@@ -43,7 +48,14 @@ function AddNewSubarea() {
         success: function (Response) {
 
             if (Response.success === true) {
-                location.reload();
+                // Redraw in place (no page reload) so the selected villa is kept, and open the new subarea
+                RefreshPropertyData(function () {
+                    var area = findAreaById(currentareaid, PropertyData.propArea);
+                    var added = area && area.subAreas ? area.subAreas.find(sa => existingIds.indexOf(sa.subareaId) === -1) : null;
+                    PreferredSubareaId = added ? added.subareaId : null;
+                    LoadCustomControlWithRender('subareaselector-div', 'views/subareaselector_new.html', currentareaid, '');
+                    PageToast('success', 'Sub area added');
+                });
             }
             else {
                 var userdata = `<p>Failed to modifify sub area</p>`
@@ -70,7 +82,21 @@ function AddNewSubarea() {
 
 // tab according chnege subareaname
 
-function getSubAreaDetail(subAreaId) {
+function selectSubAreaTab(btn) {
+    $('#tab2-tab .nav-link').removeClass('active').attr('aria-selected', 'false');
+    $(btn).addClass('active').attr('aria-selected', 'true');
+}
+
+function getSubAreaDetail(subAreaId, btn) {
+    if (btn) {
+        if (subAreaId === userselectedarea) {
+            return;
+        }
+        if (!confirmDiscardUnsaved()) {
+            return;
+        }
+        selectSubAreaTab(btn);
+    }
     userselectedarea = subAreaId;
     updateSubareaHeader(subAreaId);
     // Changed to load subareachecklist_new.html
@@ -112,9 +138,11 @@ function createSubAreaTabs(areaData) {
 
         `;
 
-        // Add options for each villa
+        // Default to the villa this audit is being done for, not simply the first villa
+        const defaultVillaId = getDefaultVillaId(areaData);
+        SelectedVillaByArea[areaData.areaid] = defaultVillaId;
         areaData.villasList.forEach(villa => {
-            html += `<option value="${villa.villaId}">${villa.villaName}</option>`;
+            html += `<option value="${villa.villaId}" ${villa.villaId === defaultVillaId ? 'selected' : ''}>${villa.villaName}</option>`;
         });
 
         html += `
@@ -125,7 +153,12 @@ function createSubAreaTabs(areaData) {
 
     // Start the tabs container
     html += '<ul class="nav nav-tab2 mb-3" id="tab2-tab" role="tablist">';
-    var firstsubarea = areaData.subAreas[0].subareaId;
+    const activeSubAreas = areaData.subAreas.filter(sa => sa.isactive !== false);
+    if (activeSubAreas.length === 0) {
+        return html + '</ul>';
+    }
+    var firstsubarea = activeSubAreas.some(sa => sa.subareaId === PreferredSubareaId) ? PreferredSubareaId : activeSubAreas[0].subareaId;
+    PreferredSubareaId = null;
 
     // Loop through each subArea to create a tab
     areaData.subAreas.forEach((subArea, index) => {
@@ -137,21 +170,17 @@ function createSubAreaTabs(areaData) {
         // Create safe ID by removing spaces and special characters
         const subAreaId = subArea.subareaName.toLowerCase().replace(/[^a-z0-9]/g, '-');
 
-        // Determine if this should be the active tab (first one is active)
-        const isActive = index === 0;
+        const isActive = subArea.subareaId === firstsubarea;
 
         html += `
             <li class="nav-item" role="presentation">
                 <button class="nav-link ${isActive ? 'active' : ''}"
                         id="${subAreaId}-tab"
-                        data-bs-toggle="pill"
-                        data-bs-target="#${subAreaId}"
                         type="button"
                         role="tab"
-                        aria-controls="${subAreaId}"
                         aria-selected="${isActive ? 'true' : 'false'}"
                         data-subarea-id="${subArea.subareaId}"
-                        onclick="getSubAreaDetail('${subArea.subareaId}')">
+                        onclick="getSubAreaDetail('${subArea.subareaId}', this)">
                     ${subArea.subareaName}
                 </button>
             </li>
@@ -172,7 +201,12 @@ function createSubAreaTabs(areaData) {
 
 // Optional: Add this helper function to handle villa selection changes
 function onVillaChange(selectedVillaId) {
+    if (!confirmDiscardUnsaved()) {
+        $('#villa-select').val(SelectedVillaByArea[currentareaid]);
+        return;
+    }
     if (selectedVillaId) {
+        SelectedVillaByArea[currentareaid] = selectedVillaId;
         // Changed to load subareachecklist_new.html
         LoadCustomControlWithRender('subareachecklist-div', 'views/subareachecklist_new.html', userselectedarea, '')
     }

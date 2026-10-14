@@ -51,26 +51,52 @@ function createAreaTabs(propAreaData) {
             <li class="nav-item" role="presentation">
                 <button class="nav-link ${isActive ? 'active' : ''}"
                         id="${areaId}-tab"
-                        data-bs-toggle="pill"
-                        data-bs-target="#${areaId}"
                         type="button"
                         role="tab"
-                        aria-controls="${areaId}"
                         aria-selected="${isActive ? 'true' : 'false'}"
                         data-area-id="${area.areaid}"
-                        onclick="getAreaDetail('${area.areaid}')">
+                        onclick="selectAreaTab(this); getAreaDetail('${area.areaid}')">
                     ${area.areaName}
                 </button>
             </li>
         `;
     });
 
+    // Key Strength is audit-wide, not an area, so it sits last and is styled differently
+    html += `
+            <li class="nav-item" role="presentation">
+                <button class="nav-link keystrength-tab"
+                        type="button"
+                        role="tab"
+                        aria-selected="false"
+                        onclick="selectAreaTab(this); ShowKeyStrength()">
+                    <i class="fa fa-star me-1"></i> Key Strength
+                </button>
+            </li>
+        `;
+
     html += '</ul>';
     getAreaDetail(firstarea)
     return html;
 }
 
+// Tabs are switched by hand rather than with data-bs-toggle so that a switch the user
+// cancels (unsaved changes) leaves the current tab highlighted
+function selectAreaTab(btn) {
+    $('#tab1-tab .nav-link').removeClass('active').attr('aria-selected', 'false');
+    $(btn).addClass('active').attr('aria-selected', 'true');
+}
+
 function getAreaDetail(areaid) {
+    if (ActiveAreaTabId === areaid) {
+        return;
+    }
+    if (ActiveAreaTabId === 'KEYSTRENGTH' ? !confirmLeaveKeyStrength() : !confirmDiscardUnsaved()) {
+        restoreActiveAreaTab();
+        return;
+    }
+    ActiveAreaTabId = areaid;
+    PreferredSubareaId = null;
     // Changed to load subareaselector_new.html
     LoadCustomControlWithRender('subareaselector-div','views/subareaselector_new.html',areaid,'')
 }
