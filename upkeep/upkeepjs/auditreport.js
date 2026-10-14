@@ -335,24 +335,29 @@ function renderReport(model) {
 
     model.areas.forEach(area => {
         const risk = suggestedRisk(area.findings);
+        const findings = area.findings.length === 0
+            ? [`<p class="finding muted">No unsatisfactory, poor or safety findings.</p>`]
+            : area.findings.map((f, i) => {
+                f.ref = `${area.number}.${i + 1}`;
+                const where = [f.subareaName, f.villaName].filter(Boolean).map(escapeHtml).join(' · ');
+                return `
+                    <div class="finding">
+                        <div><span class="finding-title">${f.ref} ${escapeHtml(f.checkpointName)}</span> ${statusChip(f.status)}</div>
+                        <div class="finding-meta">${where}</div>
+                        ${f.observation ? `<div class="finding-field"><b>Observation:</b> ${multiline(f.observation)}</div>` : ''}
+                        ${f.issue ? `<div class="finding-field"><b>Issue:</b> ${multiline(f.issue)}</div>` : ''}
+                        ${photosHtml(f.photos)}
+                    </div>`;
+            });
+        // Heading, "Findings:" and the first finding print as one unit so a heading is never left alone at a page end
         html += `
             <div class="area-block">
-                <h3>${area.number}. ${escapeHtml(area.name)}</h3>
-                <p class="findings-label">Findings:</p>
-                ${area.findings.length === 0
-                    ? `<p class="finding muted">No unsatisfactory, poor or safety findings.</p>`
-                    : area.findings.map((f, i) => {
-                        f.ref = `${area.number}.${i + 1}`;
-                        const where = [f.subareaName, f.villaName].filter(Boolean).map(escapeHtml).join(' · ');
-                        return `
-                            <div class="finding">
-                                <div><span class="finding-title">${f.ref} ${escapeHtml(f.checkpointName)}</span> ${statusChip(f.status)}</div>
-                                <div class="finding-meta">${where}</div>
-                                ${f.observation ? `<div class="finding-field"><b>Observation:</b> ${multiline(f.observation)}</div>` : ''}
-                                ${f.issue ? `<div class="finding-field"><b>Issue:</b> ${multiline(f.issue)}</div>` : ''}
-                                ${photosHtml(f.photos)}
-                            </div>`;
-                    }).join('')}
+                <div class="keep-together">
+                    <h3>${area.number}. ${escapeHtml(area.name)}</h3>
+                    <p class="findings-label">Findings:</p>
+                    ${findings[0]}
+                </div>
+                ${findings.slice(1).join('')}
                 <p class="risk-line">Risk Level (Low/Medium/High):
                     <select class="risk-select" aria-label="Risk level for ${escapeHtml(area.name)}">
                         ${['', 'Low', 'Medium', 'High'].map(r => `<option value="${r}" ${r === risk ? 'selected' : ''}>${r || '—'}</option>`).join('')}
