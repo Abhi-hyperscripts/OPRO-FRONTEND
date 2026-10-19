@@ -581,7 +581,83 @@
         .toast-container {
             z-index: 99999 !important;
         }
+
+        /* Rows edited but not yet saved */
+        .audit-table tr.row-dirty td {
+            background-color: #fff8e1;
+        }
+
+        .audit-table tr.row-dirty .btn-save-new {
+            box-shadow: 0 0 0 2px #ffc107;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-save-all {
+            padding: 0.5rem 1rem;
+            background: #28a745;
+            color: white;
+            border: 1px solid #28a745;
+            border-radius: 4px;
+            font-weight: 500;
+            font-size: 0.875rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            white-space: nowrap;
+        }
+
+        .btn-save-all:hover:not(:disabled) {
+            background: #218838;
+            border-color: #1e7e34;
+        }
+
+        .btn-save-all:disabled {
+            background: #9fd3ab;
+            border-color: #9fd3ab;
+            cursor: default;
+        }
+
+        /* Key Strength tab: a different colour so it doesn't read as an area */
+        .nav-tab1 .nav-link.keystrength-tab {
+            color: #b45309;
+            border: 1px dashed #d97706;
+            background: #fffbeb;
+        }
+
+        .nav-tab1 .nav-link.keystrength-tab:hover,
+        .nav-tab1 .nav-link.keystrength-tab.active {
+            color: #fff !important;
+            background: #d97706;
+            border: 1px solid #d97706;
+        }
+
+        .nav-tab1 .nav-link.keystrength-tab.active::before {
+            border-top-color: #d97706;
+        }
+
+        .keystrength-card {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-top: 3px solid #d97706;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            padding: 1.25rem 1.5rem;
+        }
+
+        .keystrength-card .ql-container {
+            min-height: 260px;
+            font-size: 0.95rem;
+        }
     </style>
+    <link rel="stylesheet" href="upkeep/assets/vendor/libs/quill/typography.css" />
+    <link rel="stylesheet" href="upkeep/assets/vendor/libs/quill/editor.css" />
 </head>
 
 <body>
@@ -700,6 +776,9 @@
 
     <!-- Moment.js -->
     <script src="upkeep/assets/vendor/libs/moment/moment.js"></script>
+
+    <!-- Quill rich text editor (Key Strength) -->
+    <script src="upkeep/assets/vendor/libs/quill/quill.js"></script>
 
     <!-- App JS - Using existing approved JS files -->
     <script src="../webessential/domain.js"></script>

@@ -460,9 +460,17 @@ function createAuditTable(auditData) {
                 </td>
                 <td>${audit.createdBy}</td>
                 <td>
-                    <button class="action-btn" onclick="handleAction('${audit.auditId}', '${audit.propId}')">
-                        View Details
-                    </button>
+                    <div class="action-group">
+                        <button class="action-btn" onclick="handleAction('${audit.auditId}', '${audit.propId}')">
+                            View Details
+                        </button>
+                        <button class="action-btn report-btn" onclick="openAuditReport('${audit.auditId}', '${audit.propId}', 'report')" title="Maintenance & Safety Audit Report (PDF)">
+                            Generate Report
+                        </button>
+                        <button class="action-btn export-btn" onclick="openAuditReport('${audit.auditId}', '${audit.propId}', 'export')" title="All checkpoint data as Excel or PDF">
+                            Export
+                        </button>
+                    </div>
                 </td>
             </tr>
         `;
@@ -502,6 +510,15 @@ function handleAction(auditId, propid) {
 
 
 
+}
+
+// mode: 'report' = Generate Report, 'export' = Export (Excel / PDF)
+function openAuditReport(auditId, propid, mode) {
+    var url = `auditreport.html?audit=${encodeURIComponent(auditId)}&prop=${encodeURIComponent(propid)}`;
+    if (mode === 'export') {
+        url += '&mode=export';
+    }
+    window.open(url, '_blank');
 }
 
 function handleAddNewAudit() {

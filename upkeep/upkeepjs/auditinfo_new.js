@@ -4,7 +4,13 @@ const auditID = urlParams.get('audit');
 const propID = urlParams.get('prop');
 var PropertyData = null;
 var AuditData = null;
+var AuditInfo = null;
 var userEmail = null;
+
+// State that must survive the area/subarea/checklist views being reloaded
+// (each view load re-runs its script and resets that script's globals).
+var SelectedVillaByArea = {};
+var PreferredSubareaId = null;
 function initializeSignalR(emaiID) {
     var hubconsstring = applicationdomain + 'applicationhub?token=&appcode=upkeepcreate&param=' + emaiID;
 
@@ -68,14 +74,295 @@ $(document).ready(function () {
         $('#UserName_Name').text(UserObject.name);
         $('#is-designation').text(userDesignation);
 
-        GetPropertyInfo(propID)
-        GetAuditReport();
+        // The checklist renders saved values from AuditData, so load it before the property tree
+        GetAuditInfo();
+        GetAuditReport(function () {
+            GetPropertyInfo(propID);
+        });
+
+        window.addEventListener('beforeunload', function (e) {
+            if (getUnsavedRowCount() > 0 || isKeyStrengthDirty()) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
 
     }
     else{
         LogoutUser();
     }
 });
+
+// Unsaved-change tracking: any edit inside the checklist marks its row dirty until saved
+$(document).on('input change', '.audit-table tr[id^="row_"] select, .audit-table tr[id^="row_"] textarea, .audit-table tr[id^="row_"] input', function () {
+    markRowDirty($(this).closest('tr').attr('id').substring(4));
+});
+
+function markRowDirty(checkpointId) {
+    $('#row_' + checkpointId).addClass('row-dirty');
+    updateSaveAllButton();
+}
+
+function getUnsavedRowCount() {
+    return $('.audit-table tr.row-dirty').length;
+}
+
+function updateSaveAllButton() {
+    var count = getUnsavedRowCount();
+    var btn = $('#saveAllBtn');
+    btn.prop('disabled', count === 0);
+    btn.find('.save-all-count').text(count > 0 ? `(${count})` : '');
+}
+
+// Ask before leaving a checklist with unsaved rows. Returns true when it is safe to continue.
+function confirmDiscardUnsaved() {
+    var count = getUnsavedRowCount();
+    if (count === 0) {
+        return true;
+    }
+    return window.confirm(`You have unsaved changes in ${count} checkpoint(s).\n\nPress Cancel to stay and use "Save All", or OK to discard them.`);
+}
+
+// Villa to show for an area: the one the user last picked, else the villa this audit
+// was last saved against, else the first villa in the list.
+function getDefaultVillaId(area) {
+    if (!area || !area.villasList || area.villasList.length === 0) {
+        return null;
+    }
+    var remembered = SelectedVillaByArea[area.areaid];
+    if (remembered && area.villasList.some(v => v.villaId === remembered)) {
+        return remembered;
+    }
+    var latest = null;
+    (AuditData || []).forEach(item => {
+        if (item.areaId === area.areaid && item.villaId &&
+            area.villasList.some(v => v.villaId === item.villaId) &&
+            (!latest || new Date(item.createdOn) > new Date(latest.createdOn))) {
+            latest = item;
+        }
+    });
+    return latest ? latest.villaId : area.villasList[0].villaId;
+}
+
+// Re-fetch the property tree (areas/subareas/checkpoints) without reloading the page
+function RefreshPropertyData(onDone) {
+    var form = new FormData();
+    form.append("propId", propID);
+    $.ajax({
+        url: applicationdomain + 'api/upkeep/getpropinfo',
+        type: 'POST',
+        dataType: 'json',
+        data: form,
+        processData: false,
+        contentType: false,
+        headers: {
+            "Authorization": "Bearer " + GetStoredJwt()
+        },
+        success: function (Response) {
+            if (Response) {
+                PropertyData = Response;
+            }
+            if (onDone) {
+                onDone();
+            }
+        },
+        error: function (XMLHttpRequest) {
+            if (XMLHttpRequest.status === 401) {
+                LogoutUser()
+            } else {
+                PageToast('error', 'Could not refresh the checklist. Please reload the page.')
+            }
+        }
+    });
+}
+
+function GetAuditInfo() {
+    $.ajax({
+        url: `${applicationdomain}api/upkeep/getauditinfo?prop=${propID}&audit=${auditID}`,
+        type: 'GET',
+        dataType: 'json',
+        headers: {
+            "Authorization": "Bearer " + GetStoredJwt()
+        },
+        success: function (Response) {
+            AuditInfo = Response;
+        },
+        error: function (XMLHttpRequest) {
+            if (XMLHttpRequest.status === 401) {
+                LogoutUser()
+            }
+        }
+    });
+}
+
+// toastr (used by NotifyToast) is not loaded on this page, so use a Bootstrap toast
+function PageToast(type, message) {
+    if (!document.getElementById('pageToastContainer')) {
+        document.body.insertAdjacentHTML('beforeend',
+            '<div class="toast-container position-fixed top-0 end-0 p-3" id="pageToastContainer" style="z-index: 99999;"></div>');
+    }
+    var toastId = 'ptoast_' + Date.now();
+    var bg = type === 'success' ? 'bg-success' : (type === 'warning' ? 'bg-warning text-dark' : 'bg-danger');
+    var icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+    var el = document.createElement('div');
+    el.id = toastId;
+    el.className = `toast align-items-center text-white ${bg} border-0`;
+    el.setAttribute('role', 'alert');
+    el.innerHTML = `<div class="d-flex"><div class="toast-body"><i class="fa ${icon} me-2"></i></div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button></div>`;
+    el.querySelector('.toast-body').appendChild(document.createTextNode(message));
+    document.getElementById('pageToastContainer').appendChild(el);
+    var toast = new bootstrap.Toast(el, { delay: 4000 });
+    toast.show();
+    el.addEventListener('hidden.bs.toast', function () { el.remove(); });
+}
+
+//#region Key Strength
+var keyStrengthEditor = null;
+var keyStrengthSaved = '';
+
+function isKeyStrengthDirty() {
+    return keyStrengthEditor !== null && getKeyStrengthHtml() !== keyStrengthSaved;
+}
+
+function getKeyStrengthHtml() {
+    // Quill leaves "<p><br></p>" behind when emptied
+    return keyStrengthEditor.getText().trim() === '' ? '' : keyStrengthEditor.root.innerHTML;
+}
+
+function ShowKeyStrength() {
+    if (ActiveAreaTabId === 'KEYSTRENGTH') {
+        return;
+    }
+    if (!confirmDiscardUnsaved()) {
+        restoreActiveAreaTab();
+        return;
+    }
+    ActiveAreaTabId = 'KEYSTRENGTH';
+
+    $('#subareaselector-div').html(`
+        <div class="keystrength-card">
+            <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+                <div>
+                    <h4 class="mb-1">Key Strength</h4>
+                    <p class="text-muted mb-0">Summarise what went right in this audit. This is exported to the "Key Strengths Observed" section of the report.</p>
+                </div>
+                <button class="btn-save-all" onclick="SaveKeyStrength()">
+                    <i class="fa fa-save"></i> Save Key Strength
+                </button>
+            </div>
+            <div id="keystrength-toolbar">
+                <span class="ql-formats">
+                    <select class="ql-font"></select>
+                    <select class="ql-size"></select>
+                </span>
+                <span class="ql-formats">
+                    <button class="ql-bold"></button>
+                    <button class="ql-italic"></button>
+                    <button class="ql-underline"></button>
+                    <button class="ql-strike"></button>
+                </span>
+                <span class="ql-formats">
+                    <select class="ql-color"></select>
+                    <select class="ql-background"></select>
+                </span>
+                <span class="ql-formats">
+                    <button class="ql-header" value="1"></button>
+                    <button class="ql-header" value="2"></button>
+                    <button class="ql-blockquote"></button>
+                </span>
+                <span class="ql-formats">
+                    <button class="ql-list" value="ordered"></button>
+                    <button class="ql-list" value="bullet"></button>
+                    <button class="ql-indent" value="-1"></button>
+                    <button class="ql-indent" value="+1"></button>
+                </span>
+                <span class="ql-formats">
+                    <select class="ql-align"></select>
+                </span>
+                <span class="ql-formats">
+                    <button class="ql-link"></button>
+                    <button class="ql-clean"></button>
+                </span>
+            </div>
+            <div id="keystrength-editor"></div>
+        </div>`);
+
+    keyStrengthEditor = new Quill('#keystrength-editor', {
+        theme: 'snow',
+        placeholder: 'e.g. Flooring maintenance & upkeep in all the guest villas inspected was found to be in excellent condition.',
+        modules: { toolbar: '#keystrength-toolbar' }
+    });
+
+    var existing = AuditInfo && AuditInfo.keyStrength ? AuditInfo.keyStrength : '';
+    if (existing) {
+        keyStrengthEditor.clipboard.dangerouslyPasteHTML(existing);
+    }
+    keyStrengthSaved = getKeyStrengthHtml();
+}
+
+function SaveKeyStrength() {
+    var html = getKeyStrengthHtml();
+    var form = new FormData();
+    form.append("propId", propID);
+    form.append("auditId", auditID);
+    form.append("keyStrength", html);
+
+    ShowSpinner()
+    $.ajax({
+        url: applicationdomain + 'api/upkeep/savekeystrength',
+        type: 'POST',
+        dataType: 'json',
+        data: form,
+        processData: false,
+        contentType: false,
+        headers: {
+            "Authorization": "Bearer " + GetStoredJwt()
+        },
+        success: function (Response) {
+            HideSpinner()
+            if (Response.success) {
+                keyStrengthSaved = html;
+                if (AuditInfo) {
+                    AuditInfo.keyStrength = html;
+                }
+                PageToast('success', 'Key Strength saved')
+            } else {
+                PageToast('error', 'Key Strength could not be saved')
+            }
+        },
+        error: function (XMLHttpRequest) {
+            HideSpinner()
+            if (XMLHttpRequest.status === 401) {
+                LogoutUser()
+            } else {
+                PageToast('error', 'Key Strength could not be saved')
+            }
+        }
+    });
+}
+
+// Leaving the Key Strength tab with unsaved text
+function confirmLeaveKeyStrength() {
+    if (!isKeyStrengthDirty()) {
+        keyStrengthEditor = null;
+        return true;
+    }
+    if (window.confirm('Key Strength has unsaved changes. Discard them?')) {
+        keyStrengthEditor = null;
+        return true;
+    }
+    return false;
+}
+//#endregion
+
+// Put the "active" highlight back on the area tab that is actually showing
+var ActiveAreaTabId = null;
+function restoreActiveAreaTab() {
+    $('#tab1-tab .nav-link').removeClass('active').attr('aria-selected', 'false');
+    var selector = ActiveAreaTabId === 'KEYSTRENGTH' ? '#tab1-tab .keystrength-tab' : `#tab1-tab [data-area-id="${ActiveAreaTabId}"]`;
+    $(selector).addClass('active').attr('aria-selected', 'true');
+}
 
 
 function GetPropertyInfo(propid){
@@ -115,7 +402,7 @@ function GetPropertyInfo(propid){
             else if (XMLHttpRequest.status === 400) {
                 unblockUI('#section-block');
                 var errorResponse = XMLHttpRequest.responseText;
-                NotifyToast('error', errorResponse)
+                PageToast('error', errorResponse)
 
             } else {
                 console.log("An error occurred:", errorThrown);
@@ -125,7 +412,7 @@ function GetPropertyInfo(propid){
     });
 }
 
-function GetAuditReport(){
+function GetAuditReport(onDone){
 
     ShowSpinner()
     var ep = `${applicationdomain}api/upkeep/getauditreport?prop=${propID}&audit=${auditID}`;
@@ -144,6 +431,9 @@ function GetAuditReport(){
             if(Response){
                 AuditData = Response;
             }
+            if (onDone) {
+                onDone();
+            }
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
 
@@ -153,7 +443,7 @@ function GetAuditReport(){
             else if (XMLHttpRequest.status === 400) {
 
                 var errorResponse = XMLHttpRequest.responseText;
-                NotifyToast('error', errorResponse)
+                PageToast('error', errorResponse)
 
             } else {
                 console.log("An error occurred:", errorThrown);

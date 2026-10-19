@@ -72,6 +72,7 @@ function removePhoto(checkpointId) {
         delete window['photo_data_' + checkpointId];
         console.log('Photo data cleared');
     }
+    markRowDirty(checkpointId);
 }
 
 function updateRowStatus(checkpointId, statusValue) {
@@ -100,39 +101,98 @@ function initializePage(containerId) {
         var renderType = userdata.renderType;
         var UserObject = GetStoredUserData();
         UserRoles = UserObject.role;
-        subareas = findAreaById(currentareaid, PropertyData.propArea);
-        currentsubarea = findCheckpoints(currentareaid, currentsubareaid, PropertyData.propArea)
-        villaid = $('#villa-select').val();
+        renderCurrentChecklist(null);
+    });
+}
 
+// Draws the checklist for the current area/subarea/villa. Pass drafts (from captureDrafts)
+// to carry unsaved rows across the redraw; pass null for a fresh view.
+function renderCurrentChecklist(drafts) {
+    subareas = findAreaById(currentareaid, PropertyData.propArea);
+    currentsubarea = findCheckpoints(currentareaid, currentsubareaid, PropertyData.propArea)
+    villaid = $('#villa-select').val();
 
+    if (!drafts) {
+        clearPhotoDrafts();
+    }
 
-        if (villaid !== undefined && villaid.length > 1) {
-            var tables = createVillaWiseCheckpointTable(villaid, currentsubarea.checkpoints, currentsubarea.subareaName, PropertyData.propEmp, AuditData)
+    var items;
+    if (villaid !== undefined && villaid.length > 1) {
+        var tables = createVillaWiseCheckpointTable(villaid, currentsubarea.checkpoints, currentsubarea.subareaName, PropertyData.propEmp, AuditData)
+        $('#subarea-checklist-holder').html(tables);
+        items = getItemsByAreaVilla(AuditData, subareas.areaid, villaid)
+    }
+    else {
+        var tables = createCheckpointTable(currentsubarea.checkpoints, currentsubarea.subareaName, PropertyData.propEmp, AuditData)
+        $('#subarea-checklist-holder').html(tables);
+        items = getItemsByArea(AuditData, subareas.areaid)
+    }
 
-            $('#subarea-checklist-holder').html(tables);
-            var ck2 = getItemsByAreaVilla(AuditData, subareas.areaid, villaid)
-            var sla2 = countCheckpointStatus(ck2)
+    // Nothing saved yet for this area/villa
+    var latest = getLatestItemWithDate(items);
+    $('#sc_inspectby').text(latest ? latest.item.createdBy : '-')
+    $('#sc_inspectdate').text(latest ? latest.formattedDate : '-')
 
-            var lat1 = getLatestItemWithDate(ck2);
-            $('#sc_inspectby').text(lat1.item.createdBy)
-            $('#sc_inspectdate').text(lat1.formattedDate)
+    if (drafts) {
+        restoreDrafts(drafts);
+    }
 
+    // Initialize auto-resize for textareas
+    initAutoResizeTextareas();
+    updateSaveAllButton();
+}
 
+// Photos picked but not saved live on window; drop them when a different checklist is shown
+// so they can't be saved against another villa's row with the same checkpoint id.
+function clearPhotoDrafts() {
+    Object.keys(window).forEach(key => {
+        if (key.indexOf('photo_data_') === 0) {
+            delete window[key];
         }
-        else {
-            var tables = createCheckpointTable(currentsubarea.checkpoints, currentsubarea.subareaName, PropertyData.propEmp, AuditData)
-            $('#subarea-checklist-holder').html(tables);
-            var ck1 = getItemsByArea(AuditData, subareas.areaid)
-            var sla1 = countCheckpointStatus(ck1)
+    });
+}
 
-            var lat1 = getLatestItemWithDate(ck1);
-            $('#sc_inspectby').text(lat1.item.createdBy)
-            $('#sc_inspectdate').text(lat1.formattedDate)
-
+// Snapshot of every unsaved row, so a redraw doesn't lose what the user typed
+function captureDrafts(excludeIds = []) {
+    const drafts = {};
+    $('.audit-table tr.row-dirty').each(function () {
+        const id = this.id.substring(4);
+        if (excludeIds.indexOf(id) !== -1) {
+            return;
         }
+        const preview = document.getElementById('image_preview_' + id);
+        drafts[id] = {
+            status: $('#status_' + id).val(),
+            resp: $('#resp_' + id).val(),
+            obs: $('#obs_' + id).val(),
+            issue: $('#issue_' + id).val(),
+            photoHidden: preview ? preview.style.display === 'none' : true
+        };
+    });
+    return drafts;
+}
 
-        // Initialize auto-resize for textareas
-        initAutoResizeTextareas();
+function restoreDrafts(drafts) {
+    Object.keys(drafts).forEach(id => {
+        if (!document.getElementById('row_' + id)) {
+            return;
+        }
+        const d = drafts[id];
+        $('#status_' + id).val(d.status);
+        $('#resp_' + id).val(d.resp);
+        $('#obs_' + id).val(d.obs);
+        $('#issue_' + id).val(d.issue);
+        updateRowStatus(id, d.status);
+
+        if (window['photo_data_' + id]) {
+            document.getElementById('preview_img_' + id).src = window['photo_data_' + id];
+            document.getElementById('upload_icon_' + id).style.display = 'none';
+            document.getElementById('image_preview_' + id).style.display = 'flex';
+        } else if (d.photoHidden) {
+            document.getElementById('upload_icon_' + id).style.display = 'flex';
+            document.getElementById('image_preview_' + id).style.display = 'none';
+        }
+        $('#row_' + id).addClass('row-dirty');
     });
 }
 
@@ -412,10 +472,15 @@ function createCheckpointTable(checkpoints, subareaName = "Checkpoints", teams =
 <!-- Header Section -->
 <div class="checkpoint-header">
     <h2 class="checkpoint-title">${subareaName}</h2>
-    <div class="add-section">
-        <input type="text" class="add-input" placeholder="Enter new checkpoint name" id="newCheckpointInput">
-        <button class="btn-add" onclick="AddNewCheckPoint()">
-            <i class="fa fa-plus"></i> Add
+    <div class="header-actions">
+        <div class="add-section">
+            <input type="text" class="add-input" placeholder="Enter new checkpoint name" id="newCheckpointInput">
+            <button class="btn-add" onclick="AddNewCheckPoint()">
+                <i class="fa fa-plus"></i> Add
+            </button>
+        </div>
+        <button class="btn-save-all" id="saveAllBtn" onclick="SaveAllCheckpoints()" disabled title="Save every edited checkpoint in this list">
+            <i class="fa fa-save"></i> Save All <span class="save-all-count"></span>
         </button>
     </div>
 </div>
@@ -686,10 +751,15 @@ function createVillaWiseCheckpointTable(villaid, checkpoints, subareaName = "Che
 <!-- Header Section -->
 <div class="checkpoint-header">
     <h2 class="checkpoint-title">${subareaName}</h2>
-    <div class="add-section">
-        <input type="text" class="add-input" placeholder="Enter new checkpoint name" id="newCheckpointInput">
-        <button class="btn-add" onclick="AddNewCheckPoint()">
-            <i class="fa fa-plus"></i> Add
+    <div class="header-actions">
+        <div class="add-section">
+            <input type="text" class="add-input" placeholder="Enter new checkpoint name" id="newCheckpointInput">
+            <button class="btn-add" onclick="AddNewCheckPoint()">
+                <i class="fa fa-plus"></i> Add
+            </button>
+        </div>
+        <button class="btn-save-all" id="saveAllBtn" onclick="SaveAllCheckpoints()" disabled title="Save every edited checkpoint in this list">
+            <i class="fa fa-save"></i> Save All <span class="save-all-count"></span>
         </button>
     </div>
 </div>
@@ -886,9 +956,9 @@ function showErrorModal(message) {
 
 function AddNewCheckPoint() {
 
-    var cpname = $('#newCheckpointInput').val();
+    var cpname = $('#newCheckpointInput').val().trim();
     if (cpname === '') {
-        NotifyToast('error', "Plase enter a sub area name")
+        PageToast('error', "Please enter a checkpoint name")
     }
     else {
         var form = new FormData();
@@ -909,7 +979,17 @@ function AddNewCheckPoint() {
                 "Authorization": "Bearer " + jwt
             },
             success: function (Response) {
-                location.reload();
+                if (Response.success === false) {
+                    PageToast('error', 'Checkpoint could not be added')
+                    return;
+                }
+                // Redraw in place instead of reloading the page: the villa, subarea and any
+                // unsaved rows stay as they are, and the new checkpoint appears at the end.
+                var drafts = captureDrafts();
+                RefreshPropertyData(function () {
+                    renderCurrentChecklist(drafts);
+                    PageToast('success', 'Checkpoint added')
+                });
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 if (XMLHttpRequest.status === 401) {
@@ -941,11 +1021,7 @@ function validateCheckpointData(checkpointId) {
         validationErrors.push("Status is required");
     }
 
-    // 2. Responsibility
-    const respElem = document.getElementById(`resp_${checkpointId}`);
-    if (!respElem || !respElem.value) {
-        validationErrors.push("Responsibility is required");
-    }
+    // 2. Responsibility is optional
 
     // 3. Observation
     const obsElem = document.getElementById(`obs_${checkpointId}`);
@@ -998,6 +1074,17 @@ function validateCheckpointData(checkpointId) {
 
 function AddToTaskMaster(checkpointId) {
 
+    if ($('#row_' + checkpointId).hasClass('row-dirty')) {
+        showErrorModal('<p class="mb-0">This checkpoint has unsaved changes. Save it first so TaskMaster gets the latest details.</p>');
+        return;
+    }
+    const saved = (AuditData || []).find(d => d.checkpointId === checkpointId &&
+        (villaid !== undefined && villaid.length > 1 ? d.villaId === villaid : true));
+    if (!saved || !saved.checkpointResponsibility) {
+        showErrorModal('<p class="mb-0">Choose a Responsibility and save the checkpoint before adding it to TaskMaster, so the job is assigned to a team.</p>');
+        return;
+    }
+
     showConfirmationModal(
         'Confirm Save',
         'Are you sure you want to add this to task master?',
@@ -1041,18 +1128,10 @@ function ExecuteAddToTaskMaster(checkpointId) {
         },
         success: function (Response) {
             HideSpinner()
-            AuditData = Response.trackers;
             if (Response.success) {
+                AuditData = Response.trackers;
                 showSuccessToast('Checkpoint added to task master!');
-                if (villaid !== undefined && villaid.length > 1) {
-                    var tables = createVillaWiseCheckpointTable(villaid, currentsubarea.checkpoints, currentsubarea.subareaName, PropertyData.propEmp, AuditData)
-                    $('#subarea-checklist-holder').html(tables);
-                }
-                else {
-                    var tables = createCheckpointTable(currentsubarea.checkpoints, currentsubarea.subareaName, PropertyData.propEmp, AuditData)
-                    $('#subarea-checklist-holder').html(tables);
-                }
-                initAutoResizeTextareas();
+                renderCurrentChecklist(captureDrafts());
             }
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -1105,6 +1184,54 @@ function executeCheckpointSave(checkpointId) {
         return null;
     }
 
+    const formData = buildCheckpointFormData(checkpointId);
+
+    console.log("FormData created for checkpoint:", checkpointId);
+    ShowSpinner()
+    // Example AJAX call using FormData
+    var ep = applicationdomain + 'api/upkeep/addnewcheckpoint';
+    var jwt = GetStoredJwt();
+    $.ajax({
+        url: ep,
+        type: 'POST',
+        dataType: 'json',
+        data: formData,
+        processData: false,
+        contentType: false,
+        headers: {
+            "Authorization": "Bearer " + jwt
+        },
+        success: function (Response) {
+            HideSpinner()
+            if (Response.success) {
+                AuditData = Response.trackers;
+                showSuccessToast('Checkpoint data saved successfully!');
+                // Keep the other rows the user hasn't saved yet
+                var drafts = captureDrafts([checkpointId]);
+                delete window['photo_data_' + checkpointId];
+                renderCurrentChecklist(drafts);
+            } else {
+                showErrorModal('<p class="mb-0">The checkpoint could not be saved. Please try again.</p>');
+            }
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            HideSpinner()
+            if (XMLHttpRequest.status === 401) {
+                LogoutUser()
+            }
+            else if (XMLHttpRequest.status === 400) {
+                var errorResponse = XMLHttpRequest.responseJSON;
+                ErrorMessage()
+            } else {
+                console.log("An error occurred:", errorThrown);
+            }
+        }
+    });
+
+    return formData;
+}
+
+function buildCheckpointFormData(checkpointId) {
     // Create a new FormData object
     const formData = new FormData();
 
@@ -1172,53 +1299,111 @@ function executeCheckpointSave(checkpointId) {
     // Add timestamp
     formData.append("savedOn", new Date().toISOString());
 
-    console.log("FormData created for checkpoint:", checkpointId);
-    ShowSpinner()
-    // Example AJAX call using FormData
-    var ep = applicationdomain + 'api/upkeep/addnewcheckpoint';
-    var jwt = GetStoredJwt();
-    $.ajax({
-        url: ep,
-        type: 'POST',
-        dataType: 'json',
-        data: formData,
-        processData: false,
-        contentType: false,
-        headers: {
-            "Authorization": "Bearer " + jwt
-        },
-        success: function (Response) {
-            HideSpinner()
-            AuditData = Response.trackers;
-            if (Response.success) {
-                showSuccessToast('Checkpoint data saved successfully!');
-                if (villaid !== undefined && villaid.length > 1) {
-                    var tables = createVillaWiseCheckpointTable(villaid, currentsubarea.checkpoints, currentsubarea.subareaName, PropertyData.propEmp, AuditData)
-                    $('#subarea-checklist-holder').html(tables);
-                }
-                else {
-                    var tables = createCheckpointTable(currentsubarea.checkpoints, currentsubarea.subareaName, PropertyData.propEmp, AuditData)
-                    $('#subarea-checklist-holder').html(tables);
-                }
-                initAutoResizeTextareas();
-            }
-        },
-        error: function (XMLHttpRequest, textStatus, errorThrown) {
-            $('#submit-new-job-btn').attr("disabled", false);
-            if (XMLHttpRequest.status === 401) {
-                LogoutUser()
-            }
-            else if (XMLHttpRequest.status === 400) {
-                var errorResponse = XMLHttpRequest.responseJSON;
-                ErrorMessage()
-            } else {
-                console.log("An error occurred:", errorThrown);
-            }
-        }
-    });
-
     return formData;
 }
+
+//#region Save All
+function SaveAllCheckpoints() {
+    const ids = $('.audit-table tr.row-dirty').map(function () { return this.id.substring(4); }).get();
+    if (ids.length === 0) {
+        return;
+    }
+
+    // Status is the only required field; list every row that is missing it
+    const missing = ids.filter(id => !$('#status_' + id).val());
+    if (missing.length > 0) {
+        const names = missing.map(id => '<li>' + $('#row_' + id + ' .checkpoint-name').text() + '</li>').join('');
+        showErrorModal('<p class="mb-2">Select a Status for these checkpoints before saving:</p><ul class="mb-0 ps-3">' + names + '</ul>');
+        return;
+    }
+
+    showConfirmationModal(
+        'Confirm Save All',
+        `Save ${ids.length} edited checkpoint(s)?`,
+        function () {
+            executeSaveAll(ids);
+        }
+    );
+}
+
+function postCheckpoint(formData) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: applicationdomain + 'api/upkeep/addnewcheckpoint',
+            type: 'POST',
+            dataType: 'json',
+            data: formData,
+            processData: false,
+            contentType: false,
+            headers: {
+                "Authorization": "Bearer " + GetStoredJwt()
+            },
+            success: resolve,
+            error: reject
+        });
+    });
+}
+
+function fetchAuditReport() {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: `${applicationdomain}api/upkeep/getauditreport?prop=${propID}&audit=${auditID}`,
+            type: 'GET',
+            dataType: 'json',
+            headers: {
+                "Authorization": "Bearer " + GetStoredJwt()
+            },
+            success: resolve,
+            error: reject
+        });
+    });
+}
+
+async function executeSaveAll(ids) {
+    ShowSpinner()
+    $('#saveAllBtn').prop('disabled', true);
+    const failed = [];
+
+    // One request per row, in order; the full report is fetched once at the end
+    for (const id of ids) {
+        const formData = buildCheckpointFormData(id);
+        formData.append("returnTrackers", "false");
+        try {
+            const resp = await postCheckpoint(formData);
+            if (resp.success) {
+                delete window['photo_data_' + id];
+            } else {
+                failed.push(id);
+            }
+        } catch (xhr) {
+            if (xhr.status === 401) {
+                HideSpinner()
+                LogoutUser()
+                return;
+            }
+            failed.push(id);
+        }
+    }
+
+    // Failed rows stay as unsaved drafts so nothing is lost
+    const drafts = captureDrafts(ids.filter(id => failed.indexOf(id) === -1));
+    try {
+        AuditData = await fetchAuditReport();
+    } catch (xhr) {
+        console.log("Could not reload audit report:", xhr);
+    }
+    HideSpinner()
+    renderCurrentChecklist(drafts);
+
+    const saved = ids.length - failed.length;
+    if (failed.length === 0) {
+        showSuccessToast(`${saved} checkpoint(s) saved successfully!`);
+    } else {
+        const names = failed.map(id => '<li>' + $('#row_' + id + ' .checkpoint-name').text() + '</li>').join('');
+        showErrorModal(`<p class="mb-2">${saved} saved. These could not be saved and are still marked as unsaved:</p><ul class="mb-0 ps-3">${names}</ul>`);
+    }
+}
+//#endregion
 
 function createConfirmationModal() {
     // Check if the confirmation modal already exists
