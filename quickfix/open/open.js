@@ -154,7 +154,7 @@ function PopulateOpenJobCards() {
                               <div class="col-8">${op.job_remark ? op.job_remark : "NA"}</div>
                             </div>
                             <div class="cont1">
-                              <div class="col-12 d-grid"><button class="btn btn-linkedin btn-sm" disabled onclick="ConfirmationDialog('${op.propId}','${op.jobId}')">Move To Task Master</button></div>
+                              <div class="col-12 d-grid"><button class="btn btn-linkedin btn-sm" onclick="ConfirmationDialog('${op.propId}','${op.jobId}')">Move To Task Master</button></div>
                             </div>
                           </div>
                     </div>
@@ -330,7 +330,7 @@ render: function (data, type, row) {
                 render: function (data, type, row, meta) {
                     var propId = row["propId"];
                     var jobId = row["jobId"];
-                    var tt = `<div class="col-12 d-grid"><button class="btn btn-linkedin btn-xs" disabled onclick="ConfirmationDialog('${propId}','${jobId}')">Move To Task Master</button></div>`
+                    var tt = `<div class="col-12 d-grid"><button class="btn btn-linkedin btn-xs" onclick="ConfirmationDialog('${propId}','${jobId}')">Move To Task Master</button></div>`
                     return tt;
                 }
             },
@@ -510,7 +510,7 @@ function SearchOpenJobs() {
                                   <div class="col-8">${op.job_remark ? op.job_remark : "NA"}</div>
                                 </div>
                                  <div class="cont1">
-                                    <div class="col-12 d-grid"><button class="btn btn-linkedin btn-sm" disabled onclick="ConfirmationDialog('${op.propId}','${op.jobId}')">Move To Task Master</button></div>
+                                    <div class="col-12 d-grid"><button class="btn btn-linkedin btn-sm" onclick="ConfirmationDialog('${op.propId}','${op.jobId}')">Move To Task Master</button></div>
                                  </div>
                               </div>
                         </div>
@@ -1027,51 +1027,6 @@ function ConfirmationDialog2(data1, data2, data3) {
 
         }
     });
-}
-
-
-function MoveToTaskMaster(propId, jobId) {
-    var form = new FormData();
-    form.append("jobId", jobId);
-    form.append("propId", propId);
-
-    var ep = applicationdomain + 'api/dailyjob/quickfixtojobtracker';
-    var jwt = GetStoredJwt();
-    $.ajax({
-        url: ep,
-        type: 'POST',
-        dataType: 'json',
-        data: form,
-        processData: false,
-        contentType: false,
-        headers: {
-            "Authorization": "Bearer " + jwt
-        },
-        success: function (Response) {
-            if (Response === true) {
-                GetAllOpenJobs();
-                GetAllOpenJobsCount(propId);
-                var userdata = `<p>Job moved to Task Master</p>`
-                SuccessMessageCustom('Job movement', userdata, 'success')
-            }
-            else {
-                var userdata = `<p>Failed to move to Task Master</p>`
-                SuccessMessageCustom('Job movement', userdata, 'error')
-            }
-        },
-        error: function (XMLHttpRequest, textStatus, errorThrown) {
-            if (XMLHttpRequest.status === 401) {
-                LogoutUser()
-            }
-            else if (XMLHttpRequest.status === 400) {
-                var errorResponse = XMLHttpRequest.responseJSON;
-                ErrorMessage()
-            } else {
-                console.log("An error occurred:", errorThrown);
-            }
-        }
-    });
-
 }
 
 
