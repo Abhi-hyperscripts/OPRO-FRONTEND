@@ -32,6 +32,7 @@ function handlePhotoUpload(input, checkpointId) {
             document.getElementById('upload_icon_' + checkpointId).style.display = 'none';
             document.getElementById('image_preview_' + checkpointId).style.display = 'flex';
             window['photo_data_' + checkpointId] = e.target.result;
+            delete window['photo_removed_' + checkpointId];
         };
         reader.readAsDataURL(file);
     }
@@ -72,6 +73,8 @@ function removePhoto(checkpointId) {
         delete window['photo_data_' + checkpointId];
         console.log('Photo data cleared');
     }
+    // Saving the row now tells the server to delete the saved photo too
+    window['photo_removed_' + checkpointId] = true;
     markRowDirty(checkpointId);
 }
 
@@ -116,6 +119,12 @@ function renderCurrentChecklist(drafts) {
         clearPhotoDrafts();
     }
 
+    // Villa areas show nothing until the auditor picks a villa
+    if (subareas.isvilla === true && subareas.villasList && subareas.villasList.length > 0 && !villaid) {
+        showSelectVillaPrompt();
+        return;
+    }
+
     var items;
     if (villaid !== undefined && villaid.length > 1) {
         var tables = createVillaWiseCheckpointTable(villaid, currentsubarea.checkpoints, currentsubarea.subareaName, PropertyData.propEmp, AuditData)
@@ -142,11 +151,22 @@ function renderCurrentChecklist(drafts) {
     updateSaveAllButton();
 }
 
-// Photos picked but not saved live on window; drop them when a different checklist is shown
+function showSelectVillaPrompt() {
+    ['#sc_excel', '#sc_good', '#sc_poor', '#sc_safty', '#sc_satis', '#sc_unsatis'].forEach(id => $(id).text('0'));
+    $('#sc_score').text('0%');
+    $('#sc_inspectby').text('-');
+    $('#sc_inspectdate').text('-');
+    $('#subarea-checklist-holder').html(
+        '<div class="table-container"><p class="text-muted p-4 text-center mb-0">' +
+        '<i class="fa fa-hand-pointer me-2"></i>Select a villa above to start auditing this sub area.</p></div>');
+    updateSaveAllButton();
+}
+
+// Photos picked or removed but not saved live on window; drop them when a different checklist is shown
 // so they can't be saved against another villa's row with the same checkpoint id.
 function clearPhotoDrafts() {
     Object.keys(window).forEach(key => {
-        if (key.indexOf('photo_data_') === 0) {
+        if (key.indexOf('photo_data_') === 0 || key.indexOf('photo_removed_') === 0) {
             delete window[key];
         }
     });
@@ -1209,6 +1229,7 @@ function executeCheckpointSave(checkpointId) {
                 // Keep the other rows the user hasn't saved yet
                 var drafts = captureDrafts([checkpointId]);
                 delete window['photo_data_' + checkpointId];
+                delete window['photo_removed_' + checkpointId];
                 renderCurrentChecklist(drafts);
             } else {
                 showErrorModal('<p class="mb-0">The checkpoint could not be saved. Please try again.</p>');
@@ -1295,6 +1316,9 @@ function buildCheckpointFormData(checkpointId) {
 
         formData.append("photo", file);
     }
+    else if (window[`photo_removed_${checkpointId}`]) {
+        formData.append("removePhoto", "true");
+    }
 
     // Add timestamp
     formData.append("savedOn", new Date().toISOString());
@@ -1372,6 +1396,7 @@ async function executeSaveAll(ids) {
             const resp = await postCheckpoint(formData);
             if (resp.success) {
                 delete window['photo_data_' + id];
+                delete window['photo_removed_' + id];
             } else {
                 failed.push(id);
             }
@@ -1773,9 +1798,9 @@ function getLatestItemWithDate(checkpointData) {
         return null;
     }
 
-    // Format the date for display (date only, no time)
-    const createdDate = new Date(latestItem.createdOn);
-    const formattedDate = createdDate.toLocaleDateString(); // Only date part, no time
+    // Inspection date and time in Maldives Time
+    const createdDate = parseApiDate(latestItem.createdOn);
+    const formattedDate = formatMaldives(createdDate, { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true });
 
     return {
         item: latestItem,

@@ -35,7 +35,10 @@ function createAreaTabs(propAreaData) {
         console.warn("No areas with subareas containing checkpoints found");
         return "";
     }
-    var firstarea = filteredAreas[0].areaid;
+    // Reopen the tab the auditor was on before a refresh, else the first area
+    var savedArea = SavedAuditView.area;
+    var firstarea = savedArea === 'KEYSTRENGTH' || filteredAreas.some(a => a.areaid === savedArea)
+        ? savedArea : filteredAreas[0].areaid;
 
     let html = '<ul class="nav nav-tab1 mb-3" id="tab1-tab" role="tablist">';
 
@@ -44,8 +47,7 @@ function createAreaTabs(propAreaData) {
         // Create safe ID by removing spaces and special characters
         const areaId = area.areaName.toLowerCase().replace(/[^a-z0-9]/g, '-');
 
-        // Determine if this should be the active tab (first one is active)
-        const isActive = index === 0;
+        const isActive = area.areaid === firstarea;
 
         html += `
             <li class="nav-item" role="presentation">
@@ -65,10 +67,10 @@ function createAreaTabs(propAreaData) {
     // Key Strength is audit-wide, not an area, so it sits last and is styled differently
     html += `
             <li class="nav-item" role="presentation">
-                <button class="nav-link keystrength-tab"
+                <button class="nav-link keystrength-tab ${firstarea === 'KEYSTRENGTH' ? 'active' : ''}"
                         type="button"
                         role="tab"
-                        aria-selected="false"
+                        aria-selected="${firstarea === 'KEYSTRENGTH' ? 'true' : 'false'}"
                         onclick="selectAreaTab(this); ShowKeyStrength()">
                     <i class="fa fa-star me-1"></i> Key Strength
                 </button>
@@ -76,7 +78,11 @@ function createAreaTabs(propAreaData) {
         `;
 
     html += '</ul>';
-    getAreaDetail(firstarea)
+    if (firstarea === 'KEYSTRENGTH') {
+        ShowKeyStrength();
+    } else {
+        getAreaDetail(firstarea);
+    }
     return html;
 }
 
@@ -96,7 +102,9 @@ function getAreaDetail(areaid) {
         return;
     }
     ActiveAreaTabId = areaid;
-    PreferredSubareaId = null;
+    rememberArea(areaid);
+    // Open the sub area the auditor last used in this area
+    PreferredSubareaId = SavedAuditView.subareas ? SavedAuditView.subareas[areaid] || null : null;
     // Changed to load subareaselector_new.html
     LoadCustomControlWithRender('subareaselector-div','views/subareaselector_new.html',areaid,'')
 }

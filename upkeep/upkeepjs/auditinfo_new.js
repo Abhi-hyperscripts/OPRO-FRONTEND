@@ -7,10 +7,49 @@ var AuditData = null;
 var AuditInfo = null;
 var userEmail = null;
 
+// Where the auditor is (area tab, sub area per area, villa per area). Kept in sessionStorage
+// so a page refresh comes back to the same place instead of the first tab.
+var AuditViewKey = 'upkeepAuditView_' + auditID;
+var SavedAuditView = loadAuditView();
+
+function loadAuditView() {
+    try {
+        return JSON.parse(sessionStorage.getItem(AuditViewKey)) || {};
+    } catch (e) {
+        return {};
+    }
+}
+
+function saveAuditView() {
+    try {
+        sessionStorage.setItem(AuditViewKey, JSON.stringify(SavedAuditView));
+    } catch (e) { /* storage blocked: refresh just starts at the first tab */ }
+}
+
+function rememberArea(areaId) {
+    SavedAuditView.area = areaId;
+    saveAuditView();
+}
+
+function rememberSubarea(areaId, subareaId) {
+    SavedAuditView.subareas = Object.assign({}, SavedAuditView.subareas, { [areaId]: subareaId });
+    saveAuditView();
+}
+
 // State that must survive the area/subarea/checklist views being reloaded
 // (each view load re-runs its script and resets that script's globals).
-var SelectedVillaByArea = {};
+var SelectedVillaByArea = Object.assign({}, SavedAuditView.villas);
 var PreferredSubareaId = null;
+
+function rememberVilla(areaId, villaId) {
+    if (villaId) {
+        SelectedVillaByArea[areaId] = villaId;
+    } else {
+        delete SelectedVillaByArea[areaId];
+    }
+    SavedAuditView.villas = SelectedVillaByArea;
+    saveAuditView();
+}
 function initializeSignalR(emaiID) {
     var hubconsstring = applicationdomain + 'applicationhub?token=&appcode=upkeepcreate&param=' + emaiID;
 
@@ -123,25 +162,14 @@ function confirmDiscardUnsaved() {
     return window.confirm(`You have unsaved changes in ${count} checkpoint(s).\n\nPress Cancel to stay and use "Save All", or OK to discard them.`);
 }
 
-// Villa to show for an area: the one the user last picked, else the villa this audit
-// was last saved against, else the first villa in the list.
+// Villa to show for an area: only one the auditor picked in this session. Nothing is
+// preselected, so a villa is never audited by mistake.
 function getDefaultVillaId(area) {
     if (!area || !area.villasList || area.villasList.length === 0) {
         return null;
     }
     var remembered = SelectedVillaByArea[area.areaid];
-    if (remembered && area.villasList.some(v => v.villaId === remembered)) {
-        return remembered;
-    }
-    var latest = null;
-    (AuditData || []).forEach(item => {
-        if (item.areaId === area.areaid && item.villaId &&
-            area.villasList.some(v => v.villaId === item.villaId) &&
-            (!latest || new Date(item.createdOn) > new Date(latest.createdOn))) {
-            latest = item;
-        }
-    });
-    return latest ? latest.villaId : area.villasList[0].villaId;
+    return remembered && area.villasList.some(v => v.villaId === remembered) ? remembered : null;
 }
 
 // Re-fetch the property tree (areas/subareas/checkpoints) without reloading the page
@@ -239,6 +267,7 @@ function ShowKeyStrength() {
         return;
     }
     ActiveAreaTabId = 'KEYSTRENGTH';
+    rememberArea('KEYSTRENGTH');
 
     $('#subareaselector-div').html(`
         <div class="keystrength-card">

@@ -114,7 +114,7 @@ function buildReportModel(property, rows, info) {
     const areas = (property.propArea || []).filter(a =>
         a.subAreas && a.subAreas.some(sa => sa.checkpoints && sa.checkpoints.length > 0));
 
-    const areaModels = areas.map((area, areaIndex) => {
+    const allAreaModels = areas.map(area => {
         const villas = {};
         (area.villasList || []).forEach((v, i) => { villas[v.villaId] = { name: v.villaName, order: i }; });
 
@@ -145,7 +145,7 @@ function buildReportModel(property, rows, info) {
                     photos: (r.uploads || []).map(u => u.fileurl).filter(Boolean),
                     taskMasterId: r.isjobtracker ? (r.jobtrackerid || 'Added') : '',
                     savedBy: r.createdBy || '',
-                    savedOn: r.createdOn ? new Date(r.createdOn) : null,
+                    savedOn: parseApiDate(r.createdOn),
                     sortKey: [
                         subOrder[r.subareaId] ?? 9999,
                         villa ? villa.order : -1,
@@ -156,7 +156,7 @@ function buildReportModel(property, rows, info) {
             .sort((a, b) => a.sortKey[0] - b.sortKey[0] || a.sortKey[1] - b.sortKey[1] || a.sortKey[2] - b.sortKey[2]);
 
         return {
-            number: areaIndex + 1,
+            number: 0,
             name: area.areaName,
             isVilla: area.isvilla === true,
             rows: areaRows,
@@ -165,7 +165,11 @@ function buildReportModel(property, rows, info) {
         };
     });
 
-    const dates = rows.map(r => new Date(r.createdOn)).filter(d => !isNaN(d));
+    // Areas with nothing saved were not audited, so they stay out of the report and the numbering
+    const areaModels = allAreaModels.filter(a => a.rows.length > 0);
+    areaModels.forEach((a, i) => { a.number = i + 1; });
+
+    const dates = rows.map(r => parseApiDate(r.createdOn)).filter(Boolean);
     const auditors = [...new Set(rows.map(r => r.createdBy).filter(Boolean))];
     if (auditors.length === 0 && info && info.createdBy) {
         auditors.push(info.createdBy);
@@ -174,7 +178,7 @@ function buildReportModel(property, rows, info) {
     return {
         auditId: reportAuditId,
         propertyName: property.propName || '',
-        createdOn: info && info.createdOn ? new Date(info.createdOn) : null,
+        createdOn: info ? parseApiDate(info.createdOn) : null,
         firstDate: dates.length ? new Date(Math.min(...dates)) : null,
         lastDate: dates.length ? new Date(Math.max(...dates)) : null,
         auditors: auditors,
@@ -217,14 +221,13 @@ function multiline(value) {
     return escapeHtml(value).replace(/\n/g, '<br>');
 }
 
+// Report dates are Maldives Time
 function formatDate(date) {
-    if (!date) return '';
-    return date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    return formatMaldives(date, { day: '2-digit', month: 'short', year: 'numeric' });
 }
 
 function formatDateTime(date) {
-    if (!date) return '';
-    return date.toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+    return formatMaldives(date, { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 }
 
 function auditDateRange(model) {
@@ -316,6 +319,7 @@ function renderReport(model) {
                         <td class="num">${a.score.checked}</td>
                         <td class="num">${scoreText(a.score)}</td>
                     </tr>`).join('')}
+                ${model.areas.length === 0 ? `<tr><td></td><td class="muted" colspan="3">No checkpoints have been saved in this audit yet.</td></tr>` : ''}
                 <tr>
                     <td></td>
                     <td><b>Overall</b></td>
@@ -331,13 +335,15 @@ function renderReport(model) {
             : `<p class="muted">No key strengths recorded. Add them in the audit under the "Key Strength" tab.</p>`}
 
         <h2>Detailed Findings (Area-wise)</h2>
-        <p class="muted no-print" style="margin-top:0">Checkpoints rated Unsatisfactory, Poor or Safety Issue.</p>`;
+        <p class="muted no-print" style="margin-top:0">Only areas with checkpoints rated Unsatisfactory, Poor or Safety Issue.</p>`;
 
-    model.areas.forEach(area => {
+    const areasWithFindings = model.areas.filter(a => a.findings.length > 0);
+    if (areasWithFindings.length === 0) {
+        html += `<p class="muted">No unsatisfactory, poor or safety findings were recorded in this audit.</p>`;
+    }
+    areasWithFindings.forEach(area => {
         const risk = suggestedRisk(area.findings);
-        const findings = area.findings.length === 0
-            ? [`<p class="finding muted">No unsatisfactory, poor or safety findings.</p>`]
-            : area.findings.map((f, i) => {
+        const findings = area.findings.map((f, i) => {
                 f.ref = `${area.number}.${i + 1}`;
                 const where = [f.subareaName, f.villaName].filter(Boolean).map(escapeHtml).join(' · ');
                 return `
@@ -462,7 +468,7 @@ function DownloadExcel() {
                 area.number, area.name, r.subareaName, r.villaName, r.checkpointName,
                 STATUS[r.status] ? STATUS[r.status].name : '', r.responsibility,
                 r.observation, r.issue, r.photos.join('\n'), r.taskMasterId,
-                r.savedBy, r.savedOn || ''
+                r.savedBy, formatDateTime(r.savedOn)
             ]);
         });
     });

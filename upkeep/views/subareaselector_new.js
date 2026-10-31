@@ -98,6 +98,7 @@ function getSubAreaDetail(subAreaId, btn) {
         selectSubAreaTab(btn);
     }
     userselectedarea = subAreaId;
+    rememberSubarea(currentareaid, subAreaId);
     updateSubareaHeader(subAreaId);
     // Changed to load subareachecklist_new.html
     LoadCustomControlWithRender('subareachecklist-div', 'views/subareachecklist_new.html', subAreaId, '')
@@ -138,9 +139,9 @@ function createSubAreaTabs(areaData) {
 
         `;
 
-        // Default to the villa this audit is being done for, not simply the first villa
+        // No villa is preselected; the auditor picks one before the checklist appears
         const defaultVillaId = getDefaultVillaId(areaData);
-        SelectedVillaByArea[areaData.areaid] = defaultVillaId;
+        html += `<option value="" ${defaultVillaId ? '' : 'selected'}>-- Select Villa --</option>`;
         areaData.villasList.forEach(villa => {
             html += `<option value="${villa.villaId}" ${villa.villaId === defaultVillaId ? 'selected' : ''}>${villa.villaName}</option>`;
         });
@@ -202,12 +203,9 @@ function createSubAreaTabs(areaData) {
 // Optional: Add this helper function to handle villa selection changes
 function onVillaChange(selectedVillaId) {
     if (!confirmDiscardUnsaved()) {
-        $('#villa-select').val(SelectedVillaByArea[currentareaid]);
+        $('#villa-select').val(SelectedVillaByArea[currentareaid] || '');
         return;
     }
-    if (selectedVillaId) {
-        SelectedVillaByArea[currentareaid] = selectedVillaId;
-        // Changed to load subareachecklist_new.html
-        LoadCustomControlWithRender('subareachecklist-div', 'views/subareachecklist_new.html', userselectedarea, '')
-    }
+    rememberVilla(currentareaid, selectedVillaId);
+    LoadCustomControlWithRender('subareachecklist-div', 'views/subareachecklist_new.html', userselectedarea, '')
 }

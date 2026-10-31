@@ -23,6 +23,27 @@ function formatDate(dateString) {
     return `${day}-${month}-${year}`;
 }
 
+// The API sends server times in UTC without a zone ("2026-10-31T13:02:00"); a bare string like that
+// would be read as the viewer's local time, so mark it as UTC. Returns null for empty or invalid values.
+function parseApiDate(value) {
+    if (!value) return null;
+    if (value instanceof Date) return isNaN(value) ? null : value;
+    var s = String(value).trim();
+    if (s.startsWith('0001')) return null;
+    if (/^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}/.test(s) && !/(Z|[+-]\d{2}:?\d{2})$/i.test(s)) {
+        s = s.replace(' ', 'T') + 'Z';
+    }
+    var d = new Date(s);
+    return isNaN(d) ? null : d;
+}
+
+// Shows a date in Maldives Time (UTC+5) whatever the viewer's own time zone is
+function formatMaldives(value, options) {
+    var d = parseApiDate(value);
+    if (!d) return '';
+    return d.toLocaleString('en-GB', Object.assign({ timeZone: 'Indian/Maldives' }, options));
+}
+
 
 function loadScriptSequentially(scripts, index = 0) {
     if (index >= scripts.length) {

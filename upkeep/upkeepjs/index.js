@@ -427,8 +427,7 @@ function createAuditTable(auditData) {
     sortedAuditData.forEach((audit, index) => {
         const coveredCount = audit.opUpkeepTrackers ? audit.opUpkeepTrackers.length : 0;
         const totalCount = audit.subAreaCheckPoints ? audit.subAreaCheckPoints.length : 0;
-        const createdDate = new Date(audit.createdOn).toLocaleDateString('en-US', {
-            timeZone: 'Indian/Maldives',   // ✅ Maldives Timezone
+        const createdDate = formatMaldives(audit.createdOn, {
             year: 'numeric',
             month: 'short',
             day: 'numeric',
