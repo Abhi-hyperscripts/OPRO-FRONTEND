@@ -7,14 +7,14 @@ var AuditData = null;
 var AuditInfo = null;
 var userEmail = null;
 
-// Where the auditor is (area tab, sub area per area, villa per area). Kept in sessionStorage
-// so a page refresh comes back to the same place instead of the first tab.
+// Where the auditor is (area tab, sub area per area, villa per area). Kept in localStorage per audit,
+// so a refresh or reopening the audit (View Details opens a new tab) comes back to the same place.
 var AuditViewKey = 'upkeepAuditView_' + auditID;
 var SavedAuditView = loadAuditView();
 
 function loadAuditView() {
     try {
-        return JSON.parse(sessionStorage.getItem(AuditViewKey)) || {};
+        return JSON.parse(localStorage.getItem(AuditViewKey)) || {};
     } catch (e) {
         return {};
     }
@@ -22,7 +22,7 @@ function loadAuditView() {
 
 function saveAuditView() {
     try {
-        sessionStorage.setItem(AuditViewKey, JSON.stringify(SavedAuditView));
+        localStorage.setItem(AuditViewKey, JSON.stringify(SavedAuditView));
     } catch (e) { /* storage blocked: refresh just starts at the first tab */ }
 }
 
@@ -162,8 +162,8 @@ function confirmDiscardUnsaved() {
     return window.confirm(`You have unsaved changes in ${count} checkpoint(s).\n\nPress Cancel to stay and use "Save All", or OK to discard them.`);
 }
 
-// Villa to show for an area: only one the auditor picked in this session. Nothing is
-// preselected, so a villa is never audited by mistake.
+// Villa to show for an area: the one the auditor last picked in this audit. A fresh audit
+// starts with no villa selected, so a villa is never audited by mistake.
 function getDefaultVillaId(area) {
     if (!area || !area.villasList || area.villasList.length === 0) {
         return null;

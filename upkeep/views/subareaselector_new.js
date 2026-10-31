@@ -139,12 +139,8 @@ function createSubAreaTabs(areaData) {
 
         `;
 
-        // No villa is preselected; the auditor picks one before the checklist appears
-        const defaultVillaId = getDefaultVillaId(areaData);
-        html += `<option value="" ${defaultVillaId ? '' : 'selected'}>-- Select Villa --</option>`;
-        areaData.villasList.forEach(villa => {
-            html += `<option value="${villa.villaId}" ${villa.villaId === defaultVillaId ? 'selected' : ''}>${villa.villaName}</option>`;
-        });
+        // A fresh audit has no villa preselected; the auditor picks one before the checklist appears
+        html += villaOptionsHtml(areaData, getDefaultVillaId(areaData));
 
         html += `
                 </select>
@@ -198,6 +194,48 @@ function createSubAreaTabs(areaData) {
     getSubAreaDetail(firstsubarea);
 
     return html;
+}
+
+// Saved checkpoints per villa in this area, from the audit data
+function savedCountByVilla(areaId) {
+    const counts = {};
+    (AuditData || []).forEach(d => {
+        if (d.areaId === areaId && d.villaId) {
+            counts[d.villaId] = (counts[d.villaId] || 0) + 1;
+        }
+    });
+    return counts;
+}
+
+// Villa list with the villas already audited in this audit grouped first, so finished work is easy to find
+function villaOptionsHtml(areaData, selectedId) {
+    const counts = savedCountByVilla(areaData.areaid);
+    const option = v => `<option value="${v.villaId}" ${v.villaId === selectedId ? 'selected' : ''}>${v.villaName}${counts[v.villaId] ? ` (${counts[v.villaId]} saved)` : ''}</option>`;
+    const audited = areaData.villasList.filter(v => counts[v.villaId]);
+    const notAudited = areaData.villasList.filter(v => !counts[v.villaId]);
+    let html = `<option value="" ${selectedId ? '' : 'selected'}>-- Select Villa --</option>`;
+    if (audited.length > 0) {
+        html += `<optgroup label="Audited in this audit">${audited.map(option).join('')}</optgroup>`;
+        html += `<optgroup label="Not audited yet">${notAudited.map(option).join('')}</optgroup>`;
+    } else {
+        html += notAudited.map(option).join('');
+    }
+    return html;
+}
+
+// After a save, refresh the saved counts and grouping in the villa list
+function refreshVillaOptions() {
+    const select = document.getElementById('villa-select');
+    if (!select || !subareas || !subareas.villasList) {
+        return;
+    }
+    select.innerHTML = villaOptionsHtml(subareas, select.value || null);
+}
+
+// Pick a villa from the "already audited" shortcuts on the empty checklist
+function pickVilla(villaId) {
+    $('#villa-select').val(villaId);
+    onVillaChange(villaId);
 }
 
 // Optional: Add this helper function to handle villa selection changes

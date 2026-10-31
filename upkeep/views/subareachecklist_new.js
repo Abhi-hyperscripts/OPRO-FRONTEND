@@ -124,6 +124,9 @@ function renderCurrentChecklist(drafts) {
         showSelectVillaPrompt();
         return;
     }
+    if (typeof refreshVillaOptions === 'function') {
+        refreshVillaOptions();
+    }
 
     var items;
     if (villaid !== undefined && villaid.length > 1) {
@@ -156,9 +159,19 @@ function showSelectVillaPrompt() {
     $('#sc_score').text('0%');
     $('#sc_inspectby').text('-');
     $('#sc_inspectdate').text('-');
+
+    // Shortcuts to the villas already audited, so saved work is one click away
+    const counts = savedCountByVilla(subareas.areaid);
+    const audited = subareas.villasList.filter(v => counts[v.villaId]);
+    const shortcuts = audited.length === 0 ? '' :
+        '<p class="mb-2 mt-3">Already audited in this audit:</p><div class="d-flex flex-wrap justify-content-center gap-2">' +
+        audited.map(v => `<button type="button" class="btn btn-sm btn-outline-primary" onclick="pickVilla('${v.villaId}')">` +
+            `${$('<div>').text(v.villaName).html()} <span class="badge bg-primary ms-1">${counts[v.villaId]}</span></button>`).join('') +
+        '</div>';
     $('#subarea-checklist-holder').html(
-        '<div class="table-container"><p class="text-muted p-4 text-center mb-0">' +
-        '<i class="fa fa-hand-pointer me-2"></i>Select a villa above to start auditing this sub area.</p></div>');
+        '<div class="table-container"><div class="text-muted p-4 text-center">' +
+        '<p class="mb-0"><i class="fa fa-hand-pointer me-2"></i>Select a villa above to start auditing this sub area.</p>' +
+        shortcuts + '</div></div>');
     updateSaveAllButton();
 }
 
