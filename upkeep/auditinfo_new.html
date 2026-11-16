@@ -349,6 +349,64 @@
             line-height: 1;
         }
 
+        /* Several photos per checkpoint */
+        .photo-cell {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.375rem;
+        }
+
+        .photo-thumbs {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            padding: 8px 4px 0;
+        }
+
+        .photo-thumb {
+            position: relative;
+            width: 52px;
+            height: 52px;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+        }
+
+        .photo-thumb a {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .photo-actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.25rem;
+        }
+
+        .photo-input {
+            position: absolute;
+            left: -9999px;
+            opacity: 0;
+        }
+
+        .btn-upload-photo-alt {
+            background: #fff;
+            color: #007bff;
+            border: 1px solid #007bff;
+        }
+
+        .btn-upload-photo-alt:hover {
+            background: #e3f2fd;
+        }
+
+        .photo-count {
+            font-size: 0.7rem;
+            color: #6c757d;
+        }
+
         /* Auto-resizing Textarea */
         .textarea-container {
             position: relative;
@@ -489,9 +547,9 @@
         .col-checkpoint { width: 16%; }
         .col-status { width: 12%; min-width: 120px; }
         .col-responsibility { width: 12%; min-width: 120px; }
-        .col-photo { width: 9%; text-align: center; }
-        .col-observation { width: 16%; }
-        .col-issue { width: 16%; }
+        .col-photo { width: 15%; min-width: 150px; text-align: center; }
+        .col-observation { width: 13%; }
+        .col-issue { width: 13%; }
         .col-taskmaster { width: 10%; text-align: center; }
         .col-action { width: 6%; text-align: center; }
 

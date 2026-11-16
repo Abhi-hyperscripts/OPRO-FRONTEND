@@ -5,79 +5,6 @@ var currentsubarea = null;
 var subareas = null;
 var villaid = null;
 
-// Global Photo Upload Handler Functions
-function handlePhotoUpload(input, checkpointId) {
-    console.log('handlePhotoUpload called with checkpointId:', checkpointId);
-    console.log('input.files:', input.files);
-    if (input.files && input.files[0]) {
-        const file = input.files[0];
-        console.log('File selected:', file.name, 'Type:', file.type, 'Size:', file.size);
-
-        if (file.type !== 'image/jpeg' && file.type !== 'image/png') {
-            alert('Please select a JPEG or PNG image only.');
-            input.value = '';
-            return;
-        }
-
-        const maxSize = 5 * 1024 * 1024;
-        if (file.size > maxSize) {
-            alert('Image size must be less than 5MB. Please select a smaller image.');
-            input.value = '';
-            return;
-        }
-
-        var reader = new FileReader();
-        reader.onload = function(e) {
-            document.getElementById('preview_img_' + checkpointId).src = e.target.result;
-            document.getElementById('upload_icon_' + checkpointId).style.display = 'none';
-            document.getElementById('image_preview_' + checkpointId).style.display = 'flex';
-            window['photo_data_' + checkpointId] = e.target.result;
-            delete window['photo_removed_' + checkpointId];
-        };
-        reader.readAsDataURL(file);
-    }
-}
-
-function removePhoto(checkpointId) {
-    console.log('removePhoto called for:', checkpointId);
-
-    // Clear the file input
-    var fileInput = document.getElementById('photo_inline_' + checkpointId);
-    if (fileInput) {
-        fileInput.value = '';
-        console.log('File input cleared');
-    }
-
-    // Clear the preview image
-    var previewImg = document.getElementById('preview_img_' + checkpointId);
-    if (previewImg) {
-        previewImg.src = '';
-    }
-
-    // Show the upload button container (use flex for centering)
-    var uploadIcon = document.getElementById('upload_icon_' + checkpointId);
-    if (uploadIcon) {
-        uploadIcon.style.display = 'flex';
-        console.log('Upload icon shown');
-    }
-
-    // Hide the image preview container
-    var imagePreview = document.getElementById('image_preview_' + checkpointId);
-    if (imagePreview) {
-        imagePreview.style.display = 'none';
-        console.log('Image preview hidden');
-    }
-
-    // Clear stored base64 data
-    if (window['photo_data_' + checkpointId]) {
-        delete window['photo_data_' + checkpointId];
-        console.log('Photo data cleared');
-    }
-    // Saving the row now tells the server to delete the saved photo too
-    window['photo_removed_' + checkpointId] = true;
-    markRowDirty(checkpointId);
-}
-
 function updateRowStatus(checkpointId, statusValue) {
     const row = document.getElementById('row_' + checkpointId);
     if (row) {
@@ -175,16 +102,6 @@ function showSelectVillaPrompt() {
     updateSaveAllButton();
 }
 
-// Photos picked or removed but not saved live on window; drop them when a different checklist is shown
-// so they can't be saved against another villa's row with the same checkpoint id.
-function clearPhotoDrafts() {
-    Object.keys(window).forEach(key => {
-        if (key.indexOf('photo_data_') === 0 || key.indexOf('photo_removed_') === 0) {
-            delete window[key];
-        }
-    });
-}
-
 // Snapshot of every unsaved row, so a redraw doesn't lose what the user typed
 function captureDrafts(excludeIds = []) {
     const drafts = {};
@@ -193,13 +110,11 @@ function captureDrafts(excludeIds = []) {
         if (excludeIds.indexOf(id) !== -1) {
             return;
         }
-        const preview = document.getElementById('image_preview_' + id);
         drafts[id] = {
             status: $('#status_' + id).val(),
             resp: $('#resp_' + id).val(),
             obs: $('#obs_' + id).val(),
-            issue: $('#issue_' + id).val(),
-            photoHidden: preview ? preview.style.display === 'none' : true
+            issue: $('#issue_' + id).val()
         };
     });
     return drafts;
@@ -217,14 +132,7 @@ function restoreDrafts(drafts) {
         $('#issue_' + id).val(d.issue);
         updateRowStatus(id, d.status);
 
-        if (window['photo_data_' + id]) {
-            document.getElementById('preview_img_' + id).src = window['photo_data_' + id];
-            document.getElementById('upload_icon_' + id).style.display = 'none';
-            document.getElementById('image_preview_' + id).style.display = 'flex';
-        } else if (d.photoHidden) {
-            document.getElementById('upload_icon_' + id).style.display = 'flex';
-            document.getElementById('image_preview_' + id).style.display = 'none';
-        }
+        // Unsaved photos stay in photoDrafts and were drawn with the row
         $('#row_' + id).addClass('row-dirty');
     });
 }
@@ -451,55 +359,6 @@ function createCheckpointTable(checkpoints, subareaName = "Checkpoints", teams =
         return `<select name="resp_${checkpointId}" id="resp_${checkpointId}" class="form-select-new">${optionsHTML}</select>`;
     }
 
-    // Helper function to create image preview with existing image if available - NEW STYLING
-    function createImagePreview(checkpointId, imageUrl = null) {
-        if (!imageUrl) {
-            // No existing image - show upload button with label approach for Chrome compatibility
-            return `
-                <div id="upload_icon_${checkpointId}" class="photo-container-new">
-                    <input type="file" id="photo_inline_${checkpointId}"
-                           accept="image/jpeg, image/png"
-                           style="position:absolute;left:-9999px;opacity:0;"
-                           onchange="handlePhotoUpload(this, '${checkpointId}')">
-                    <label for="photo_inline_${checkpointId}" class="btn-upload-photo">
-                        <i class="fa fa-camera"></i> Upload
-                    </label>
-                </div>
-
-                <div id="image_preview_${checkpointId}" class="photo-container-new" style="display:none;">
-                    <div class="image-preview-new">
-                        <img id="preview_img_${checkpointId}" src="" alt="Preview" class="preview-image">
-                        <button type="button" class="remove-photo-btn" onclick="removePhoto('${checkpointId}')">
-                            <i class="fa fa-times"></i>
-                        </button>
-                    </div>
-                </div>
-            `;
-        } else {
-            // Existing image - show preview with option to change
-            return `
-                <div id="upload_icon_${checkpointId}" class="photo-container-new" style="display:none;">
-                    <input type="file" id="photo_inline_${checkpointId}"
-                           accept="image/jpeg, image/png"
-                           style="position:absolute;left:-9999px;opacity:0;"
-                           onchange="handlePhotoUpload(this, '${checkpointId}')">
-                    <label for="photo_inline_${checkpointId}" class="btn-upload-photo">
-                        <i class="fa fa-camera"></i> Upload
-                    </label>
-                </div>
-
-                <div id="image_preview_${checkpointId}" class="photo-container-new" style="display:block;">
-                    <div class="image-preview-new">
-                        <img id="preview_img_${checkpointId}" src="${imageUrl}" alt="Preview" class="preview-image">
-                        <button type="button" class="remove-photo-btn" onclick="removePhoto('${checkpointId}')">
-                            <i class="fa fa-times"></i>
-                        </button>
-                    </div>
-                </div>
-            `;
-        }
-    }
-
     // Start building the HTML table with NEW STYLING from test.html
     let tableHTML = `
 <!-- Header Section -->
@@ -548,12 +407,6 @@ function createCheckpointTable(checkpoints, subareaName = "Checkpoints", teams =
         const observationValue = existingCheckpointData ? existingCheckpointData.checkpointObservation || '' : '';
         const issueValue = existingCheckpointData ? existingCheckpointData.checkpointIssue || '' : '';
 
-        // Get image URL if available
-        let imageUrl = null;
-        if (existingCheckpointData && existingCheckpointData.uploads && existingCheckpointData.uploads.length > 0) {
-            imageUrl = existingCheckpointData.uploads[0].fileurl;
-        }
-
         // Get row status class
         const rowStatusClass = getRowStatusClass(statusValue);
 
@@ -572,7 +425,7 @@ function createCheckpointTable(checkpoints, subareaName = "Checkpoints", teams =
                         ${createResponsibilityDropdown(checkpoint.checkpointId, responsibilityValue)}
                     </td>
                     <td>
-                        ${createImagePreview(checkpoint.checkpointId, imageUrl)}
+                        ${renderPhotoCell(checkpoint.checkpointId, existingCheckpointData ? existingCheckpointData.uploads : [])}
                     </td>
                     <td>
                         <div class="textarea-container">
@@ -730,55 +583,6 @@ function createVillaWiseCheckpointTable(villaid, checkpoints, subareaName = "Che
         return `<select name="resp_${checkpointId}" id="resp_${checkpointId}" class="form-select-new">${optionsHTML}</select>`;
     }
 
-    // Helper function to create image preview with existing image if available - NEW STYLING
-    function vcreateImagePreview(checkpointId, imageUrl = null) {
-        if (!imageUrl) {
-            // No existing image - show upload button with label approach for Chrome compatibility
-            return `
-                <div id="upload_icon_${checkpointId}" class="photo-container-new">
-                    <input type="file" id="photo_inline_${checkpointId}"
-                           accept="image/jpeg, image/png"
-                           style="position:absolute;left:-9999px;opacity:0;"
-                           onchange="handlePhotoUpload(this, '${checkpointId}')">
-                    <label for="photo_inline_${checkpointId}" class="btn-upload-photo">
-                        <i class="fa fa-camera"></i> Upload
-                    </label>
-                </div>
-
-                <div id="image_preview_${checkpointId}" class="photo-container-new" style="display:none;">
-                    <div class="image-preview-new">
-                        <img id="preview_img_${checkpointId}" src="" alt="Preview" class="preview-image">
-                        <button type="button" class="remove-photo-btn" onclick="removePhoto('${checkpointId}')">
-                            <i class="fa fa-times"></i>
-                        </button>
-                    </div>
-                </div>
-            `;
-        } else {
-            // Existing image - show preview with option to change
-            return `
-                <div id="upload_icon_${checkpointId}" class="photo-container-new" style="display:none;">
-                    <input type="file" id="photo_inline_${checkpointId}"
-                           accept="image/jpeg, image/png"
-                           style="position:absolute;left:-9999px;opacity:0;"
-                           onchange="handlePhotoUpload(this, '${checkpointId}')">
-                    <label for="photo_inline_${checkpointId}" class="btn-upload-photo">
-                        <i class="fa fa-camera"></i> Upload
-                    </label>
-                </div>
-
-                <div id="image_preview_${checkpointId}" class="photo-container-new" style="display:block;">
-                    <div class="image-preview-new">
-                        <img id="preview_img_${checkpointId}" src="${imageUrl}" alt="Preview" class="preview-image">
-                        <button type="button" class="remove-photo-btn" onclick="removePhoto('${checkpointId}')">
-                            <i class="fa fa-times"></i>
-                        </button>
-                    </div>
-                </div>
-            `;
-        }
-    }
-
     // Start building the HTML table with NEW STYLING
     let tableHTML = `
 <!-- Header Section -->
@@ -827,12 +631,6 @@ function createVillaWiseCheckpointTable(villaid, checkpoints, subareaName = "Che
         const observationValue = existingCheckpointData ? existingCheckpointData.checkpointObservation || '' : '';
         const issueValue = existingCheckpointData ? existingCheckpointData.checkpointIssue || '' : '';
 
-        // Get image URL if available
-        let imageUrl = null;
-        if (existingCheckpointData && existingCheckpointData.uploads && existingCheckpointData.uploads.length > 0) {
-            imageUrl = existingCheckpointData.uploads[0].fileurl;
-        }
-
         // Get row status class
         const rowStatusClass = getRowStatusClass(statusValue);
 
@@ -851,7 +649,7 @@ function createVillaWiseCheckpointTable(villaid, checkpoints, subareaName = "Che
                         ${vcreateResponsibilityDropdown(checkpoint.checkpointId, responsibilityValue)}
                     </td>
                     <td>
-                        ${vcreateImagePreview(checkpoint.checkpointId, imageUrl)}
+                        ${renderPhotoCell(checkpoint.checkpointId, existingCheckpointData ? existingCheckpointData.uploads : [])}
                     </td>
                     <td>
                         <div class="textarea-container">
@@ -1068,17 +866,7 @@ function validateCheckpointData(checkpointId) {
         // validationErrors.push("Issue is required");
     }
 
-    // 5. Photo - Enhanced validation for existing images
-    const fileInput = document.getElementById(`photo_inline_${checkpointId}`);
-    const hasNewFile = fileInput?.files?.[0];
-    const hasBase64Data = window[`photo_data_${checkpointId}`];
-
-    // Check if there's an existing image displayed
-    const previewImg = document.getElementById(`preview_img_${checkpointId}`);
-    const hasExistingImage = previewImg && previewImg.src && previewImg.src !== '' &&
-        previewImg.src !== window.location.href && previewImg.src !== 'about:blank';
-
-    const photoExists = hasNewFile || hasBase64Data || hasExistingImage;
+    // 5. Photos are optional
 
     // Check IDs
     if (!checkpointId) {
@@ -1241,8 +1029,7 @@ function executeCheckpointSave(checkpointId) {
                 showSuccessToast('Checkpoint data saved successfully!');
                 // Keep the other rows the user hasn't saved yet
                 var drafts = captureDrafts([checkpointId]);
-                delete window['photo_data_' + checkpointId];
-                delete window['photo_removed_' + checkpointId];
+                discardPhotoDraft(checkpointId);
                 renderCurrentChecklist(drafts);
             } else {
                 showErrorModal('<p class="mb-0">The checkpoint could not be saved. Please try again.</p>');
@@ -1304,34 +1091,8 @@ function buildCheckpointFormData(checkpointId) {
         formData.append("issue", issueElem.value);
     }
 
-    // Get and add photo data (if available)
-    // First check if we have a file input with an actual file
-    const fileInput = document.getElementById(`photo_inline_${checkpointId}`);
-    if (fileInput && fileInput.files && fileInput.files[0]) {
-        formData.append("photo", fileInput.files[0]);
-    }
-    // If no file in input but we have stored base64 data, convert it to a file
-    else if (window[`photo_data_${checkpointId}`]) {
-        // Convert base64 to blob
-        const base64Data = window[`photo_data_${checkpointId}`];
-        const byteString = atob(base64Data.split(',')[1]);
-        const mimeString = base64Data.split(',')[0].split(':')[1].split(';')[0];
-        const ab = new ArrayBuffer(byteString.length);
-        const ia = new Uint8Array(ab);
-
-        for (let i = 0; i < byteString.length; i++) {
-            ia[i] = byteString.charCodeAt(i);
-        }
-
-        const blob = new Blob([ab], { type: mimeString });
-        const fileName = `checkpoint_${checkpointId}_photo.${mimeString.split('/')[1]}`;
-        const file = new File([blob], fileName, { type: mimeString });
-
-        formData.append("photo", file);
-    }
-    else if (window[`photo_removed_${checkpointId}`]) {
-        formData.append("removePhoto", "true");
-    }
+    // New photos plus the saved photos to keep
+    appendPhotosToForm(formData, checkpointId);
 
     // Add timestamp
     formData.append("savedOn", new Date().toISOString());
@@ -1408,8 +1169,7 @@ async function executeSaveAll(ids) {
         try {
             const resp = await postCheckpoint(formData);
             if (resp.success) {
-                delete window['photo_data_' + id];
-                delete window['photo_removed_' + id];
+                discardPhotoDraft(id);
             } else {
                 failed.push(id);
             }
