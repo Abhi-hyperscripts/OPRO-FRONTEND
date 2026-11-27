@@ -1,162 +1,281 @@
 <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WorkWize | Login</title>
+  <link rel="icon" type="image/png" href="assets/logo.png">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body.login-body {
+      background: linear-gradient(135deg, #EBF1FD 0%, #DDE6FA 50%, #E8F4E6 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .login-container {
+      width: 100%;
+      max-width: 440px;
+    }
+    .login-card {
+      background: #ffffff;
+      border-radius: 18px;
+      box-shadow: 0 12px 36px rgba(64, 88, 166, 0.12), 0 2px 6px rgba(0,0,0,0.04);
+      padding: 36px 32px;
+      border: 1px solid #E3E8F5;
+    }
+    .login-brand {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    .login-brand .logo-img {
+      height: 48px;
+      margin-bottom: 12px;
+    }
+    .login-brand h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 4px;
+    }
+    .login-brand p {
+      font-size: 13.5px;
+      color: var(--muted);
+    }
+    .login-fld {
+      margin-bottom: 18px;
+    }
+    .login-fld label {
+      display: block;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .input-wrap input {
+      width: 100%;
+      height: 46px;
+      padding: 0 42px 0 14px;
+      border: 1.5px solid var(--line);
+      border-radius: 10px;
+      font-size: 14px;
+      background: #FAFCFF;
+      color: var(--ink);
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .input-wrap input:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(64, 88, 166, 0.15);
+    }
+    .pwd-toggle {
+      position: absolute;
+      right: 12px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--muted);
+      display: flex;
+      padding: 4px;
+    }
+    .pwd-toggle:hover {
+      color: var(--primary);
+    }
+    .login-btn {
+      width: 100%;
+      height: 46px;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(64, 88, 166, 0.35);
+      transition: background .15s, transform .1s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .login-btn:hover {
+      background: var(--primary-dark);
+    }
+    .login-btn:active {
+      transform: scale(0.99);
+    }
+    .login-btn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+    .login-error {
+      color: #dc2626;
+      font-size: 13px;
+      font-weight: 600;
+      text-align: center;
+      margin-top: 14px;
+      min-height: 20px;
+    }
+    .login-footer {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body class="login-body">
 
-<html
-  lang="en"
-  class="light-style customizer-hide"
-  dir="ltr"
-  data-theme="theme-default"
-  data-assets-path="quickfixcssjs/theme/assets/"
-  data-template="vertical-menu-template"
->
-  <head>
-    <meta charset="utf-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
-    />
-
-    <title>WorkWize | Login</title>
-
-    <meta name="description" content="" />
-
-    <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="quickfixcssjs/theme/assets/img/AppImages/logo.jpeg" />
-
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
-      rel="stylesheet"
-    />
-
-    <!-- Icons -->
-    <link rel="stylesheet" href="quickfixcssjs/theme/assets/vendor/fonts/boxicons.css" />
-    <link rel="stylesheet" href="quickfixcssjs/theme/assets/vendor/fonts/fontawesome.css" />
-    <link rel="stylesheet" href="quickfixcssjs/theme/assets/vendor/fonts/flag-icons.css" />
-
-    <!-- Core CSS -->
-    <link rel="stylesheet" href="quickfixcssjs/theme/assets/vendor/css/rtl/core.css" class="template-customizer-core-css" />
-    <link rel="stylesheet" href="quickfixcssjs/theme/assets/vendor/css/rtl/theme-default.css" class="template-customizer-theme-css" />
-    <link rel="stylesheet" href="quickfixcssjs/theme/assets/css/demo.css" />
-
-    <!-- Vendors CSS -->
-    <link rel="stylesheet" href="quickfixcssjs/theme/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
-    <link rel="stylesheet" href="quickfixcssjs/theme/assets/vendor/libs/typeahead-js/typeahead.css" />
-    <!-- Vendor -->
-    <link rel="stylesheet" href="quickfixcssjs/theme/assets/vendor/libs/formvalidation/dist/css/formValidation.min.css" />
-
-    <!-- Page CSS -->
-    <!-- Page -->
-    <link rel="stylesheet" href="quickfixcssjs/theme/assets/vendor/css/pages/page-auth.css" />
-    <!-- Helpers -->
-    <script src="quickfixcssjs/theme/assets/vendor/js/helpers.js"></script>
-
-    <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
-    <!--? Template customizer: To hide customizer set displayCustomizer value false in config.js.  -->
-    <script src="quickfixcssjs/theme/assets/vendor/js/template-customizer.js"></script>
-    <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
-    <script src="quickfixcssjs/theme/assets/js/config.js"></script>
-
-    <link rel="stylesheet" href="quickfixcssjs/theme/systemjscss/cs/opro.css">
-  </head>
-
-  <body class="bglogins">
-    <!-- Content -->
-
-    <div class="container-xxl ">
-      <div class="authentication-wrapper authentication-basic container-p-y">
-        <div class="authentication-inner">
-          <!-- Register -->
-          <div class="card">
-            <div class="card-body">
-              <!-- Logo -->
-              <div class="app-brand justify-content-center">
-                <a href="../index.html" class="app-brand-link gap-2">
-                  <span class="">
-                    <img src="quickfixcssjs/assets/images/logo.png" alt="Opro" title="Opro" width="90%"/>
-                  </span>
-                </a>
-              </div>
-              <!-- /Logo -->
-              <div id="formAuthentication" class="mb-3">
-                <div class="mb-3">
-                  <label for="email" class="form-label">Email or Username</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="username"
-                    name="email-username"
-                    placeholder="Enter your email or username"
-                    autofocus
-                  />
-                </div>
-                <div class="mb-3 form-password-toggle">
-                  <div class="d-flex justify-content-between">
-                    <label class="form-label" for="password">Password</label>
-                    <a href="../forgetpwd.html">
-                      <small>Forgot Password?</small>
-                    </a>
-                  </div>
-                  <div class="input-group input-group-merge">
-                    <input
-                      type="password"
-                      id="password"
-                      class="form-control"
-                      name="password"
-                      placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
-                      aria-describedby="password"
-                    />
-                    <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
-                  </div>
-                </div>
-                
-                <div class="mb-3">
-                  <button class="btn btn-linkedin d-grid w-100" onclick="loginUser()">Sign in</button>
-                </div>
-              </div>
-
-              <p class="text-center">
-                <span id="login-errors" class="text-danger"></span>
-              </p>
-            </div>
-          </div>
-          <!-- /Register -->
-        </div>
+  <div class="login-container">
+    <div class="login-card">
+      <div class="login-brand">
+        <img src="assets/logo.png" alt="WorkWize" class="logo-img">
+        <h1>Sign In</h1>
+        <p>Enter your credentials to access WorkWize Daily Jobs</p>
       </div>
+
+      <!-- Active Session Banner -->
+      <div id="alreadyLoggedInBanner" style="display:none; background:#EFF6FF; border:1px solid #BFDBFE; border-radius:10px; padding:12px 14px; margin-bottom:18px; font-size:13px; color:#1E40AF; align-items:center; justify-content:space-between; gap:10px;">
+        <div>
+          <span>Logged in as: <strong id="loggedInUserLabel">User</strong></span>
+        </div>
+        <a href="index.html" style="color:#2563EB; font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; font-size:12.5px;">
+          Go to Jobs &rarr;
+        </a>
+      </div>
+
+      <form id="loginForm" novalidate>
+        <div class="login-fld">
+          <label for="username">Email or Username</label>
+          <div class="input-wrap">
+            <input type="text" id="username" placeholder="e.g. it@workwize.com" required autofocus autocomplete="username">
+          </div>
+        </div>
+
+        <div class="login-fld">
+          <label for="password">Password</label>
+          <div class="input-wrap">
+            <input type="password" id="password" placeholder="Enter your password" required autocomplete="current-password">
+            <button type="button" class="pwd-toggle" id="pwdToggle" aria-label="Toggle password visibility">
+              <svg id="eyeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="login-btn" id="signInBtn">
+          <span>Sign In</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </button>
+
+        <div class="login-error" id="loginErrors"></div>
+      </form>
     </div>
 
-    <!-- / Content -->
+    <div class="login-footer">
+      &copy; 2023-2026 WorkWize . Efficiency Redefined
+    </div>
+  </div>
 
-    <!-- Core JS -->
-    <!-- build:js quickfixcssjs/theme/assets/vendor/js/core.js -->
-    <script src="quickfixcssjs/theme/assets/vendor/libs/jquery/jquery.js"></script>
-    <script src="quickfixcssjs/theme/assets/vendor/libs/popper/popper.js"></script>
-    <script src="quickfixcssjs/theme/assets/vendor/js/bootstrap.js"></script>
-    <script src="quickfixcssjs/theme/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+  <div class="toast" id="toast" role="status"></div>
 
-    <script src="quickfixcssjs/theme/assets/vendor/libs/hammer/hammer.js"></script>
-    <script src="quickfixcssjs/theme/assets/vendor/libs/i18n/i18n.js"></script>
-    <script src="quickfixcssjs/theme/assets/vendor/libs/typeahead-js/typeahead.js"></script>
+  <script src="api/config.js"></script>
+  <script src="api/dailyJobApi.js"></script>
+  <script>
+    (function () {
+      const loginForm = document.getElementById('loginForm');
+      const usernameInput = document.getElementById('username');
+      const passwordInput = document.getElementById('password');
+      const signInBtn = document.getElementById('signInBtn');
+      const loginErrors = document.getElementById('loginErrors');
+      const pwdToggle = document.getElementById('pwdToggle');
+      const toastEl = document.getElementById('toast');
 
-    <script src="quickfixcssjs/theme/assets/vendor/js/menu.js"></script>
-    <!-- endbuild -->
+      function showToast(msg) {
+        if (!toastEl) return;
+        toastEl.textContent = msg;
+        toastEl.classList.add('show');
+        setTimeout(() => toastEl.classList.remove('show'), 2500);
+      }
 
-    <!-- Vendors JS -->
-    <script src="quickfixcssjs/theme/assets/vendor/libs/formvalidation/dist/js/FormValidation.min.js"></script>
-    <script src="quickfixcssjs/theme/assets/vendor/libs/formvalidation/dist/js/plugins/Bootstrap5.min.js"></script>
-    <script src="quickfixcssjs/theme/assets/vendor/libs/formvalidation/dist/js/plugins/AutoFocus.min.js"></script>
+      // Toggle password visibility
+      if (pwdToggle) {
+        pwdToggle.addEventListener('click', function () {
+          const type = passwordInput.type === 'password' ? 'text' : 'password';
+          passwordInput.type = type;
+        });
+      }
 
-    <!-- Main JS -->
-    <script src="quickfixcssjs/theme/assets/js/main.js"></script>
+      // Check existing session
+      try {
+        const stored = localStorage.getItem('oproUserData');
+        if (stored) {
+          const u = JSON.parse(stored);
+          if (u && (u.name || u.username) && (u.jwt || u.token)) {
+            const banner = document.getElementById('alreadyLoggedInBanner');
+            const label = document.getElementById('loggedInUserLabel');
+            if (banner && label) {
+              label.textContent = (u.name || u.username) + ' (' + (u.desg || 'Logged in') + ')';
+              banner.style.display = 'flex';
+            }
+          }
+        }
+      } catch (err) {}
 
-    <!-- Page JS -->
-    <script src="quickfixcssjs/theme/assets/js/pages-auth.js"></script>
+      // Login form submission
+      loginForm.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const username = usernameInput.value.trim();
+        const password = passwordInput.value.trim();
 
+        if (!username || !password) {
+          loginErrors.textContent = 'Please enter both username and password.';
+          return;
+        }
 
-    <script src="https://cdn.jsdelivr.net/npm/jwt-decode@4.0.0/build/cjs/index.min.js"></script>
-    <script src="../webessential/domain.js"></script>
-    <script src="quickfixcssjs/app_quickfix.js"></script>
+        loginErrors.textContent = '';
+        signInBtn.disabled = true;
+        signInBtn.innerHTML = 'Signing in...';
 
-  </body>
+        try {
+          if (!window.WorkWizeDailyJobApi || typeof window.WorkWizeDailyJobApi.login !== 'function') {
+            throw new Error('Login service is unavailable. Please refresh and try again.');
+          }
+
+          await window.WorkWizeDailyJobApi.login(username, password, 'quickfix');
+
+          showToast('Login successful! Redirecting...');
+          setTimeout(() => {
+            window.location.href = 'index.html';
+          }, 400);
+        } catch (err) {
+          console.error('[Login Error]:', err);
+          let msg = err.message || 'Login failed. Please try again.';
+          if (msg === 'UNAUTHORIZED' || msg.toLowerCase().includes('401') || msg.toLowerCase().includes('invalid credentials')) {
+            msg = 'Invalid email/username or password. Please try again.';
+          }
+          loginErrors.textContent = msg;
+          signInBtn.disabled = false;
+          signInBtn.innerHTML = '<span>Sign In</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>';
+        }
+      });
+    })();
+  </script>
+</body>
 </html>

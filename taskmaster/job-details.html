@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Taskmaster | Job Details</title>
+  <link rel="icon" type="image/jpeg" href="assets/logo.jpeg">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="min-h-screen flex bg-[#F2F5FB]">
+
+    <!-- Mobile Sidebar Backdrop -->
+  <div id="sidebarBackdrop" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-40 lg:hidden hidden"></div>
+
+  <!-- Sidebar Navigation (Replaces Top Header) -->
+  <aside id="appSidebar" class="app-sidebar fixed lg:sticky top-0 left-0 bottom-0 z-50 w-64 bg-white border-r border-slate-200/80 flex flex-col h-screen flex-shrink-0 transition-transform duration-300 -translate-x-full lg:translate-x-0 shadow-lg lg:shadow-none">
+    
+    <!-- Sidebar Brand Logo Header -->
+    <div class="h-20 px-5 flex items-center justify-between border-b border-slate-100 shrink-0">
+      <a href="job-by-area.html" class="flex items-center gap-2.5">
+        <img src="assets/logo.png" alt="WorkWize Logo" class="h-12 w-auto max-w-[185px] object-contain">
+      </a>
+      <button type="button" id="closeSidebarBtn" class="lg:hidden p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-colors">
+        <i class="fa-solid fa-xmark text-base"></i>
+      </button>
+    </div>
+
+    <!-- Navigation Menu Items -->
+    <div class="flex-1 overflow-y-auto py-3 px-3 space-y-1" id="tabs">
+      <div class="px-2 pt-1 pb-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Main Navigation</div>
+
+      <!-- Create New Job Button -->
+      <button type="button" class="tab sidebar-tab btn-open-job-modal text-left justify-start cursor-pointer" id="headerNavCreateJob" data-tab="create-job">
+        <i class="fa-solid fa-plus text-xs w-4 text-center"></i>
+        <span class="truncate">Create New Job</span>
+      </button>
+
+      <a href="job-by-area.html" class="tab sidebar-tab" id="headerNavJobByArea" data-tab="job-by-area">
+        <i class="fa-solid fa-layer-group text-xs w-4 text-center"></i>
+        <span class="truncate">Jobs by Area</span>
+      </a>
+
+      <a href="all-jobs.html" class="tab sidebar-tab" id="headerNavAllJobs" data-tab="all-jobs">
+        <i class="fa-solid fa-list-check text-xs w-4 text-center"></i>
+        <span class="truncate">All Jobs</span>
+        <span id="headerOpenBadge" class="badge ml-auto">0</span>
+      </a>
+
+      <a href="closed-jobs.html" class="tab sidebar-tab" id="headerNavClosedJobs" data-tab="closed-jobs">
+        <i class="fa-regular fa-circle-check text-xs w-4 text-center"></i>
+        <span class="truncate">Closed Jobs</span>
+        <span id="headerClosedBadge" class="badge ml-auto">0</span>
+      </a>
+
+      <a href="bulk-import.html" class="tab sidebar-tab" id="headerNavBulkImport" data-tab="bulk-import">
+        <i class="fa-solid fa-cloud-arrow-up text-xs w-4 text-center text-blue-500"></i>
+        <span class="truncate">Bulk Import</span>
+        <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-blue-100 text-blue-700 ml-auto">CSV</span>
+      </a>
+
+      <a href="dashboard.html" class="tab sidebar-tab" id="headerNavDashboard" data-tab="dashboard">
+        <i class="fa-solid fa-house text-xs w-4 text-center"></i>
+        <span class="truncate">Dashboard</span>
+      </a>
+
+
+      <div class="pt-3 pb-1.5 px-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Analytics</div>
+
+      <a href="opro-dashboard.html" class="tab sidebar-tab" id="headerNavOproDashboard" data-tab="opro-dashboard">
+        <i class="fa-solid fa-chart-pie text-xs w-4 text-center text-indigo-500"></i>
+        <span class="truncate">OPRO Dashboard</span>
+      </a>
+    </div>
+
+    <!-- Sidebar Bottom / User Profile & Logout -->
+    <div class="p-3 border-t border-slate-100 shrink-0 bg-slate-50/60">
+      <div class="relative">
+        <button id="userProfileBtn" type="button" class="w-full flex items-center gap-2.5 p-2 rounded-xl hover:bg-white hover:shadow-xs transition-all text-left">
+          <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-xs uppercase shrink-0" id="headerUserAvatar">
+            <i class="fa-regular fa-user"></i>
+          </div>
+          <div class="text-left leading-tight min-w-0 flex-1">
+            <span class="text-xs font-bold text-slate-800 block truncate header-user-display-name">IT [App admin]</span>
+            <span class="text-[10px] text-slate-400 font-medium block truncate header-user-display-role">it@workwise.in</span>
+          </div>
+          <i class="fa-solid fa-chevron-up text-[10px] text-slate-400 shrink-0"></i>
+        </button>
+
+        <div id="userProfileMenu" class="hidden absolute left-0 right-0 bottom-full mb-2 bg-white border border-slate-200 rounded-xl shadow-xl py-1.5 z-50 text-xs text-slate-700 animate-fade-in">
+          <div class="px-3.5 py-2 border-b border-slate-100 font-medium">
+            <p class="text-slate-800 font-semibold header-menu-user-name">IT [App admin]</p>
+            <p class="text-slate-400 text-[11px] truncate header-menu-user-email">it@workwise.in</p>
+          </div>
+          <div class="p-1 space-y-0.5">
+            <button type="button" onclick="openResetPasswordModal()" class="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-slate-100 text-slate-700 font-medium transition-colors text-left cursor-pointer">
+              <i class="fa-solid fa-key text-xs text-slate-500"></i>
+              <span>Reset Password</span>
+            </button>
+            <a href="login.html" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-rose-50 text-rose-600 font-medium transition-colors">
+              <i class="fa-solid fa-arrow-right-from-bracket text-xs"></i>
+              <span>Log Out</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content Area -->
+  <div class="flex-1 flex flex-col min-w-0 min-h-screen">
+
+    <!-- Mobile-Only Top Bar with Hamburger -->
+    <div class="lg:hidden flex items-center justify-between px-4 py-3 bg-white border-b border-slate-200 sticky top-0 z-30 shadow-2xs">
+      <div class="flex items-center gap-3">
+        <button id="openSidebarBtn" type="button" class="p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors">
+          <i class="fa-solid fa-bars text-base"></i>
+        </button>
+        <img src="assets/logo.png" alt="WorkWize Logo" class="h-10 w-auto object-contain">
+      </div>
+      
+    </div>
+
+    <!-- Page Body -->
+    <main class="p-4 max-w-[80rem] w-full mx-auto space-y-4 sm:space-y-5">
+
+      <!-- Breadcrumbs & Navigation -->
+      <div class="flex items-center justify-between flex-wrap gap-3">
+        <div class="flex items-center gap-2 text-xs text-slate-500">
+          <a href="job-by-area.html" class="hover:text-blue-600 transition-colors">Jobs by Area</a>
+          <span>/</span>
+          <a href="all-jobs.html" class="hover:text-blue-600 transition-colors">All Jobs</a>
+          <span>/</span>
+          <span class="text-slate-900 font-bold" id="dynJobBreadcrumbId">Job Details</span>
+        </div>
+        <a id="backToJobsBtn" href="all-jobs.html" class="inline-flex items-center gap-2 text-xs font-semibold text-slate-600 hover:text-blue-600 transition-colors">
+          <i class="fa-solid fa-arrow-left"></i> Back to All Jobs
+        </a>
+      </div>
+
+      <!-- Job Reference Banner -->
+      <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div class="space-y-2">
+          <div class="flex items-center gap-3 flex-wrap">
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Job Order:</span>
+            <span class="px-3.5 py-1 bg-blue-600 text-white rounded-xl text-base sm:text-lg font-extrabold tracking-wide shadow-xs inline-flex items-center" id="dynJobOrgId">Loading...</span>
+          </div>
+          <div class="text-xs text-slate-600 flex items-center gap-3 flex-wrap pt-0.5">
+            <span class="inline-flex items-center gap-1.5">
+              <span class="font-bold text-slate-700">Created Date:</span>
+              <span id="dynJobCreatedOn" class="font-semibold text-slate-900">Created -</span>
+            </span>
+            <span class="text-slate-300">&bull;</span>
+            <span class="inline-flex items-center gap-1.5">
+              <span class="font-bold text-slate-700">Created By:</span>
+              <span id="dynJobCreatedBy" class="font-semibold text-slate-900">-</span>
+            </span>
+            <span id="dynJobClosedByWrapper" class="hidden inline-flex items-center gap-3">
+              <span class="text-slate-300">&bull;</span>
+              <span class="inline-flex items-center gap-1.5">
+                <span class="font-bold text-slate-700">Closed By:</span>
+                <span id="dynJobClosedByHeader" class="font-semibold text-emerald-700">-</span>
+              </span>
+            </span>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2.5 flex-wrap">
+          <!-- Super Admin Delete Job Button (Point 14) -->
+          <button id="detailDeleteJobBtn" type="button" onclick="deleteCurrentJob()" class="btn-outline !text-rose-600 !border-rose-200 hover:!bg-rose-50 text-xs !py-2 !px-3 font-semibold hidden" title="Super Admin Job Deletion">
+            <i class="fa-solid fa-trash-can mr-1.5 text-rose-500"></i> Delete Job
+          </button>
+          <!-- Close Job Button (Only for SuperAdmin, OproAdmin, Admin when status is Completed) -->
+          <button id="detailCloseJobBtn" type="button" onclick="openCloseJobModal()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-md shadow-emerald-500/20 inline-flex items-center gap-2 transition-all hidden" title="Close this completed job order">
+            <i class="fa-solid fa-circle-check text-xs"></i> Close Job
+          </button>
+          <button type="button" onclick="window.print()" class="btn-outline text-xs !py-2 !px-3 font-semibold text-slate-700 hover:bg-slate-50">
+            <i class="fa-solid fa-print mr-1.5 text-slate-400"></i> Print
+          </button>
+          <a id="heroUpdateJobBtn" href="#" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-md shadow-blue-500/20 inline-flex items-center gap-2 transition-all">
+            <i class="fa-solid fa-pen-to-square"></i> Update Job
+          </a>
+        </div>
+      </div>
+
+      <!-- Closed Banner (Visible when Job is Closed) -->
+      <div id="closedInfoContainer" class="hidden p-4 rounded-2xl bg-emerald-50 border border-emerald-200 shadow-sm flex items-center justify-between flex-wrap gap-3">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center text-base shadow-sm">
+            <i class="fa-solid fa-circle-check"></i>
+          </div>
+          <div>
+            <h4 class="font-bold text-emerald-950 text-sm">Job Order Closed</h4>
+            <p class="text-xs text-emerald-800 mt-0.5">
+              Closed on <span class="font-bold" id="dynJobClosedOn">-</span> by <span class="font-bold" id="dynJobClosedBy">Authorized Officer</span>
+            </p>
+          </div>
+        </div>
+        <span class="px-3 py-1 bg-emerald-600 text-white text-xs font-bold rounded-lg uppercase tracking-wider">Completed</span>
+      </div>
+
+      <!-- 2-Column Grid Row 1: Location Details (Left) + Status & Priority Settings (Right) -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5 items-stretch">
+        <!-- 1. Location Details -->
+        <div class="ww-card space-y-4 flex flex-col justify-between">
+          <div class="border-b border-slate-100 pb-3 flex items-center gap-2">
+            <div class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center text-xs font-bold">
+              <i class="fa-solid fa-location-dot"></i>
+            </div>
+            <h3 class="font-bold text-slate-900 text-sm">Location Details</h3>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1.5">Area</label>
+              <div class="w-full text-xs font-bold text-slate-800 bg-slate-50 border border-slate-200 rounded-xl p-3 flex items-center gap-2">
+                <i class="fa-solid fa-layer-group text-blue-500"></i>
+                <span id="dynJobAreaName">-</span>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1.5"> Location </label>
+              <div class="w-full text-xs font-bold text-slate-800 bg-slate-50 border border-slate-200 rounded-xl p-3 flex items-center gap-2">
+                <i class="fa-solid fa-door-open text-slate-400"></i>
+                <span id="dynJobLocation">-</span>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1.5">Villa Number</label>
+              <div class="w-full text-xs font-bold text-slate-800 bg-slate-50 border border-slate-200 rounded-xl p-3 flex items-center gap-2">
+                <i class="fa-solid fa-house-user text-blue-500"></i>
+                <span id="dynJobVillaDisplay">-</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Status & Priority Settings -->
+        <div class="ww-card space-y-4 flex flex-col justify-between">
+          <div class="border-b border-slate-100 pb-3 flex items-center gap-2">
+            <div class="w-7 h-7 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold">
+              <i class="fa-solid fa-arrows-spin"></i>
+            </div>
+            <h3 class="font-bold text-slate-900 text-sm">Status & Priority Settings</h3>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1.5">Job Status</label>
+              <div class="w-full text-xs font-semibold bg-slate-50 border border-slate-200 rounded-xl p-3 flex items-center justify-start">
+                <span id="viewJobStatusBadge" class="badge-status badge-yet-to-commence text-xs font-bold px-3 py-1 rounded-full shadow-2xs">Yet to Commence</span>
+              </div>
+              <p class="text-[11px] text-slate-400 mt-1">Current operational status of this work order.</p>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1.5">Priority Level</label>
+              <div class="w-full text-xs font-semibold bg-slate-50 border border-slate-200 rounded-xl p-3 flex items-center justify-start">
+                <span id="viewJobPriorityBadge" class="badge-priority badge-priority-medium text-xs font-bold px-3 py-1 rounded-full shadow-2xs">Medium</span>
+              </div>
+              <p class="text-[11px] text-slate-400 mt-1">Priority assigned for technical dispatch.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2-Column Grid Row 2: Assignment & Timeline (Left) + Financial Allocation (Right) -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5 items-stretch">
+        <!-- 3. Assignment & Timeline -->
+        <div class="ww-card space-y-4 flex flex-col justify-start">
+          <div class="border-b border-slate-100 pb-3 flex items-center gap-2">
+            <div class="w-7 h-7 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center text-xs font-bold">
+              <i class="fa-solid fa-users-gear"></i>
+            </div>
+            <h3 class="font-bold text-slate-900 text-sm">Assignment & Timeline</h3>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1.5">Assign To</label>
+              <div class="w-full text-xs font-bold text-slate-800 bg-slate-50 border border-slate-200 rounded-xl p-3 min-h-[48px] flex items-center">
+                <div id="dynJobAssignedList" class="flex flex-wrap gap-1.5 items-center w-full">
+                  <span class="w-6 h-6 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-[10px] font-bold shrink-0">
+                    <i class="fa-solid fa-user-check"></i>
+                  </span>
+                  <span id="dynJobAssigned" class="truncate">Unassigned</span>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1.5">Expected Completion</label>
+              <div class="w-full text-xs font-bold text-slate-800 bg-slate-50 border border-slate-200 rounded-xl p-3 flex items-center gap-2">
+                <i class="fa-regular fa-calendar-check text-blue-600"></i>
+                <span id="dynJobExpected">dd-mm-yy</span>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1.5">Reference / Work Order #</label>
+              <div class="w-full text-xs font-mono font-bold text-slate-800 bg-slate-50 border border-slate-200 rounded-xl p-3 flex items-center gap-2">
+                <i class="fa-solid fa-hashtag text-slate-400 text-[10px]"></i>
+                <span id="dynJobRefNum">-</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. Financial Allocation -->
+        <div class="ww-card space-y-4 flex flex-col justify-start" id="financialCard">
+          <div class="border-b border-slate-100 pb-3 flex items-center gap-2">
+            <div class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center text-xs font-bold">
+              <i class="fa-solid fa-dollar-sign"></i>
+            </div>
+            <h3 class="font-bold text-slate-900 text-sm">Financial Allocation</h3>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1.5">Budget Allocated ($)</label>
+              <div class="w-full text-sm font-extrabold text-slate-900 bg-slate-50 border border-slate-200 rounded-xl p-3" id="dynJobBudget">
+                $0
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1.5">Cost Center</label>
+              <div class="w-full text-xs font-bold text-slate-800 bg-slate-50 border border-slate-200 rounded-xl p-3" id="dynJobCostCenter">
+                -
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1.5">Final Expense ($)</label>
+              <div class="w-full text-sm font-extrabold text-slate-900 bg-slate-50 border border-slate-200 rounded-xl p-3" id="dynJobFinalExp">
+                $0
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. Job Scope & Remarks -->
+      <div class="ww-card space-y-4">
+        <div class="border-b border-slate-100 pb-3 flex items-center gap-2">
+          <div class="w-7 h-7 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center text-xs font-bold">
+            <i class="fa-solid fa-file-pen"></i>
+          </div>
+          <h3 class="font-bold text-slate-900 text-sm">Job Details & Remarks</h3>
+        </div>
+
+        <div class="space-y-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1.5">Job Detail</label>
+            <div class="w-full text-xs sm:text-sm text-slate-800 leading-relaxed bg-slate-50 border border-slate-200 rounded-xl p-4 min-h-[90px]" id="dynJobDetailText">
+              Loading description...
+            </div>
+          </div>
+
+          <div id="remarksCard">
+            <label class="block text-xs font-bold text-slate-700 mb-1.5"> Remark</label>
+            <div class="w-full text-xs text-slate-800 bg-slate-50 border border-slate-200 rounded-xl p-3 min-h-[48px]" id="dynJobRemarks">
+              No remarks noted.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6. Job Documentation & Photos -->
+      <div class="ww-card space-y-4">
+        <div class="border-b border-slate-100 pb-3 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <div class="w-7 h-7 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center text-xs font-bold">
+              <i class="fa-solid fa-images"></i>
+            </div>
+            <h3 class="font-bold text-slate-900 text-sm">Job Documentation & Photos</h3>
+          </div>
+          <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-200" id="dynUploadsCount">0 Files</span>
+        </div>
+
+        <!-- Photos Grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4" id="dynJobUploads">
+          <!-- Populated dynamicallyf -->
+        </div>
+      </div>
+
+      <!-- 7. Owner's Comment (Separate Dedicated Card Above Activity History) -->
+      <div id="ownerCommentCard" class="ww-card space-y-4 border-purple-200 bg-purple-50/30">
+        <div class="border-b border-purple-200/80 pb-3 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <div class="w-7 h-7 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center text-xs font-bold">
+              <i class="fa-solid fa-crown"></i>
+            </div>
+            <h3 class="font-bold text-purple-950 text-sm">Owner's Comment</h3>
+          </div>
+          <div class="flex items-center gap-2">
+            <button type="button" id="btnOpenAddOwnerModal" onclick="openAddOwnerCommentModal()" class="hidden px-3 py-1 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold shadow-xs inline-flex items-center gap-1.5 transition-all">
+              <i class="fa-solid fa-plus text-[10px]"></i> Add Comment
+            </button>
+            <span id="dynOwnerCommentsCount" class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-purple-100 text-purple-700 border border-purple-200">0</span>
+          </div>
+        </div>
+
+        <div class="space-y-3">
+          <!-- Owner Comments View Display (shows up to 5 comments, then scrollbar appears) -->
+          <div class="space-y-2 max-h-[350px] overflow-y-auto pr-1" id="dynJobOwnerComment">
+            <div class="w-full text-xs text-purple-950 bg-white border border-purple-200/80 rounded-xl p-3.5 leading-relaxed">
+              <span class="text-slate-400 italic">No owner comment recorded yet.</span>
+            </div>
+          </div>
+
+          <!-- Chronological History List -->
+          <div id="dynOwnerCommentHistoryContainer" class="space-y-2 pt-2 border-t border-purple-200/50 hidden">
+            <span class="text-[10px] font-bold text-purple-800 tracking-wider block uppercase">Previous Comments by Job Owner (History)</span>
+            <div id="dynOwnerCommentHistoryList" class="space-y-2"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 8. Activity & Updates History -->
+      <div class="ww-card space-y-4">
+        <div class="border-b border-slate-100 pb-3 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <div class="w-7 h-7 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold">
+              <i class="fa-solid fa-comments"></i>
+            </div>
+            <h3 class="font-bold text-slate-900 text-sm">Activity & Updates History</h3>
+          </div>
+          <span class="text-xs text-slate-400 font-semibold" id="dynCommentsCount">0 Updates</span>
+        </div>
+
+        <div id="dynJobComments" class="space-y-3 max-h-96 overflow-y-auto pr-1">
+          <!-- Populated dynamically -->
+        </div>
+
+        <!-- Add Progress Comment & Upload Photos Form -->
+        <div id="detailsAddCommentContainer" class="pt-4 border-t border-slate-100">
+          <div class="bg-slate-50 border border-slate-200/90 rounded-2xl p-4 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                <i class="fa-solid fa-comment-dots text-blue-600"></i> Add Progress Note / Comment
+              </span>
+              <span class="text-[11px] text-slate-400">Post updates and upload photos</span>
+            </div>
+            <textarea id="detailNewCommentText" rows="3" placeholder="Write a comment, directive, or progress report..." class="w-full text-xs bg-white border border-slate-200 rounded-xl p-3 focus:border-blue-500 focus:outline-none resize-y"></textarea>
+
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+              <div class="flex items-center gap-2 flex-wrap">
+                <label for="detailCommentFile" class="cursor-pointer px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium inline-flex items-center gap-1.5 shadow-2xs transition-colors">
+                  <i class="fa-solid fa-camera text-blue-600 text-xs"></i>
+                  <span>Attach Photos</span>
+                  <input type="file" id="detailCommentFile" multiple accept="*/*" class="hidden" onchange="handleDetailCommentFilesChange(this)">
+                </label>
+                <div id="detailCommentFilesPreviewList" class="flex items-center gap-1.5 flex-wrap"></div>
+              </div>
+
+              <button type="button" id="btnSubmitDetailComment" onclick="submitDetailComment()" class="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm shadow-blue-500/20 inline-flex items-center justify-center gap-1.5 transition-all">
+                <i class="fa-solid fa-paper-plane text-[11px]"></i> Post Comment
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Action Bar (Matches Update Form layout) -->
+      <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between gap-3">
+        <a href="all-jobs.html" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-all">
+          <i class="fa-solid fa-arrow-left mr-1.5"></i> Back to All Jobs
+        </a>
+        <div class="flex items-center gap-3">
+          <button id="bottomCloseJobBtn" type="button" onclick="openCloseJobModal()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-md shadow-emerald-500/20 inline-flex items-center gap-2 transition-all hidden" title="Close this completed job order">
+            <i class="fa-solid fa-circle-check text-xs"></i> Close Job
+          </button>
+          <button type="button" onclick="window.print()" class="px-4 py-2.5 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-xl text-xs font-semibold inline-flex items-center gap-2 shadow-xs transition-all">
+            <i class="fa-solid fa-print text-slate-400"></i> Print
+          </button>
+          <a id="bottomUpdateJobBtn" href="#" class="px-7 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-md shadow-blue-500/20 inline-flex items-center gap-2 transition-all">
+            <i class="fa-solid fa-pen-to-square"></i> Update Job
+          </a>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Image Preview Lightbox Modal -->
+  <div id="imagePreviewModal" class="modal-backdrop">
+    <div class="modal-container !max-w-4xl !p-0 overflow-hidden bg-slate-950 border border-slate-800 shadow-2xl">
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between p-3.5 px-5 border-b border-slate-800/80 bg-slate-900/90 text-white">
+        <div class="flex items-center gap-2.5 min-w-0 pr-3">
+          <i class="fa-regular fa-image text-blue-400 text-sm shrink-0"></i>
+          <span class="text-xs font-semibold truncate" id="previewModalTitle">Photo Preview</span>
+        </div>
+        <div class="flex items-center gap-2 shrink-0">
+          <a id="previewModalDownloadBtn" href="#" target="_blank" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs transition-colors inline-flex items-center gap-1.5" title="Open full image in new tab">
+            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+            <span class="hidden sm:inline">Open in new tab</span>
+          </a>
+          <button type="button" onclick="closeImagePreview()" class="w-8 h-8 rounded-full hover:bg-slate-800 flex items-center justify-center text-slate-400 hover:text-white transition-colors" title="Close Preview">
+            <i class="fa-solid fa-xmark text-base"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Modal Body (Image Container) -->
+      <div class="p-4 sm:p-6 flex items-center justify-center bg-black/90 max-h-[75vh] overflow-auto">
+        <img id="previewModalImg" src="" alt="Job Preview Photo" class="max-h-[70vh] max-w-full object-contain rounded-lg shadow-2xl">
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="p-3 px-5 border-t border-slate-800/80 bg-slate-900/90 flex items-center justify-between text-xs text-slate-400">
+        <span id="previewModalCaption">WorkWize Attachment</span>
+        <button type="button" onclick="closeImagePreview()" class="px-3.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-white text-xs font-medium transition-colors">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  
+  <!-- Add New Job Modal -->
+  <div id="addJobModal" class="modal-backdrop">
+    <div class="modal-container">
+      <div class="flex items-center justify-between p-6 border-b border-slate-100">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-base">
+            <i class="fa-solid fa-folder-plus"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-slate-900 text-lg">Add New Job</h3>
+            <p class="text-xs text-slate-400">Configure parameters, assignment and documentation</p>
+          </div>
+        </div>
+
+        <button id="closeJobModalBtn" class="w-8 h-8 rounded-full hover:bg-slate-100 flex items-center justify-center text-slate-400 hover:text-slate-700 transition-colors">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <form id="addJobForm" onsubmit="return false;" class="p-6 space-y-6">
+        <!-- 1. Basic Information -->
+        <div id="stepContent1" class="space-y-4">
+          <div class="flex items-center gap-2 pb-2 border-b border-slate-100">
+            <span class="w-6 h-6 rounded-md bg-blue-50 text-blue-600 flex items-center justify-center text-xs font-bold">1</span>
+            <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider">Basic Information</h4>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1.5">Area <span class="text-rose-500">*</span></label>
+              <select id="modalArea" class="w-full text-xs bg-slate-50 border border-slate-200 rounded-lg p-2.5 focus:border-blue-500 focus:bg-white outline-none" onchange="handleModalAreaChange()">
+                <option value="">Select Area</option>
+                <option value="Statutory Compliance">Statutory Compliance</option>
+                <option value="Development/Project">Development/Project</option>
+                <option value="Fire Safety">Fire Safety</option>
+                <option value="Back of the House">Back of the House</option>
+                <option value="CAPEX">CAPEX</option>
+                <option value="SOP & Checklist">SOP & Checklist</option>
+                <option value="Energy Management">Energy Management</option>
+                <option value="Waste Management">Waste Management</option>
+                <option value="Utility">Utility</option>
+                <option value="Guest Villa">Guest Villa</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1.5">Villa Number <span id="villaRequiredMark" class="text-rose-500 hidden">*</span></label>
+              <input type="text" id="modalVillaNumber" placeholder="Disabled (Select Villa Area)" disabled class="w-full text-xs bg-slate-50 border border-slate-200 rounded-lg p-2.5 focus:border-blue-500 focus:bg-white outline-none disabled:opacity-60 disabled:cursor-not-allowed">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1.5">Priority <span class="text-rose-500">*</span></label>
+              <select id="modalPriority" class="w-full text-xs bg-slate-50 border border-slate-200 rounded-lg p-2.5 focus:border-blue-500 focus:bg-white outline-none">
+                <option value="">Select Priority</option>
+                <option value="HIGH">High</option>
+                <option value="MEDIUM">Medium</option>
+                <option value="LOW">Low</option>
+                <option value="SAFETY">Safety</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1.5">Status <span class="text-rose-500">*</span></label>
+              <select id="modalStatus" class="w-full text-xs bg-slate-50 border border-slate-200 rounded-lg p-2.5 focus:border-blue-500 focus:bg-white outline-none">
+                <option value="">Select Status</option>
+                <option value="YET_TO_COMMENCE">Yet to Commence</option>
+                <option value="IN_PROGRESS">In Progress</option>
+                <option value="SPARES_ON_ORDER">Spares on Order</option>
+                <option value="UNDER_DISCUSSION">Under Discussion</option>
+                <option value="FIXED">Fixed</option>
+                <option value="COMPLETED">Completed</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-1">
+            <div class="sm:col-span-2">
+              <label class="block text-xs font-semibold text-slate-700 mb-1.5">Job Location <span class="text-rose-500">*</span></label>
+              <input type="text" id="modalLocation" placeholder="e.g. Main Building Floor 3" class="w-full text-xs bg-slate-50 border border-slate-200 rounded-lg p-2.5 focus:border-blue-500 focus:bg-white outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1.5">Job Creation Date <span class="text-rose-500">*</span></label>
+              <input type="date" id="modalJobCreationDate" class="w-full text-xs bg-slate-50 border border-slate-200 rounded-lg p-2.5 focus:border-blue-500 focus:bg-white outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1.5">Expected Completion Date</label>
+              <input type="date" id="modalExpectedDate" class="w-full text-xs bg-slate-50 border border-slate-200 rounded-lg p-2.5 focus:border-blue-500 focus:bg-white outline-none">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1.5">Created By</label>
+              <input type="text" id="modalCreatedBy" readonly class="w-full text-xs bg-slate-100 border border-slate-200 rounded-lg p-2.5 text-slate-700 font-medium outline-none cursor-not-allowed" value="IT [App admin]">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1.5">Reference No.</label>
+              <input type="text" id="modalReferenceNo" placeholder="e.g. REF-2026-99" class="w-full text-xs bg-slate-50 border border-slate-200 rounded-lg p-2.5 focus:border-blue-500 focus:bg-white outline-none">
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Assignment & Details -->
+        <div id="stepContent2" class="space-y-4 pt-2">
+          <div class="flex items-center gap-2 pb-2 border-b border-slate-100">
+            <span class="w-6 h-6 rounded-md bg-blue-50 text-blue-600 flex items-center justify-center text-xs font-bold">2</span>
+            <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider">Assignment & Details</h4>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1.5">Assign To <span class="text-rose-500">*</span></label>
+              <div class="relative" id="modalAssignedToDropdown">
+                <button type="button" id="modalAssignedToBtn" onclick="toggleAssigneeDropdown('modalAssignedToMenu')" class="w-full text-xs bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-left flex items-center justify-between focus:border-blue-500 focus:bg-white outline-none">
+                  <span id="modalAssignedToText" class="text-slate-500 truncate">Select Assignee</span>
+                  <i class="fa-solid fa-chevron-down text-[10px] text-slate-400 ml-2 shrink-0"></i>
+                </button>
+                <div id="modalAssignedToMenu" class="hidden absolute left-0 right-0 top-full mt-1 bg-white border border-slate-200 rounded-lg shadow-xl p-2 z-50 max-h-56 overflow-y-auto space-y-1">
+                  <label class="flex items-center gap-2 px-2.5 py-1.5 hover:bg-slate-50 rounded-md cursor-pointer text-xs text-slate-700 select-none">
+                    <input type="checkbox" value="Facilities Team" data-name="Facilities Team" class="rounded border-slate-300 text-blue-600 focus:ring-blue-500 modal-assignee-cb" onchange="updateModalAssigneeButtonText()">
+                    <span class="truncate">Facilities Team</span>
+                  </label>
+                  <label class="flex items-center gap-2 px-2.5 py-1.5 hover:bg-slate-50 rounded-md cursor-pointer text-xs text-slate-700 select-none">
+                    <input type="checkbox" value="Engineering Team" data-name="Engineering Team" class="rounded border-slate-300 text-blue-600 focus:ring-blue-500 modal-assignee-cb" onchange="updateModalAssigneeButtonText()">
+                    <span class="truncate">Engineering Team</span>
+                  </label>
+                  <label class="flex items-center gap-2 px-2.5 py-1.5 hover:bg-slate-50 rounded-md cursor-pointer text-xs text-slate-700 select-none">
+                    <input type="checkbox" value="IT Admin" data-name="Testing - IT Admin" class="rounded border-slate-300 text-blue-600 focus:ring-blue-500 modal-assignee-cb" onchange="updateModalAssigneeButtonText()">
+                    <span class="truncate">Testing - IT Admin</span>
+                  </label>
+                  <label class="flex items-center gap-2 px-2.5 py-1.5 hover:bg-slate-50 rounded-md cursor-pointer text-xs text-slate-700 select-none">
+                    <input type="checkbox" value="Safety Team" data-name="Safety Team" class="rounded border-slate-300 text-blue-600 focus:ring-blue-500 modal-assignee-cb" onchange="updateModalAssigneeButtonText()">
+                    <span class="truncate">Safety Team</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1.5">Budget ($)</label>
+              <input type="number" id="modalBudget" placeholder="e.g. 1500" class="w-full text-xs bg-slate-50 border border-slate-200 rounded-lg p-2.5 focus:border-blue-500 focus:bg-white outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1.5">Cost Center</label>
+              <select id="modalCostCenter" class="w-full text-xs bg-slate-50 border border-slate-200 rounded-lg p-2.5 focus:border-blue-500 focus:bg-white outline-none" onchange="handleModalCcfChange()">
+                <option value="">Select Cost Center</option>
+                <option value="POMEC">POMEC</option>
+                <option value="CAPEX">CAPEX</option>
+                <option value="Department Operational Budget">Department Operational Budget</option>
+              </select>
+              <div id="modalCcfDeptContainer" class="hidden mt-2.5">
+                <label class="block text-xs font-semibold text-slate-700 mb-1.5">Department Name <span class="text-rose-500">*</span></label>
+            <input type="text" id="modalCcfDept" placeholder="Enter Department Name" class="w-full text-xs bg-slate-50 border border-slate-200 rounded-lg p-2.5 focus:border-blue-500 focus:bg-white outline-none">
+              </div>
+            </div>
+          </div>
+
+
+
+          <div>
+            <div class="flex items-center justify-between mb-1.5">
+              <label class="block text-xs font-semibold text-slate-700">Job Details <span class="text-rose-500">*</span></label>
+              <div class="flex items-center gap-1 bg-white border border-slate-200 rounded-lg px-2 py-1 shadow-2xs">
+                <button type="button" class="format-btn" title="Bold" onclick="formatRichText('modalJobDetails', 'bold')"><b>B</b></button>
+                <button type="button" class="format-btn" title="Italic" onclick="formatRichText('modalJobDetails', 'italic')"><i>I</i></button>
+                <button type="button" class="format-btn" title="Underline" onclick="formatRichText('modalJobDetails', 'underline')"><u>U</u></button>
+                <div class="w-px h-3.5 bg-slate-200 mx-0.5"></div>
+                <button type="button" class="format-color-chip bg-slate-800" title="Dark Slate" onclick="formatRichTextColor('modalJobDetails', '#1e293b')"></button>
+                <button type="button" class="format-color-chip bg-red-500" title="Red" onclick="formatRichTextColor('modalJobDetails', '#ef4444')"></button>
+                <button type="button" class="format-color-chip bg-blue-600" title="Blue" onclick="formatRichTextColor('modalJobDetails', '#2563eb')"></button>
+                <button type="button" class="format-color-chip bg-emerald-500" title="Green" onclick="formatRichTextColor('modalJobDetails', '#10b981')"></button>
+                <button type="button" class="format-color-chip bg-amber-500" title="Amber" onclick="formatRichTextColor('modalJobDetails', '#f59e0b')"></button>
+                <button type="button" class="format-color-chip bg-purple-600" title="Purple" onclick="formatRichTextColor('modalJobDetails', '#9333ea')"></button>
+                <label class="format-color-chip bg-gradient-to-tr from-rose-400 via-purple-400 to-blue-400 relative overflow-hidden flex items-center justify-center cursor-pointer" title="Custom Color">
+                  <input type="color" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer" onchange="formatRichTextColor('modalJobDetails', this.value)">
+                </label>
+              </div>
+            </div>
+            <div id="modalJobDetails" contenteditable="true" data-placeholder="Enter detailed description..." class="rich-text-editor w-full text-xs bg-slate-50 border border-slate-200 rounded-lg p-2.5 focus:border-blue-500 focus:bg-white outline-none min-h-[76px] max-h-[160px] overflow-y-auto leading-relaxed"></div>
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between mb-1.5">
+              <label class="block text-xs font-semibold text-slate-700">Remarks</label>
+              <div class="flex items-center gap-1 bg-white border border-slate-200 rounded-lg px-2 py-1 shadow-2xs">
+                <button type="button" class="format-btn" title="Bold" onclick="formatRichText('modalRemarks', 'bold')"><b>B</b></button>
+                <button type="button" class="format-btn" title="Italic" onclick="formatRichText('modalRemarks', 'italic')"><i>I</i></button>
+                <button type="button" class="format-btn" title="Underline" onclick="formatRichText('modalRemarks', 'underline')"><u>U</u></button>
+                <div class="w-px h-3.5 bg-slate-200 mx-0.5"></div>
+                <button type="button" class="format-color-chip bg-slate-800" title="Dark Slate" onclick="formatRichTextColor('modalRemarks', '#1e293b')"></button>
+                <button type="button" class="format-color-chip bg-red-500" title="Red" onclick="formatRichTextColor('modalRemarks', '#ef4444')"></button>
+                <button type="button" class="format-color-chip bg-blue-600" title="Blue" onclick="formatRichTextColor('modalRemarks', '#2563eb')"></button>
+                <button type="button" class="format-color-chip bg-emerald-500" title="Green" onclick="formatRichTextColor('modalRemarks', '#10b981')"></button>
+                <button type="button" class="format-color-chip bg-amber-500" title="Amber" onclick="formatRichTextColor('modalRemarks', '#f59e0b')"></button>
+                <button type="button" class="format-color-chip bg-purple-600" title="Purple" onclick="formatRichTextColor('modalRemarks', '#9333ea')"></button>
+                <label class="format-color-chip bg-gradient-to-tr from-rose-400 via-purple-400 to-blue-400 relative overflow-hidden flex items-center justify-center cursor-pointer" title="Custom Color">
+                  <input type="color" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer" onchange="formatRichTextColor('modalRemarks', this.value)">
+                </label>
+              </div>
+            </div>
+            <div id="modalRemarks" contenteditable="true" data-placeholder="Enter remarks..." class="rich-text-editor w-full text-xs bg-slate-50 border border-slate-200 rounded-lg p-2.5 focus:border-blue-500 focus:bg-white outline-none min-h-[56px] max-h-[140px] overflow-y-auto leading-relaxed"></div>
+          </div>
+        </div>
+
+        <!-- 3. Additional Details & Attachments -->
+        <div id="stepContent3" class="space-y-4 pt-2">
+          <div class="flex items-center gap-2 pb-2 border-b border-slate-100">
+            <span class="w-6 h-6 rounded-md bg-blue-50 text-blue-600 flex items-center justify-center text-xs font-bold">3</span>
+            <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider">Additional Details & Attachments</h4>
+          </div>
+
+                    <!-- Owner Directive & Attachments (Optional) -->
+          <div class="rounded-xl border border-purple-200 bg-purple-50/40 p-3.5 space-y-2.5">
+            <div class="flex items-center justify-between">
+              <label class="text-xs font-bold text-purple-950 flex items-center gap-1.5">
+                <i class="fa-solid fa-crown text-purple-600"></i> Owner Directive / Comment
+              </label>
+              <span class="text-[10px] text-purple-600 font-semibold px-2 py-0.5 rounded-full bg-purple-100">Optional</span>
+            </div>
+            <textarea id="modalOwnerComment" rows="2" placeholder="Enter owner instructions, special directives, or priority guidance..." class="w-full text-xs bg-white border border-purple-200 rounded-lg p-2.5 focus:border-purple-500 focus:bg-white outline-none resize-none"></textarea>
+            <div>
+              <label class="block text-[11px] font-semibold text-purple-900 mb-1">Owner Comment Attachments / Photos</label>
+              <div class="flex items-center gap-2 flex-wrap">
+                <label for="modalOwnerUploadInput" class="cursor-pointer px-3 py-1.5 rounded-lg border border-purple-200 bg-white hover:bg-purple-50 text-purple-700 text-xs font-semibold inline-flex items-center gap-1.5 shadow-2xs transition-colors">
+                  <i class="fa-solid fa-paperclip text-xs"></i>
+                  <span>Attach Files</span>
+                  <input type="file" id="modalOwnerUploadInput" multiple accept="*/*" class="hidden" onchange="handleModalOwnerUploadChange(this)">
+                </label>
+                <div id="modalOwnerUploadedFileList" class="flex items-center gap-1.5 flex-wrap"></div>
+              </div>
+            </div>
+          </div>
+
+          <label class="block text-xs font-semibold text-slate-700">General Job Photos & Documentation</label>
+          <div id="fileDropZone" class="border-2 border-dashed border-slate-300 rounded-2xl p-6 text-center cursor-pointer hover:border-blue-400 hover:bg-slate-50 transition-all">
+            <input type="file" id="fileUploadInput" multiple accept="*/*" class="hidden">
+            <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl mx-auto mb-2">
+              <i class="fa-regular fa-file-image"></i>
+            </div>
+            <p class="text-xs font-semibold text-slate-700">Drag & drop files here or <span class="text-blue-600 underline">click to upload</span></p>
+            <p class="text-[10px] text-slate-400 mt-1">All file types supported (Images, Videos, PDFs, Word, Excel, ZIP) up to 5MB</p>
+          </div>
+
+          <!-- Uploaded files list preview -->
+          <div id="uploadedFileList" class="space-y-2"></div>
+        </div>
+      </form>
+
+      <!-- Modal Footer -->
+      <div class="flex items-center justify-end gap-3 p-6 border-t border-slate-100 bg-slate-50/50 rounded-b-2xl">
+        <button id="cancelJobModalBtn" class="btn-outline text-xs">Cancel</button>
+        <button id="nextJobModalBtn" class="btn-primary text-xs">
+          <i class="fa-solid fa-paper-plane text-xs mr-1.5"></i> Submit
+        </button>
+      </div>
+    </div>
+  </div>
+
+  
+  <!-- Scripts -->
+  <script src="js/api.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/job-details.js"></script>
+    <!-- Close Job Modal (Admin, SuperAdmin, OproAdmin Only) -->
+  <div id="closeJobModal" class="modal-backdrop">
+    <div class="modal-container !max-w-lg">
+      <div class="modal-header border-b border-emerald-100 bg-emerald-50/70 p-4 flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-emerald-600 text-white flex items-center justify-center text-sm shadow-xs">
+            <i class="fa-solid fa-lock"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-emerald-950 text-sm">Close This Job</h3>
+            <p class="text-[11px] text-emerald-700">Authorized: SuperAdmin, OproAdmin & Admin</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeCloseJobModal()" class="w-8 h-8 rounded-full hover:bg-emerald-100/80 flex items-center justify-center text-slate-400 hover:text-slate-700 transition-colors">
+          <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+      </div>
+      <div class="p-5 space-y-4">
+        <div class="p-3 bg-emerald-50/50 rounded-xl border border-emerald-200/60 text-xs text-emerald-900 flex items-start gap-2.5">
+          <i class="fa-solid fa-circle-info text-emerald-600 mt-0.5 text-sm shrink-0"></i>
+          <p class="leading-relaxed">
+            This job status is <span class="font-bold text-emerald-800">Completed</span>. Closing this job will move it to <span class="font-semibold text-emerald-800">Closed Jobs</span>. Please enter official closure comments / remarks to proceed.
+          </p>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1.5">
+            Closure Comments / Remarks <span class="text-rose-500">*</span>
+          </label>
+          <textarea id="modalCloseJobRemarks" rows="5" placeholder="Enter closure comments / sign-off remarks..." class="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl p-3 focus:border-emerald-500 focus:bg-white outline-none resize-none leading-relaxed"></textarea>
+          <p class="text-[11px] text-slate-400 mt-1">Remarks will be saved in admin comment history & email notification will be sent.</p>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1.5">
+            Closure Photos <span class="text-slate-400 font-normal text-[11px]">(Optional)</span>
+          </label>
+          <div class="flex items-center gap-2">
+            <label class="btn-outline !py-1.5 !px-3 text-xs cursor-pointer hover:bg-slate-50 inline-flex items-center gap-1.5 font-semibold text-slate-700">
+              <i class="fa-solid fa-paperclip text-slate-400"></i> Attach Photos
+              <input type="file" id="modalCloseJobFiles" multiple accept="image/*" class="hidden" onchange="handleCloseJobFilesChange(this)">
+            </label>
+            <span id="modalCloseJobFilesCount" class="text-[11px] text-slate-500">No photos selected</span>
+          </div>
+          <div id="modalCloseJobFilesPreview" class="flex flex-wrap gap-1.5 mt-2"></div>
+        </div>
+      </div>
+      <div class="p-4 border-t border-slate-100 bg-slate-50 flex items-center justify-end gap-2">
+        <button type="button" onclick="closeCloseJobModal()" class="px-4 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 text-xs font-semibold transition-all">Cancel</button>
+        <button type="button" id="btnConfirmCloseJob" onclick="submitCloseJob()" class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md shadow-emerald-500/20 inline-flex items-center gap-1.5 transition-all">
+          <i class="fa-solid fa-circle-check text-xs"></i> Close Job
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Owner Comment Modal -->
+  <div id="addOwnerCommentModal" class="modal-backdrop">
+    <div class="modal-container !max-w-lg">
+      <div class="modal-header border-b border-purple-100 bg-purple-50/50 p-4 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <div class="w-7 h-7 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center text-xs font-bold">
+            <i class="fa-solid fa-crown"></i>
+          </div>
+          <h3 class="font-bold text-purple-950 text-sm">Add Owner's Comment</h3>
+        </div>
+        <button type="button" onclick="closeAddOwnerCommentModal()" class="w-8 h-8 rounded-full hover:bg-purple-100/80 flex items-center justify-center text-slate-400 hover:text-slate-700">
+          <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+      </div>
+      <div class="p-5 space-y-3">
+        <label class="block text-xs font-bold text-slate-700">New Directive / Comment by Job Owner</label>
+        <textarea id="modalOwnerCommentText" rows="4" placeholder="Enter owner directives, instructions, or notes..." class="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl p-3 focus:border-purple-500 focus:bg-white outline-none resize-y"></textarea>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1.5">Attach Directive Photo / Document</label>
+          <div class="flex items-center gap-2 flex-wrap">
+            <label for="modalOwnerCommentFile" class="cursor-pointer px-3 py-1.5 rounded-xl border border-purple-200 bg-purple-50/70 hover:bg-purple-100/70 text-purple-700 text-xs font-semibold inline-flex items-center gap-1.5 shadow-2xs transition-colors">
+              <i class="fa-solid fa-paperclip text-xs"></i>
+              <span>Attach File</span>
+              <input type="file" id="modalOwnerCommentFile" multiple accept="*/*" class="hidden" onchange="handleModalOwnerCommentFilesChange(this)">
+            </label>
+            <div id="modalOwnerCommentFilesPreviewList" class="flex items-center gap-1.5 flex-wrap"></div>
+          </div>
+        </div>
+        <p class="text-[11px] text-slate-400 flex items-center gap-1">
+          <i class="fa-regular fa-clock text-purple-500 text-[10px]"></i> Comment will be tracked in Maldives time.
+        </p>
+      </div>
+      <div class="p-4 border-t border-slate-100 bg-slate-50 flex items-center justify-end gap-2">
+        <button type="button" onclick="closeAddOwnerCommentModal()" class="px-4 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 text-xs font-semibold">Cancel</button>
+        <button type="button" id="btnSaveOwnerCommentModal" onclick="submitAddOwnerComment()" class="px-5 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold shadow-xs">Post Directive</button>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

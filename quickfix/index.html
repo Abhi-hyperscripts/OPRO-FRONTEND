@@ -1,353 +1,723 @@
 <!DOCTYPE html>
-<html lang="en" class="light-style layout-navbar-fixed layout-menu-fixed layout-footer-fixed layout-menu-collapse"
-  dir="ltr" data-theme="theme-default" data-assets-path="quickfixcssjs/theme/assets/"
-  data-template="horizontal-menu-template-no-customizer">
-
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport"
-    content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
-  <title>WorkWize | Daily Jobs</title>
-  <meta name="description" content="" />
-  <link rel="icon" type="image/x-icon" href="quickfixcssjs/theme/assets/img/AppImages/logo.jpeg" />
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
-    rel="stylesheet" />
-  <!-- All CSS -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WorkWize - QuickFix</title>
+  <link rel="icon" type="image/x-icon" href="assets/logo.jpeg" />
 
-  <script>window.CACHE_VERSION = Date.now();</script>
-    <script>document.write('<script src="js/sw-version.js?v=' + CACHE_VERSION + '"><\/script>');</script>
-    <script src="/js/sw-update.js"></script>
-    <script src="/js/pwa-install-prompt.js"></script>
-    <script>document.write('<link rel="stylesheet" href="css/theme.css?v=' + CACHE_VERSION + '">');</script>
-    <script>document.write('<link rel="stylesheet" href="css/landing.css?v=' + CACHE_VERSION + '">');</script>
-
-
-  <link rel="stylesheet" href="quickfixcssjs/theme/assets/vendor/fonts/boxicons.css" />
-  <link rel="stylesheet" href="quickfixcssjs/theme/assets/vendor/fonts/fontawesome.css" />
-  <link rel="stylesheet" href="quickfixcssjs/theme/assets/vendor/fonts/flag-icons.css" />
-  <link rel="stylesheet" href="quickfixcssjs/theme/assets/vendor/css/rtl/core.css" />
-  <link rel="stylesheet" href="quickfixcssjs/theme/assets/vendor/css/rtl/theme-default.css" />
-  <link rel="stylesheet" href="quickfixcssjs/theme/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
-  <link rel="stylesheet" href="quickfixcssjs/theme/assets/vendor/libs/typeahead-js/typeahead.css" />
-  <link rel="stylesheet" href="quickfixcssjs/theme/assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css" />
-  <link rel="stylesheet"
-    href="quickfixcssjs/theme/assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css" />
-  <link rel="stylesheet"
-    href="quickfixcssjs/theme/assets/vendor/libs/datatables-checkboxes-jquery/datatables.checkboxes.css" />
-  <link rel="stylesheet" href="quickfixcssjs/theme/assets/vendor/libs/datatables-buttons-bs5/buttons.bootstrap5.css" />
-  <link rel="stylesheet" href="quickfixcssjs/theme/assets/vendor/libs/flatpickr/flatpickr.css" />
-  <link rel="stylesheet"
-    href="quickfixcssjs/theme/assets/vendor/libs/datatables-rowgroup-bs5/rowgroup.bootstrap5.css" />
-  <link rel="stylesheet" href="quickfixcssjs/theme/assets/vendor/libs/formvalidation/dist/css/formValidation.min.css" />
-  <link rel="stylesheet" href="quickfixcssjs/theme/assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.css" />
-  <link rel="stylesheet"
-    href="quickfixcssjs/theme/assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.css" />
-  <link rel="stylesheet" href="quickfixcssjs/theme/assets/vendor/libs/jquery-timepicker/jquery-timepicker.css" />
-  <link rel="stylesheet" href="quickfixcssjs/theme/assets/vendor/libs/pickr/pickr-themes.css" />
-  <link rel="stylesheet" href="quickfixcssjs/theme/assets/css/demo.css" />
-  <link rel="stylesheet" href="quickfixcssjs/theme/assets/css/daily-job.css" />
-  <link rel="stylesheet" href="quickfixcssjs/theme/assets/vendor/libs/select2/select2.css" />
-
-  <link rel="stylesheet" href="quickfixcssjs/theme/assets/vendor/libs/animate-css/animate.css" />
-  <link rel="stylesheet" href="quickfixcssjs/theme/assets/vendor/libs/sweetalert2/sweetalert2.css" />
-  <link rel="stylesheet" href="../webessential/LoadingSpin.css">
-  <link href="https://cdn.datatables.net/v/bs5/jszip-3.10.1/dt-2.0.8/af-2.7.0/b-3.0.2/b-colvis-3.0.2/b-html5-3.0.2/b-print-3.0.2/cr-2.0.3/date-1.5.2/fc-5.0.1/fh-4.0.1/kt-2.12.1/r-3.0.2/rg-1.5.0/rr-1.5.0/sc-2.4.3/sb-1.7.1/sp-2.3.1/sl-2.0.3/sr-1.4.1/datatables.min.css" rel="stylesheet">
-
-
-  <style>
-    /* Optional: Styling for hidden rows f */
-    .hidden {
-      display: none;
-    }
-
-    .nav-pills .nav-link.active,
-    .nav-pills .nav-link.active:hover,
-    .nav-pills .nav-link.active:focus {
-      background-color: #0077b5;
-      color: #fff;
-      box-shadow: 0 2px 4px 0 rgba(105, 108, 255, 0.4);
-    }
-
-    .nav-pills .nav-link.active,
-    .nav-pills .show>.nav-link {
-      color: #fff;
-      background-color: #0077b5 !important;
-    }
-
-    .nav-tabs .nav-link,
-    .nav-pills .nav-link {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      color: #000;
-      border: 1px solid #0077b5 !important;
-      position: relative !important;
-    }
-
-    .nav-link span {
-      color: #fff;
-      position: absolute;
-      right: 0;
-      top: -14px;
-      background: red;
-      border-radius: 50pc;
-      padding: 2px;
-      font-size: 14px;
-      width: 30px;
-    }
-
-    .nav .nav-item,
-    .nav .nav-link,
-    .tab-pane,
-    .tab-pane .card-body {
-      outline: none !important;
-      margin-right: 15px;
-    }
-
-    .nav-link.active::before {
-      content: '';
-      display: block;
-      position: absolute;
-      left: 0;
-      right: 0;
-      margin-right: auto;
-      margin-left: auto;
-      top: 100%;
-      width: 0;
-      height: 0;
-      border-top: 10px solid #0077b5;
-      border-right: 10px solid transparent;
-      border-bottom: 0 solid transparent;
-      border-left: 10px solid transparent;
-    }
-  </style>
-  
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-  <!-- Layout wrapper -->
-  <div class="layout-wrapper layout-navbar-full layout-horizontal layout-without-menu">
-    <div class="layout-container">
-      <!-- Menu -->
-      <nav class="layout-navbar navbar navbar-expand-xl align-items-center bg-navbar-theme bg-lighter"
-        id="layout-navbar">
-        <div class="container-fluid">
-          <div class="navbar-brand app-brand demo d-xl-flex py-0 me-4">
-            <a href="#" class="app-brand-link gap-2">
-              <div class="logo">
-                <img src="quickfixcssjs/assets/images/logo.png" alt="Opro" title="Opro" style="height: 50px;" />
-              </div>
-            </a>
-          </div>
-          <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
-            <ul class="navbar-nav flex-row align-items-center ms-auto">
-              <li class="nav-item dropdown-notifications navbar-dropdown dropdown me-3">
-                <i class="bx bx-bell bx-sm"></i>
-                <div id="top-notification-bell">
-                  <!-- <span class="badge bg-danger rounded-pill badge-notifications"></span> -->
-                </div>
-              </li>
-              <li class="nav-item navbar-dropdown dropdown-user dropdown">
-                <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
-                  <div class="avatar avatar-offline" id="avatar-status">
-                    <img src="quickfixcssjs/theme/assets/img/avatars/21.png" alt
-                      class="w-px-40 h-auto rounded-circle" />
-                  </div>
-                </a>
-                <ul class="dropdown-menu dropdown-menu-end">
-                  <li>
-                    <a class="dropdown-item">
-                      <div class="d-flex">
-                        <div class="flex-shrink-0 me-3">
-                          <div class="avatar avatar-offline" id="avatar-status-dd">
-                            <img src="quickfixcssjs/theme/assets/img/avatars/21.png" alt
-                              class="w-px-40 h-auto rounded-circle" />
-                          </div>
-                        </div>
-                        <div class="flex-grow-1">
-                          <span class="fw-semibold d-block" id="UserName_Name"></span>
-                          <small class="text-muted"><span id="is-designation"></span></small>
-                          <small class="text-muted" id="master-prop-name"></small>
-                        </div>
-                      </div>
-                    </a>
-                  </li>
-                  <li>
-                    <div class="dropdown-divider"></div>
-                    <div class="p-2" id="prop-selector-div">
 
-                    </div>
-                  </li>
-                  <li>
-                    <a class="dropdown-item" onclick="ResetPassword()">
-                      <i class="bx bx-reset me-2"></i>
-                      <span class="align-middle">Reset Password</span>
-                    </a>
-                  </li>
-                  <li>
-                    <a class="dropdown-item" onclick="LogoutUserMobile()">
-                      <i class="bx bx-power-off me-2"></i>
-                      <span class="align-middle">Log Out</span>
-                    </a>
-                  </li>
-                </ul>
-              </li>
-            </ul>
-          </div>
+  <!-- ===== HEADER ===== -->
+  <header class="header">
+    <div class="logo-pill"><img src="assets/logo.png" alt="WorkWize"></div>
+
+    <nav class="seg" id="tabs">
+      <button class="tab on" data-tab="new"><span class="ic">+</span> New Job</button>
+      <button class="tab" data-tab="open">Open <span class="badge" id="openBadge">0</span></button>
+      <button class="tab" data-tab="closed">Closed <span class="badge muted-b" id="closedBadge"></span></button>
+    </nav>
+
+    <div class="hr">
+      <button class="icon-btn" aria-label="Notifications">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 01-3.4 0"/></svg>
+      </button>
+      <div class="user-menu-wrap">
+        <div class="avatar" id="userMenuTrigger" role="button" tabindex="0" aria-label="User profile menu" aria-haspopup="true" aria-expanded="false" title="IT - App admin">
+          <img src="assets/avatar.png" alt="SD" class="avatar-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+          <span class="avatar-initials" style="display:none;">SD</span>
         </div>
-      </nav>
-      <!-- Menu End -->
 
-      <!-- Layout container -->
-      <div class="layout-page mt-4 mb-5">
-        <div class="content-wrapper"
-          style="width: auto !important; min-width: auto !important; max-width: auto !important;">
-          <div class="container-fluid" id="section-block">
-            <!-- Public Area Content Start -->
-            <div class="area-main">
+        <!-- ===== Profile Dropdown Popover (image.png) ===== -->
+        <div class="profile-dropdown" id="profileDropdown" hidden>
+          <!-- Top User Info -->
+          <div class="pd-header">
+            <div class="pd-avatar-wrap">
+              <img src="assets/avatar.png" alt="IT" class="pd-avatar" id="pdAvatarImg">
+            </div>
+            <div class="pd-user-info">
+              <div class="pd-name" id="pdUserName">IT</div>
+              <div class="pd-role" id="pdUserRole">App admin</div>
+            </div>
+          </div>
 
-              <!-- Table Start -->
-              <div class="container-fluid">
-                <ul class="nav nav-pills mb-3 d-flex justify-content-center" id="tab1-tab" role="tablist">
-                  <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="tab1-tab" data-bs-toggle="pill" data-bs-target="#tab1"
-                      type="button" role="tab" aria-controls="tab1" aria-selected="true">New Job</button>
-                  </li>
-                  <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="tab2-tab" data-bs-toggle="pill" data-bs-target="#tab2" type="button"
-                      role="tab" aria-controls="tab2" aria-selected="false">Open <span
-                        id="openjobcountbadge"></span></button>
-                  </li>
-                  <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="tab3-tab" data-bs-toggle="pill" data-bs-target="#tab3" type="button"
-                      role="tab" aria-controls="tab3" aria-selected="false">Closed</button>
-                  </li>
-                </ul>
+          <div class="pd-divider"></div>
 
-              </div>
-
-              <div class="">
-                <div class="row">
-                  <div class="card-body">
-
-                    <div class="tab-content" id="pills-tabContent">
-                      <!-- Tab 1 -->
-                      <div class="tab-pane fade show active" id="tab1" role="tabpanel" aria-labelledby="tab1-tab">
-                        <div id="div-newjob-holder" class="container"></div>
-                      </div>
-
-                      <!-- Tab 2 -->
-                      <div class="tab-pane fade" id="tab2" role="tabpanel" aria-labelledby="tab2-tab">
-                        <div id="div-openjob-holder"></div>
-                      </div>
-                      <!-- Tab 3 -->
-                      <div class="tab-pane fade" id="tab3" role="tabpanel" aria-labelledby="tab3-tab">
-                        <div id="div-closejob-holder"></div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+          <!-- Testing Dropdown -->
+          <div class="pd-select-container">
+            <div class="pd-select-box" id="pdTestingSelectBtn" tabindex="0" role="button" aria-haspopup="listbox" aria-expanded="false">
+              <span class="pd-select-value" id="pdSelectedValue">Testing</span>
+              <svg class="pd-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 9l6 6 6-6"/>
+              </svg>
+            </div>
+            <div class="pd-options-menu" id="pdTestingMenu" hidden role="listbox">
+              <div class="pd-option-item active" role="option" data-val="Testing">
+                <span>Testing</span>
+                <svg class="pd-check-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
               </div>
             </div>
           </div>
-        </div>
 
-        <!-- Footer -->
-        <footer class="content-footer footer bg-footer-theme">
-          <div class="container-xxl d-flex flex-wrap justify-content-between py-2 flex-md-row flex-column">
-            <div class="mb-2 mb-md-0 text-center w-100">
-              © 2023- 2024 WorkWize . All Rights Reserved
-              <script>
-                document.write(new Date().getFullYear());
-              </script>
+          <!-- Action Items -->
+          <div class="pd-menu">
+            <button type="button" class="pd-action-btn" id="pdLoginBtn" hidden>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+                <polyline points="10 17 15 12 10 7"/>
+                <line x1="15" y1="12" x2="3" y2="12"/>
+              </svg>
+              <span>Sign In</span>
+            </button>
+            <button type="button" class="pd-action-btn" id="pdResetPwdBtn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                <path d="M3 3v5h5"/>
+                <circle cx="12" cy="12" r="1.5" fill="currentColor"/>
+              </svg>
+              <span>Reset Password</span>
+            </button>
+            <button type="button" class="pd-action-btn danger" id="pdLogoutBtn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18.36 6.64a9 9 0 1 1-12.73 0"/>
+                <line x1="12" y1="2" x2="12" y2="12"/>
+              </svg>
+              <span>Log Out</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <!-- ===== SEARCH + FILTERS (sticky, every tab) ===== -->
+    <div class="sticky-bar">
+      <div class="topbar">
+        <div class="search">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+          <input id="search" type="text" placeholder="Search by job, area, sub-area, issued by, status..." autocomplete="off">
+          <button id="clearSearch" class="clear" title="Clear" hidden>&times;</button>
+        </div>
+        <div class="tools" id="tools" hidden>
+          <button class="chip btn-filter" id="btnFilter" aria-label="Filter" title="Open Filter & Sort">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+            </svg>
+            <span>Filter</span>
+            <span class="filter-dot" id="filterDot" hidden></span>
+          </button>
+          <button class="chip" id="btnCopy">Copy</button>
+          <button class="chip" id="btnExcel">Export</button>
+          <button class="chip" id="btnPrint">Print</button>
+        </div>
+      </div>
+
+      <div class="filters" id="filters" hidden>
+        <select id="pageSize" aria-label="Rows per page">
+          <option value="25" selected>25 / page</option>
+          <option value="50">50 / page</option>
+          <option value="100">100 / page</option>
+          <option value="200">200 / page</option>
+        </select>
+        <div class="vtoggle" role="group" aria-label="Layout">
+          <button id="viewGrid" title="Card view">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          </button>
+          <button id="viewList" class="on" title="Table view">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+          </button>
+        </div>
+        <button class="link" id="clearFilters" hidden>Clear filters</button>
+        <span class="count" id="resultCount"></span>
+      </div>
+    </div>
+
+    <!-- ===== NEW JOB ===== -->
+    <section id="view-new" class="view">
+      <div class="split">
+        <form class="card" id="jobForm" novalidate>
+          <h2>Create New Job</h2>
+          <div class="fgrid">
+            <div class="fld">
+              <label for="fDept">Issued To Dept.</label>
+              <select id="fDept" required>
+                <option value="">Select department</option>
+              </select>
+              <small class="err"></small>
+            </div>
+            <div class="fld">
+              <label for="fBy">Issued By</label>
+              <input id="fBy" type="text" value="IT [App admin]" readonly>
+            </div>
+            <div class="fld">
+              <label for="fArea">Area</label>
+              <select id="fArea" required>
+                <option value="">Select area</option>
+              </select>
+              <small class="err"></small>
+            </div>
+            <div class="fld">
+              <label for="fSub">Sub-Area</label>
+              <input id="fSub" type="text" placeholder="Subarea">
+            </div>
+            <div class="fld full">
+              <label for="fDetails">Job Details</label>
+              <input id="fDetails" type="text" placeholder="Enter job detail" required>
+              <small class="err"></small>
+            </div>
+            <div class="fld" id="fDeptAssignWrap" hidden>
+              <label for="fDeptAssign">Assign (Dept.)</label>
+              <select id="fDeptAssign"></select>
+            </div>
+            <div class="fld" id="fSupervisorAssignWrap" hidden>
+              <label for="fSupervisorAssign">Assign (Supervisor)</label>
+              <select id="fSupervisorAssign"></select>
+            </div>
+            <div class="fld full" id="fSubTeamWarningWrap" hidden>
+              <small class="err" id="fSubTeamWarning" style="color:var(--danger,#e53e3e);display:block;"></small>
+            </div>
+            <div class="fld full">
+              <label>Photo (Size Limit: 5MB)</label>
+              <label class="drop" id="drop" for="fPhoto">
+                <input id="fPhoto" type="file" accept=".jpeg, .jpg, .png, .mp4, .mov" multiple hidden>
+                <div id="dropText">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M6 10l6-6 6 6M4 20h16"/></svg>
+                  <span>Click to upload photo or video &middot; max 5MB</span>
+                </div>
+                <img id="preview" alt="" hidden>
+              </label>
+              <div id="newJobPreviews" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;"></div>
+              <small class="err" id="photoErr"></small>
             </div>
           </div>
-        </footer>
-        <!-- / Footer -->
+          <div class="btns">
+            <button type="button" class="btn s" id="btnCancel">Cancel</button>
+            <button type="submit" class="btn p">Submit</button>
+          </div>
+        </form>
+
+        <aside class="card recent">
+          <div class="recent-top">
+            <h3 class="recent-heading">Job Statistics</h3>
+            <div class="recent-tabs" id="periodTabs" role="tablist">
+              <button type="button" class="rtab on" data-period="today">Today <span class="badge" id="pCountToday">0</span></button>
+              <button type="button" class="rtab" data-period="weekly">Weekly <span class="badge" id="pCountWeekly">0</span></button>
+              <button type="button" class="rtab" data-period="monthly">Monthly <span class="badge" id="pCountMonthly">0</span></button>
+            </div>
+          </div>
+
+          <!-- Period Metrics Grid (4 Boxes: Total,   Open, Assigned, Closed) -->
+          <div class="stat-boxes" id="periodStatBoxes">
+            <div class="sbox sbox-total" data-status-filter="all" title="View all jobs in this period">
+              <div class="sbox-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+                  <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+                </svg>
+              </div>
+              <div class="sbox-content">
+                <div class="sbox-label">Total New Jobs</div>
+                <div class="sbox-num" id="statBoxTotal">0</div>
+              </div>
+            </div>
+
+            <div class="sbox sbox-open" data-status-filter="Open" title="View open jobs">
+              <div class="sbox-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"/>
+                  <polyline points="12 6 12 12 16 14"/>
+                </svg>
+              </div>
+              <div class="sbox-content">
+                <div class="sbox-label">Open</div>
+                <div class="sbox-num" id="statBoxOpen">0</div>
+              </div>
+            </div>
+
+            <div class="sbox sbox-assigned" data-status-filter="Assigned" title="View assigned jobs">
+              <div class="sbox-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                  <circle cx="9" cy="7" r="4"/>
+                  <polyline points="16 11 18 13 22 9"/>
+                </svg>
+              </div>
+              <div class="sbox-content">
+                <div class="sbox-label">Assigned</div>
+                <div class="sbox-num" id="statBoxAssigned">0</div>
+              </div>
+            </div>
+
+            <div class="sbox sbox-inprogress" data-status-filter="In-Progress" title="View in-progress jobs">
+              <div class="sbox-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="23 4 23 10 17 10"></polyline>
+                  <polyline points="1 20 1 14 7 14"></polyline>
+                  <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                </svg>
+              </div>
+              <div class="sbox-content">
+                <div class="sbox-label">In Progress</div>
+                <div class="sbox-num" id="statBoxInProgress">0</div>
+              </div>
+            </div>
+
+            <div class="sbox sbox-closed" data-status-filter="Closed" title="View closed jobs">
+              <div class="sbox-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                  <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+              </div>
+              <div class="sbox-content">
+                <div class="sbox-label">Closed</div>
+                <div class="sbox-num" id="statBoxClosed">0</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Aging of Jobs (> 1 Week Old) -->
+          <div class="aging-section">
+            <div class="aging-header">
+              <div class="aging-title">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"/>
+                  <polyline points="12 6 12 12 16 14"/>
+                </svg>
+                <span>Aging of Jobs</span>
+              </div>
+              <span class="aging-pill">&gt; 1 Week Old</span>
+            </div>
+
+            <div class="aging-grid" id="agingStatBoxes">
+              <div class="abox abox-open" data-aging-status="Open" title="View Open jobs older than 1 week">
+                <div class="abox-header">
+                  <span class="abox-dot"></span>
+                  <span class="abox-label">Open</span>
+                </div>
+                <div class="abox-num" id="agingOpenCount">0</div>
+                <span class="abox-sub">&gt; 7 days</span>
+              </div>
+
+              <div class="abox abox-assigned" data-aging-status="Assigned" title="View Assigned jobs older than 1 week">
+                <div class="abox-header">
+                  <span class="abox-dot"></span>
+                  <span class="abox-label">Assigned</span>
+                </div>
+                <div class="abox-num" id="agingAssignedCount">0</div>
+                <span class="abox-sub">&gt; 7 days</span>
+              </div>
+
+              <div class="abox abox-inprogress" data-aging-status="In-Progress" title="View In-Progress jobs older than 1 week">
+                <div class="abox-header">
+                  <span class="abox-dot"></span>
+                  <span class="abox-label">In-Progress</span>
+                </div>
+                <div class="abox-num" id="agingInProgressCount">0</div>
+                <span class="abox-sub">&gt; 7 days</span>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ===== OPEN ===== -->
+    <section id="view-open" class="view" hidden>
+      <div class="cards" id="openCards"></div>
+      <div class="pager" id="openPager"></div>
+    </section>
+
+    <!-- ===== CLOSED ===== -->
+    <section id="view-closed" class="view" hidden>
+      <div class="cards" id="closedCards"></div>
+      <div class="pager" id="closedPager"></div>
+    </section>
+
+  </main>
+
+  <footer class="foot">
+    &copy; 2023-2026 WorkWize . All Rights Reserved
+  </footer>
+
+  <!-- ===== FILTER SIDEBAR DRAWER ===== -->
+  <div class="filter-overlay" id="filterOverlay" hidden></div>
+  <aside class="filter-sidebar" id="filterSidebar" aria-label="Filter Sidebar" hidden>
+    <div class="fs-head">
+      <div class="fs-title">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+        </svg>
+        <span>Filter &amp; Sort</span>
+      </div>
+      <button type="button" class="fs-close" id="btnCloseFilter" aria-label="Close filters">&times;</button>
+    </div>
+
+    <div class="fs-body">
+      <!-- Status Filter -->
+      <div class="fs-group" id="fsStatusGroup">
+        <label class="fs-label" for="fltStatus">Status</label>
+        <select id="fltStatus" aria-label="Filter by status">
+          <option value="all">All</option>
+          <option value="Open">Open</option>
+          <option value="Assigned">Assigned</option>
+          <option value="In-Progress">In Progress</option>
+        </select>
+      </div>
+
+      <!-- Area Filter -->
+      <div class="fs-group">
+        <label class="fs-label" for="fltArea">Filter by Area</label>
+        <select id="fltArea" aria-label="Filter by area">
+          <option value="all">All areas</option>
+        </select>
+      </div>
+
+      <!-- Issued By Filter -->
+      <div class="fs-group">
+        <label class="fs-label" for="fltIssuedBy">Issued By Team</label>
+        <select id="fltIssuedBy" aria-label="Filter by issued by">
+          <option value="all">All Issued By</option>
+        </select>
+      </div>
+
+      <!-- Issued To Filter -->
+      <div class="fs-group">
+        <label class="fs-label" for="fltIssuedTo">Issued To Team</label>
+        <select id="fltIssuedTo" aria-label="Filter by issued to">
+          <option value="all">All Jobs</option>
+        </select>
+      </div>
+
+      <!-- Assign To Filter -->
+      <div class="fs-group" id="fsAssignToGroup">
+        <label class="fs-label" for="fltAssignTo">Assign To</label>
+        <select id="fltAssignTo" aria-label="Filter by assign to">
+          <option value="all">All Assign To</option>
+        </select>
+      </div>
+
+      <!-- Closed By Filter -->
+      <div class="fs-group" id="fsClosedByGroup" hidden>
+        <label class="fs-label" for="fltClosedBy">Closed By</label>
+        <select id="fltClosedBy" aria-label="Filter by closed by">
+          <option value="all">All Closed By</option>
+        </select>
+      </div>
+
+      <!-- Date Range Filter -->
+      <div class="fs-group" id="fsDateRangeGroup">
+        <label class="fs-label">Date Range</label>
+        <div class="fs-date-grid">
+          <div class="fs-date-col">
+            <span class="fs-sublabel">From Date</span>
+            <input type="date" id="fltFromDate" class="fs-date-input" aria-label="From Date">
+          </div>
+          <div class="fs-date-col">
+            <span class="fs-sublabel">To Date</span>
+            <input type="date" id="fltToDate" class="fs-date-input" aria-label="To Date">
+          </div>
+        </div>
+      </div>
+
+      <!-- Sort Filter -->
+      <div class="fs-group">
+        <label class="fs-label" for="sortBy">Sort By</label>
+        <select id="sortBy" aria-label="Sort">
+          <option value="new">Newest first (Open Date)</option>
+          <option value="old">Oldest first (Open Date)</option>
+          <option value="closed_new">Close Date (Newest first)</option>
+          <option value="closed_old">Close Date (Oldest first)</option>
+          <option value="az">Job name A-Z</option>
+          <option value="area">Area A-Z</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="fs-foot">
+      <button type="button" class="btn s" id="btnClearFilterDrawer">Reset All</button>
+      <button type="button" class="btn p" id="btnApplyFilterDrawer">Apply</button>
+    </div>
+  </aside>
+
+  <!-- ===== VIEW DETAILS MODAL ===== -->
+  <div class="modal" id="viewModal" hidden>
+    <div class="vdialog" id="viewDialog" role="dialog" aria-modal="true" aria-label="Job details"></div>
+  </div>
+
+  <!-- ===== EDIT MODAL ===== -->
+  <div class="modal" id="editModal" hidden>
+    <form class="dialog" id="editForm" novalidate>
+      <div class="dhead"><h3>Edit Job <span id="editId" class="muted"></span></h3><button type="button" class="x" data-close>&times;</button></div>
+      <div class="fgrid">
+        <div class="fld full"><label>Job Details</label><input id="eDetails" required></div>
+        <div class="fld"><label>Issued To Dept.</label>
+          <select id="eDept"><option value="">Issued To Dept.</option></select></div>
+        <div class="fld"><label>Area</label>
+          <select id="eArea"><option value="">Area</option></select></div>
+        <div class="fld"><label>Sub-Area</label><input id="eSub"></div>
+        <div class="fld" id="eSubDeptWrap"><label>Assign Sub-Dept.</label>
+          <select id="eSubDept"><option value="">Assign Sub-Dept.</option></select></div>
+        <div class="fld" id="eAssignedWrap"><label>Assign To</label>
+          <select id="eAssigned"><option value="">Assign To</option></select></div>
+        <div class="fld" id="eStatusWrap"><label>Status</label>
+          <select id="eStatus"><option>Open</option><option>Assigned</option><option value="In-Progress">In-Progress</option><option>Closed</option></select></div>
+        <div class="fld" id="eClosedByWrap" hidden><label>Closed By</label><input id="eClosedBy"></div>
+        <div class="fld full"><label>Remarks</label><input id="eRemarks" placeholder="NA"></div>
+
+        <div class="fld full">
+          <label>Photo Before</label>
+          <div class="pp" id="ePhotoBeforeWrap" data-which="Before">
+            <img id="ePhotoBeforeImg" alt="" hidden><span class="none" id="ePhotoBeforeNone">No photo</span>
+            <div class="ppb">
+              <button type="button" class="mini" id="ePhotoBeforePick">Choose</button>
+              <button type="button" class="mini danger" id="ePhotoBeforeDel" hidden>Remove</button>
+            </div>
+            <input type="file" id="ePhotoBeforeInput" accept="image/*" hidden>
+          </div>
+        </div>
+      </div>
+      <small class="err" id="editPhotoErr"></small>
+      <div class="btns">
+        <button type="submit" class="btn p">Save Changes</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- ===== DELETE MODAL ===== -->
+  <div class="modal" id="delModal" hidden>
+    <div class="dialog small">
+      <div class="dhead">
+        <h3 style="display:flex;align-items:center;gap:8px;color:var(--red);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"/>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+            <line x1="10" y1="11" x2="10" y2="17"/>
+            <line x1="14" y1="11" x2="14" y2="17"/>
+          </svg>
+          Delete Job?
+        </h3>
+        <button type="button" class="x" data-close>&times;</button>
+      </div>
+      <p id="delText" class="muted"></p>
+      <div class="btns">
+        <button type="button" class="btn s" data-close>Cancel</button>
+        <button type="button" class="btn d" id="confirmDelete">Delete</button>
       </div>
     </div>
   </div>
-  <!-- / Layout pageeee -->
 
-  <!-- Overlay -->
-  <div class="layout-overlay layout-menu-toggle"></div>
-  <div id="modelHolder"></div>
-  <div id="teams2"></div>
-  <div id="divholder"></div>
-  <div id="permissin-divs"></div>
-  <div id="SpinnerLoader" style="margin: 0 auto; display:none;z-index:999999"></div>
-  <!-- All JS -->
-  <script src="quickfixcssjs/theme/assets/vendor/libs/jquery/jquery.js"></script>
-  <script src="quickfixcssjs/theme/assets/vendor/libs/popper/popper.js"></script>
-  <script src="quickfixcssjs/theme/assets/vendor/js/bootstrap.js"></script>
-  <script src="quickfixcssjs/theme/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
-  <script src="quickfixcssjs/theme/assets/vendor/libs/hammer/hammer.js"></script>
-  <script src="quickfixcssjs/theme/assets/vendor/libs/i18n/i18n.js"></script>
-  <script src="quickfixcssjs/theme/assets/vendor/libs/typeahead-js/typeahead.js"></script>
-  <script src="quickfixcssjs/theme/assets/vendor/js/menu.js"></script>
-  <!-- <script src="quickfixcssjs/theme/assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js"></script> -->
-  <script src="quickfixcssjs/theme/assets/vendor/libs/moment/moment.js"></script>
-  <script src="quickfixcssjs/theme/assets/vendor/libs/flatpickr/flatpickr.js"></script>
-  <script src="quickfixcssjs/theme/assets/vendor/libs/formvalidation/dist/js/FormValidation.min.js"></script>
-  <script src="quickfixcssjs/theme/assets/vendor/libs/formvalidation/dist/js/plugins/Bootstrap5.min.js"></script>
-  <script src="quickfixcssjs/theme/assets/vendor/libs/formvalidation/dist/js/plugins/AutoFocus.min.js"></script>
-  <script src="quickfixcssjs/theme/assets/js/main.js"></script>
-  <script src="quickfixcssjs/theme/assets/js/tables-datatables-basic.js"></script>
-  <script src="quickfixcssjs/theme/assets/vendor/js/helpers.js"></script>
-  <script src="quickfixcssjs/theme/assets/vendor/js/template-customizer.js"></script>
-  <script src="quickfixcssjs/theme/assets/js/config.js"></script>
-  <script src="quickfixcssjs/theme/assets/js/tables-datatables-advanced.js"></script>
-  <!-- Date Picker JS -->
-  <script src="quickfixcssjs/theme/assets/vendor/libs/moment/moment.js"></script>
-  <script src="quickfixcssjs/theme/assets/vendor/libs/flatpickr/flatpickr.js"></script>
-  <script src="quickfixcssjs/theme/assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.js"></script>
-  <script src="quickfixcssjs/theme/assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.js"></script>
-  <script src="quickfixcssjs/theme/assets/vendor/libs/jquery-timepicker/jquery-timepicker.js"></script>
-  <script src="quickfixcssjs/theme/assets/vendor/libs/pickr/pickr.js"></script>
-  <script src="quickfixcssjs/theme/assets/js/forms-pickers.js"></script>
+  <!-- ===== MOVE TO TASK MASTER MODAL ===== -->
+  <div class="modal" id="taskMasterModal" hidden>
+    <div class="dialog small">
+      <div class="dhead">
+        <h3 style="display:flex;align-items:center;gap:8px;color:var(--primary);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>
+            <path d="M9 14l2 2 4-4"/>
+          </svg>
+          Move to Task Master
+        </h3>
+        <button type="button" class="x" data-close>&times;</button>
+      </div>
+      <p id="taskMasterText" class="muted"></p>
+      <div class="btns">
+        <button type="button" class="btn s" data-close>Cancel</button>
+        <button type="button" class="btn p" id="confirmMoveTaskMaster">Save</button>
+      </div>
+    </div>
+  </div>
 
+  <!-- ===== NO PHOTO CONFIRMATION MODAL ===== -->
+  <div class="modal" id="noPhotoModal" hidden>
+    <div class="dialog small">
+      <div class="dhead">
+        <h3 style="display:flex;align-items:center;gap:8px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+          No Image Attached
+        </h3>
+        <button type="button" class="x" id="btnXNoPhoto">&times;</button>
+      </div>
+      <p style="font-size:14px;color:var(--ink);margin:0 0 8px;font-weight:600;" id="noPhotoPrompt">Do you want to continue without job image?</p>
+      <p style="font-size:12.5px;color:var(--muted);margin:0 0 18px;" id="noPhotoDesc">You have not attached any photo or video for this job.</p>
+      <div class="btns">
+        <button type="button" class="btn s" id="btnCancelNoPhoto">Cancel / Add Photo</button>
+        <button type="button" class="btn p" id="btnConfirmNoPhoto">Continue &amp; Save</button>
+      </div>
+    </div>
+  </div>
 
-  <script src="https://cdn.datatables.net/2.0.8/js/dataTables.js"></script>
-  <script src="https://cdn.datatables.net/2.0.8/js/dataTables.bootstrap5.js"></script>
+  <!-- ===== ASSIGN MODAL ===== -->
+  <div class="modal" id="assignModal" hidden>
+    <form class="dialog" id="assignForm" novalidate>
+      <div class="dhead">
+        <h3>Assign Job <span id="assignId" class="muted"></span></h3>
+        <button type="button" class="x" data-close>&times;</button>
+      </div>
+      <div class="job-brief" id="assignBrief"></div>
+      <div class="fgrid">
+        <div class="fld full">
+          <label for="asDept">Select Sub-Dept. / Sub-Team</label>
+          <select id="asDept" required>
+            <option value="">Select sub-team</option>
+          </select>
+        </div>
+        <div class="fld full">
+          <label for="asMember">Assign To Team Member</label>
+          <select id="asMember" required></select>
+        </div>
+        <div class="fld full" id="customMemberWrap" hidden>
+          <label for="asCustomMember">Custom Member Name</label>
+          <input id="asCustomMember" placeholder="Enter staff name">
+        </div>
+        <div class="fld full">
+          <label for="asRemarks">Assignment Notes / Instructions (Optional)</label>
+          <input id="asRemarks" placeholder="e.g. Please check urgently">
+        </div>
+      </div>
+      <div class="btns">
+        <button type="button" class="btn s" data-close>Cancel</button>
+        <button type="submit" class="btn p">Assign Job</button>
+      </div>
+    </form>
+  </div>
 
-  <!-- DataTables Buttons -->
-  <script src="https://cdn.datatables.net/buttons/3.0.2/js/dataTables.buttons.js"></script>
-  <script src="https://cdn.datatables.net/buttons/3.0.2/js/buttons.bootstrap5.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
-  <script src="https://cdn.datatables.net/buttons/3.0.2/js/buttons.html5.min.js"></script>
-  <script src="https://cdn.datatables.net/buttons/3.0.2/js/buttons.print.min.js"></script>
+  <!-- ===== CLOSE JOB MODAL ===== -->
+  <div class="modal" id="closeModal" hidden>
+    <form class="dialog" id="closeForm" novalidate>
+      <div class="dhead">
+        <button type="button" class="x-top-left" data-close title="Close dialog" aria-label="Close dialog">&times;</button>
+        <h3>Close Job <span id="closeId" class="muted"></span></h3>
+        <button type="button" class="x" data-close title="Close dialog">&times;</button>
+      </div>
+      <div class="job-brief" id="closeBrief"></div>
+      <div class="team-rule-note">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span id="closeTeamNotice">Jobs can be closed by authorized members of the responsible team.</span>
+      </div>
+      <div class="fgrid">
+        <div class="fld full" id="clByWrap">
+          <label for="clBy">Closing Team Member</label>
+          <select id="clBy" required></select>
+        </div>
+        <div class="fld full" id="clRemarksWrap">
+          <label for="clRemarks">Completion Remarks</label>
+          <input id="clRemarks" placeholder="e.g. Work completed. Done." value="Done." required>
+        </div>
+        <div class="fld full" id="clPhotoWrap">
+          <label>Photo After (Optional)</label>
+          <div class="pp" id="closePhotoWrap" data-which="After">
+            <div class="ppb" style="margin-bottom:6px;">
+              <button type="button" class="mini" id="closePhotoPick">Choose Photos</button>
+              <button type="button" class="mini danger" id="closePhotoDel" hidden>Remove All</button>
+            </div>
+            <span class="none" id="closePhotoNone">No photo</span>
+            <div id="closePhotoPreviews" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;"></div>
+            <input type="file" id="closePhotoInput" accept=".jpeg, .jpg, .png, .mp4, .mov, image/*" multiple hidden>
+          </div>
+        </div>
+      </div>
+      <div class="btns">
+        <button type="button" class="btn s" data-close>Cancel</button>
+        <button type="submit" class="btn g" id="closeSubmitBtn">Confirm &amp; Close Job</button>
+      </div>
+    </form>
+  </div>
 
-  <script src="quickfixcssjs/theme/assets/vendor/libs/select2/select2.js"></script>
-  <script src="quickfixcssjs/theme/assets/vendor/libs/block-ui/block-ui.js"></script>
-  <script src="quickfixcssjs/theme/assets/js/extended-ui-blockui.js"></script>
-  <script src="quickfixcssjs/theme/assets/vendor/libs/sweetalert2/sweetalert2.js"></script>
+  <!-- ===== RESET PASSWORD MODAL ===== -->
+  <div class="modal" id="resetPwdModal" hidden>
+    <form class="dialog small" id="resetPwdForm" novalidate>
+      <div class="dhead">
+        <h3>Reset Password</h3>
+        <button type="button" class="x" data-close>&times;</button>
+      </div>
+      <p style="font-size:13px;color:var(--muted);margin:0 0 16px;">Update the password for <b>IT (App admin)</b>.</p>
+      <div class="fgrid">
+        <div class="fld full">
+          <label for="newPwd">New Password</label>
+          <input type="password" id="newPwd" placeholder="Enter new password (min. 6 characters)" required minlength="6">
+        </div>
+        <div class="fld full">
+          <label for="confirmPwd">Confirm Password</label>
+          <input type="password" id="confirmPwd" placeholder="Re-enter new password" required minlength="6">
+        </div>
+      </div>
+      <div class="btns">
+        <button type="button" class="btn s" data-close>Cancel</button>
+        <button type="submit" class="btn p">Update Password</button>
+      </div>
+    </form>
+  </div>
 
-  <script src="quickfixcssjs/signalr.min.js"></script>
+  <!-- ===== CHANGE TEAM MODAL (Point 6) ===== -->
+  <!-- <div class="modal" id="changeTeamModal" hidden>
+    <form class="dialog small" id="changeTeamForm" novalidate>
+      <div class="dhead">
+        <button type="button" class="x-top-left" data-close title="Close dialog">&times;</button>
+        <h3>Change Team Assignment <span id="changeTeamJobId" class="muted"></span></h3>
+        <button type="button" class="x" data-close>&times;</button>
+      </div>
+      <p style="font-size:13px;color:var(--muted);margin:0 0 16px;">
+        If a job was wrongly assigned, the 'Issued By' user can reassign it to the correct department while it is in OPEN status.
+      </p>
+      <div class="job-brief" id="changeTeamBrief"></div>
+      <div class="fgrid">
+        <div class="fld full">
+          <label for="chNewTeam">Select New Team / Department</label>
+          <select id="chNewTeam" required>
+            <option value="">Select Department</option>
+          </select>
+        </div>
+      </div>
+      <div class="btns" style="margin-top:20px;">
+        <button type="button" class="btn s" data-close>Cancel</button>
+        <button type="submit" class="btn p">Update Team</button>
+      </div>
+    </form>
+  </div> -->
 
+  <!-- ===== PHOTO LIGHTBOX WITH ZOOM & GALLERY CONTROLS ===== -->
+  <div class="lightbox" id="lightbox" hidden>
+    <div class="lb-toolbar">
+      <span class="lb-counter" id="lbCounter" style="display:none;"></span>
+      <button type="button" class="lb-tool" id="lbZoomIn" title="Zoom In">+</button>
+      <button type="button" class="lb-tool" id="lbZoomOut" title="Zoom Out">&minus;</button>
+      <button type="button" class="lb-tool" id="lbZoomReset" title="Reset Zoom">100%</button>
+      <button type="button" class="x lb-close" id="lbClose" title="Close photo">&times;</button>
+    </div>
+    <button type="button" class="lb-nav-btn lb-prev" id="lbPrev" title="Previous photo (Left arrow)" style="display:none;">&lsaquo;</button>
+    <div class="lb-img-container" id="lbImgContainer">
+      <img id="lbImg" alt="Preview Photo">
+    </div>
+    <button type="button" class="lb-nav-btn lb-next" id="lbNext" title="Next photo (Right arrow)" style="display:none;">&rsaquo;</button>
+    <div class="lb-thumbs" id="lbThumbs" style="display:none;"></div>
+  </div>
+  <input type="file" accept="image/*" id="quickPhoto" hidden>
 
-  <script src="../webessential/domain.js"></script>
-  <script src="quickfixcssjs/app_quickfix.js"></script>
-  <script src="quickfixcssjs/qindex.js"></script>
+  <!-- ===== SCREEN LOADING OVERLAY ===== -->
+  <div class="screen-loader" id="screenLoader" hidden aria-live="polite" aria-busy="true">
+    <div class="screen-loader-box">
+      <div class="screen-loader-spin"></div>
+      <div class="screen-loader-text" id="screenLoaderText">Updating status...</div>
+    </div>
+  </div>
 
+  <button class="totop" id="toTop" aria-label="Back to top" hidden>&uarr;</button>
+  <div class="toast" id="toast" role="status"></div>
 
-  <script>
-    new DataTable('#datatable1', {
-      responsive: true
-    });
-    new DataTable('#datatable2', {
-      responsive: true
-    });
-  </script>
-  <script>
-
-  </script>
-
+  <script src="assets/exceljs.min.js"></script>
+  <script src="assets/xlsx.full.min.js"></script>
+  <script src="api/config.js"></script>
+  <script src="api/dailyJobApi.js"></script>
+  <script src="script.js"></script>
 </body>
-
 </html>
