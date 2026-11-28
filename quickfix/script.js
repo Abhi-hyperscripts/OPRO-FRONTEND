@@ -1213,12 +1213,25 @@
     return isJobIssuedToUserTeam(j);
   }
 
-  // Anyone (any team / any email login, except view-only Atmosphere Admin) can update a non-closed job status (Open, Assigned, In-Progress)
+  function isJobAssignedToUser(j) {
+    if (!j) return false;
+    var sup = String(j.assigned_supervisor || '').trim();
+    var mem = String(j.assigned_member || '').trim();
+    var name = String(j.assigned || '').trim();
+    var hasAssignedUser =
+      (sup && sup !== 'NA' && sup !== 'null') ||
+      (mem && mem !== 'NA' && mem !== 'null') ||
+      (name && name !== 'NA' && name !== 'null' && name !== 'Not assigned');
+    return j.status === 'Assigned' && Boolean(hasAssignedUser);
+  }
+
+  // Anyone (any team / any email login, except view-only Atmosphere Admin) can mark a job In-Progress only once it is Assigned to a user
   function canMarkInProgress(j) {
     if (isAtmosphereAdmin()) return false;
     if (!j) return false;
     var closed = (j.status === 'Closed') || (state.tab === 'closed');
-    return !closed;
+    if (closed) return false;
+    return isJobAssignedToUser(j);
   }
 
   // QuickFix condition: who can close / change status of a job
@@ -2919,17 +2932,22 @@
   async function executeChangeJobStatus(job, newStatus) {
     if (!job) return;
     var normalizedNew = isInProgressStatus(newStatus) ? 'In-Progress' : newStatus;
-    var allowed = (normalizedNew === 'Closed') ? canCloseJob(job) : canMarkInProgress(job);
-    if (!allowed) {
-      toast('You do not have permission to update this job status.');
-      return;
-    }
-
     var normalizedCur = isInProgressStatus(job.status) ? 'In-Progress' : job.status;
     if (normalizedNew === normalizedCur) {
       toast('Job is already ' + normalizedNew + '.');
       var cmSame = $('#closeModal');
       if (cmSame && !cmSame.hidden) cmSame.hidden = true;
+      return;
+    }
+
+    if (normalizedNew === 'In-Progress' && !isJobAssignedToUser(job)) {
+      toast('Job must be assigned to a user before it can be marked In-Progress.');
+      return;
+    }
+
+    var allowed = (normalizedNew === 'Closed') ? canCloseJob(job) : canMarkInProgress(job);
+    if (!allowed) {
+      toast('You do not have permission to update this job status.');
       return;
     }
 
@@ -3326,6 +3344,20 @@
     return false;
   }
 
+  function syncEditInProgressOption() {
+    var eAssigned = $('#eAssigned');
+    var eStatus = $('#eStatus');
+    if (!eStatus) return;
+    var hasAssigned = Boolean(eAssigned && eAssigned.value && eAssigned.value.trim());
+    var inProgOpt = eStatus.querySelector('option[value="In-Progress"]');
+    if (inProgOpt) {
+      inProgOpt.disabled = !hasAssigned;
+    }
+    if (!hasAssigned && isInProgressStatus(eStatus.value)) {
+      eStatus.value = 'Open';
+    }
+  }
+
   function handleEditDeptChange(deptVal, initialSubDept, initialAssigned) {
     var subWrap = $('#eSubDeptWrap');
     var assignWrap = $('#eAssignedWrap');
@@ -3354,6 +3386,7 @@
         curAssigned = eAssigned ? eAssigned.value : '';
       }
       populateEditMembers(deptVal, effSubDept, curAssigned);
+      syncEditInProgressOption();
 
       var eStatus = $('#eStatus');
       if (closedByWrap) {
@@ -3474,6 +3507,10 @@
       var status = $('#eStatus') ? $('#eStatus').value : (oldStatus || 'Open');
 
       if (status !== 'Closed') {
+        if (!assigned && isInProgressStatus(status)) {
+          toast('Job must be assigned to a user before it can be set to In-Progress.');
+          return;
+        }
         if (assigned && status === 'Open') {
           status = 'Assigned';
         } else if (!assigned && status === 'Assigned') {
@@ -5258,6 +5295,7 @@
     if (eSubDept) {
       eSubDept.addEventListener('change', function () {
         populateEditMembers($('#eDept') ? $('#eDept').value : '', this.value);
+        syncEditInProgressOption();
       });
     }
     var eAssigned = $('#eAssigned');
@@ -5267,15 +5305,21 @@
         if (eStatus && eStatus.value !== 'Closed') {
           if (this.value && eStatus.value === 'Open') {
             eStatus.value = 'Assigned';
-          } else if (!this.value && eStatus.value === 'Assigned') {
+          } else if (!this.value && (eStatus.value === 'Assigned' || isInProgressStatus(eStatus.value))) {
             eStatus.value = 'Open';
           }
         }
+        syncEditInProgressOption();
       });
     }
     var eStatus = $('#eStatus');
     if (eStatus) {
       eStatus.addEventListener('change', function () {
+        var curAssigned = $('#eAssigned') ? $('#eAssigned').value.trim() : '';
+        if (isInProgressStatus(this.value) && !curAssigned) {
+          toast('Job must be assigned to a user before it can be marked In-Progress.');
+          this.value = 'Open';
+        }
         var wrap = $('#eClosedByWrap');
         if (wrap) wrap.hidden = (this.value !== 'Closed');
       });
